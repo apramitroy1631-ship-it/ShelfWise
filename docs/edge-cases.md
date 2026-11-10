@@ -94,6 +94,18 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | `SW-HOM-00033` and `sw-hom-00033` are confused | Lookup is exact and case-sensitive (D1) | `CatalogueApiTest.skuLookupIsCaseSensitive_D1` |
 | A change leaves no trace | Every create, edit, price set, archive and unarchive is in the audit log, in the same transaction | `CatalogueApiTest.adminCreatesAProductAndItIsAudited` and others |
 
+## Inventory (M10, M12)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| Overlapping write-offs oversell or lose a change | Each change is one atomic "only if the result stays ≥ 0" update plus its history entry, in one transaction | `InventoryApiTest.overlappingAdjustmentsNeverOversellOrLoseAChange_M12` (10 concurrent on 5 units → 5 succeed, stock 0, history 4,3,2,1,0) |
+| An adjustment takes stock below 0 | Refused with 409 showing the current stock; nothing changes | `InventoryApiTest.anAdjustmentThatWouldGoBelowZeroIsRefusedAndChangesNothing` |
+| A manager reads or changes another store's stock | Store scope checked on the server for every call (403) | `InventoryApiTest.storeManagerSeesOnlyTheirOwnStore`, `onlyTheStoresManagerOrAnAdminCanAdjust` |
+| Finance changes stock | Not allowed (403); admins and the store's managers only | same test |
+| A stock change has no explanation | Every change has a reason code; "other" requires a note; all go into the history with who made it | `InventoryApiTest.anOtherAdjustmentNeedsANote`, `damagedStockIsRemovedAndRecordedWithItsReason` |
+| An import-corrected row stays flagged forever | A recount sets the counted quantity and clears "recount needed" (D5) | `InventoryApiTest.recountSetsTheCountedQuantityAndClearsTheFlag_D5` |
+| Leftover stock of an archived product can't be cleared | Adjustments are allowed on archived products (D3) | `InventoryApiTest.archivedProductsCanStillBeWrittenOff_D3` |
+
 ## Web app: sign-in
 
 | What could go wrong | How it's handled | Proof |
