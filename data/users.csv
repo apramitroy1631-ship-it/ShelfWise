@@ -1,0 +1,13 @@
+user_id,name,email,role,store_id,active
+U01,Rohit Menon,rohit.menon@shelfwise.example,ADMIN,,true
+U02,Neha Kulkarni,neha.kulkarni@shelfwise.example,ADMIN,,true
+U03,Arjun Rao,arjun.rao@shelfwise.example,STORE_MANAGER,S01,true
+U04,Sneha Reddy,sneha.reddy@shelfwise.example,STORE_MANAGER,S02,true
+U05,Kiran Patil,kiran.patil@shelfwise.example,STORE_MANAGER,S03,true
+U06,Lakshmi Iyer,lakshmi.iyer@shelfwise.example,STORE_MANAGER,S04,true
+U07,Subrata Das,subrata.das@shelfwise.example,STORE_MANAGER,S05,true
+U08,Imran Sheikh,imran.sheikh@shelfwise.example,STORE_MANAGER,S01,true
+U09,Divya Nair,divya.nair@shelfwise.example,STORE_MANAGER,S02,true
+U10,Meera Joshi,meera.joshi@shelfwise.example,FINANCE_APPROVER,,true
+U11,Anil Gupta,anil.gupta@shelfwise.example,FINANCE_APPROVER,,true
+U12,Pooja Bansal,pooja.bansal@shelfwise.example,FINANCE_APPROVER,,false

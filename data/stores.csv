@@ -1,0 +1,6 @@
+store_id,name,city,state,opened_on,manager_user_id
+S01,ShelfWise Whitefield,Bengaluru,Karnataka,2019-03-15,U03
+S02,ShelfWise Madhapur,Hyderabad,Telangana,2020-04-15,U04
+S03,ShelfWise Kothrud,Pune,Maharashtra,2021-05-15,U05
+S04,ShelfWise Adyar,Chennai,Tamil Nadu,2022-06-15,U06
+S05,ShelfWise Salt Lake,Kolkata,West Bengal,2023-07-15,U07
