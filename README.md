@@ -5,16 +5,22 @@ Staff use it to run their shops: store managers handle stock, customer orders an
 
 > **Status:** early setup. This README grows with the project; everything required by the brief will live here or be linked from here.
 
-## What it is made of (planned)
+## What it is made of
 
-| Part | Technology | Users |
-|---|---|---|
-| Core service | Java, Spring Boot WebFlux (reactive) | — |
-| Notification service | Java, Spring Boot WebFlux | — |
-| Web app | React | Admin, store manager, finance approver |
-| Mobile app | React Native (Expo) | Store manager |
+| Part | Technology |
+|---|---|
+| Core service | Java, Spring Boot WebFlux (reactive), Maven |
+| Notification service | Java, Spring Boot WebFlux, Maven |
+| Database | PostgreSQL via R2DBC, Flyway migrations |
+| Messaging | RabbitMQ with a transactional outbox |
+| File storage | S3-compatible: MinIO locally, Cloudflare R2 deployed |
+| Auth | Spring Security (reactive), access + refresh tokens, BCrypt |
+| Remote config | Own settings table + `/config` endpoint |
+| Web app | React (all roles) |
+| Mobile app | React Native with Expo, store managers *(to confirm)* |
+| Hosting | Railway (containers), Cloudflare R2, Expo EAS for the Android build |
 
-Technology choices and their trade-offs will be recorded in the decision log.
+Why each was chosen, the alternatives, and what would change at 10× load: **[Decision log](docs/decision-log.md)**.
 
 ## Roles
 
