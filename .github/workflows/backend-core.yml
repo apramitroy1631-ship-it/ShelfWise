@@ -1,0 +1,37 @@
+# CI for the core service only.
+# Runs when the core service (or the backend's shared build settings) changes,
+# never because of web/, mobile/ or the notification service (decision DL-08).
+name: backend-core
+
+on:
+  push:
+    paths:
+      - "backend/core-service/**"
+      - "backend/pom.xml"
+      - "backend/.mvn/**"
+      - "backend/mvnw"
+      - ".github/workflows/backend-core.yml"
+  pull_request:
+    paths:
+      - "backend/core-service/**"
+      - "backend/pom.xml"
+      - "backend/.mvn/**"
+      - "backend/mvnw"
+      - ".github/workflows/backend-core.yml"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      # -pl: build only this service; -am: plus the parent pom it needs.
+      - name: Build and test core service
+        run: ./mvnw -B -pl core-service -am verify

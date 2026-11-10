@@ -1,0 +1,18 @@
+# Core service settings. Values that differ per environment come from
+# environment variables (e.g. SERVER_PORT); these are the local defaults.
+spring:
+  application:
+    name: core-service
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true   # /actuator/health/liveness and /readiness for containers
