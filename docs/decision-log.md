@@ -70,9 +70,14 @@ Fixed by the brief: **Java + Spring Boot WebFlux (used reactively)** for the bac
   - Mobile keeps tokens in secure device storage.
 - **Why:**
   - Nothing extra to run or explain.
-  - It supports D20 (a deactivated user is cut off at the next token refresh) and D25 (hashed passwords, a first-login-change switch, the demo password from config).
+  - It supports D20 (a deactivated user is cut off on their **next request**) and D25 (hashed passwords, a first-login-change switch, the demo password from config).
+- **As built (2026-11-10):**
+  - Access tokens last 15 minutes and refresh tokens 7 days. Refresh tokens are single-use (rotation), and reusing a revoked one ends all of that user's sessions.
+  - The access token only identifies the user: **every request re-reads the user**, so deactivation and role changes apply at once. *Amended: this entry first said "at the next refresh"; D20 promised "next request", so the stronger rule was built.* Cost: one primary-key lookup per request.
+  - Every sign-in failure gets the same message, and unknown emails still run a password check, so a failure reveals neither which emails exist nor (by timing) whether the email was right.
+  - BCrypt runs off the request threads to keep the service non-blocking.
 - **Trade-offs:** we own the security code, so it needs careful tests (expired, tampered and revoked tokens; role escalation). Keycloak was rejected as a heavy extra container, Auth0/Cognito as external accounts.
-- **At 10×:** a dedicated identity provider for single sign-on and multi-factor login.
+- **At 10×:** a dedicated identity provider for single sign-on and multi-factor login; cache the per-request user lookup for a few seconds; rate-limit sign-in attempts per email and IP.
 
 ## DL-06 Remote configuration: own settings table + `/config` endpoint
 *Locked 2026-11-10*
