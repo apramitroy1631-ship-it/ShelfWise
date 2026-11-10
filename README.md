@@ -22,6 +22,8 @@ Staff use it to run their shops: store managers handle stock, customer orders an
 
 Why each was chosen, the alternatives, and what would change at 10× load: **[Decision log](docs/decision-log.md)**.
 
+How the web and mobile apps look (colours, status chips, layouts, light and dark themes): **[Design system](docs/design-system.md)**, with mockups for the [light](docs/design/ui-v3-light.html) and [dark](docs/design/ui-v3-dark.html) themes.
+
 ## Roles
 
 - **Admin (head office):** all stores; manages products, suppliers, users; dashboard and exports.

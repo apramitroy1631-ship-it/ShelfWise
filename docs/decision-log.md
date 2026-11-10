@@ -151,6 +151,27 @@ Fixed by the brief: **Java + Spring Boot WebFlux (used reactively)** for the bac
   - Deployment needs either same-origin hosting or CORS on the core service.
 - **At 10×:** a component library and a design system, route-based code splitting, and end-to-end tests in a real browser on every change.
 
+## DL-11 UI design system: v3, light + dark
+*Locked 2026-11-10. Spec: [design-system.md](design-system.md). Mockups: [light](design/ui-v3-light.html), [dark](design/ui-v3-dark.html).*
+- **Options:**
+  - v1: royal blue everywhere on cream. Rejected as looking basic, with low-contrast text.
+  - v2: ink-navy structure, royal blue used sparingly, high-contrast text.
+  - v3: v2 plus published UX guidance for tables, statuses, approvals and mobile.
+- **Chosen:** v3, with a light theme and a matching dark theme.
+  - Structure is ink navy (`#0E1A3A`), the action colour is royal blue (`#2F55D4`), and the page is a neutral off-white (`#F6F5F1`) with white cards.
+  - Dark mode keeps the same layout. Depth comes from lighter surfaces, and a lighter blue (`#7C96F2`) is used for links and icons so they stay readable.
+  - Order and PO statuses are **icon + word + colour**, with five distinct hues (Pending amber, Packed indigo, Shipped teal, Delivered green, Cancelled grey); red is kept for real problems.
+  - Web list pages follow one pattern: title and actions → KPI cards → filters and sort → bulk actions → table → pager. Mobile uses cards and labelled bottom tabs.
+- **Why:**
+  - Store staff and finance spend their day scanning tables. Dense rows, lined-up numbers and clear statuses matter more than decoration.
+  - Every choice is backed by a published source (NN/g, Carbon, Shopify Polaris, Apple/Material touch-target rules), listed in the spec.
+  - Text is at least 7:1 contrast and buttons and links at least 4.5:1 in both themes, which helps on shop floors with glare.
+- **Trade-offs:**
+  - Two themes double the colour values to keep in sync. This is kept cheap by defining both themes in each app's single theme file, never as raw colours in components.
+  - Under DL-08 the web and mobile apps each copy the tokens; this document is the single source of truth.
+  - The brief does not grade polish, so dark mode is built only after the core features work.
+- **At 10×:** publish the tokens as a versioned design-token package (e.g. Style Dictionary) that generates both apps' theme files, and add visual regression tests for both themes.
+
 ---
 
 ## Still to lock
