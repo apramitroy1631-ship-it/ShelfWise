@@ -29,6 +29,17 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- Sign-in: Spring Security validates our own signed access tokens (JWT) on every request (DL-05). -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
+        </dependency>
+        <!-- Request validation (e.g. email must not be blank). -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
         <!-- Database access, non-blocking (R2DBC) so request threads never wait on I/O (DL-02). -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

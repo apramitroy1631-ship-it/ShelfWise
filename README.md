@@ -61,6 +61,17 @@ On start-up the core service applies the database migrations automatically (Flyw
 
 Stop everything with `docker compose down`, or `docker compose down -v` to also delete the local database.
 
+### Sign-in API
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /api/auth/login` | `{ "email", "password" }` → access token (15 min), refresh token (7 days), user's id, name, role, store |
+| `POST /api/auth/refresh` | `{ "refreshToken" }` → a new pair; the old refresh token stops working |
+| `POST /api/auth/logout` | `{ "refreshToken" }` → revokes it (204) |
+| `GET /api/me` | The signed-in user (header `Authorization: Bearer <access token>`) |
+
+Demo accounts and their password arrive with the data import (D25). What can go wrong and how it's handled: [edge-case register](docs/edge-cases.md).
+
 ### Running the backend tests
 
 Needs Java 21 and Docker running (tests start a throwaway PostgreSQL):

@@ -16,6 +16,19 @@ spring:
     user: ${DB_USER:shelfwise}
     password: ${DB_PASSWORD:shelfwise}
 
+  # Errors are returned as standard JSON problem details (RFC 9457).
+  webflux:
+    problemdetails:
+      enabled: true
+
+shelfwise:
+  auth:
+    # Signing key for access tokens. The default is for LOCAL DEVELOPMENT ONLY;
+    # every deployed environment must set JWT_SECRET (at least 32 characters).
+    jwt-secret: ${JWT_SECRET:local-development-only-secret-do-not-use-elsewhere}
+    access-token-ttl: 15m
+    refresh-token-ttl: 7d
+
 server:
   port: ${SERVER_PORT:8080}
 
