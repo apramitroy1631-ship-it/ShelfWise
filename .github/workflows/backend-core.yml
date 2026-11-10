@@ -4,6 +4,7 @@
 name: backend-core
 
 on:
+  workflow_dispatch:   # "Run workflow" button on GitHub
   push:
     paths:
       - "backend/core-service/**"

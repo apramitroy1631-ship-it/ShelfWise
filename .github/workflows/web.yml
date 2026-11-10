@@ -3,6 +3,7 @@
 name: web
 
 on:
+  workflow_dispatch:   # "Run workflow" button on GitHub
   push:
     paths:
       - "web/**"
