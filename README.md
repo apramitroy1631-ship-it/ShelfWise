@@ -16,7 +16,7 @@ Staff use it to run their shops: store managers handle stock, customer orders an
 | File storage | S3-compatible: SeaweedFS locally, Cloudflare R2 deployed |
 | Auth | Spring Security (reactive), access + refresh tokens, BCrypt |
 | Remote config | Own settings table + `/config` endpoint |
-| Web app | React (all roles) |
+| Web app | React + TypeScript + Vite, tested with Vitest (all roles) |
 | Mobile app | React Native with Expo, store managers *(to confirm)* |
 | Hosting | Railway (containers), Cloudflare R2, Expo EAS for the Android build |
 
@@ -60,6 +60,19 @@ The first run builds the images and takes a few minutes; later runs take seconds
 On start-up the core service applies the database migrations automatically (Flyway).
 
 Stop everything with `docker compose down`, or `docker compose down -v` to also delete the local database.
+
+### Web app (development)
+
+Needs Node.js 22 or newer, and the backend running (`docker compose up -d --build`).
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Open http://localhost:5173. `/api` calls are forwarded to the core service on port 8080.
+Tests: `npm test`. Type check: `npm run typecheck`. Production build: `npm run build`.
 
 ### Sign-in API
 

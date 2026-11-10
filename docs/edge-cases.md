@@ -31,3 +31,13 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | Email typed with different capitals | Matched case-insensitively | `AuthFlowTest.emailIsCaseInsensitive` |
 | Deployed with the local development signing key | Start-up fails if `JWT_SECRET` is shorter than 32 bytes; deployment must set its own | Start-up check in `AuthProperties`; deployment checklist (to add) |
 | Repeated password guessing | **Not handled yet**: rate limiting is listed in known issues | — |
+
+## Web app: sign-in
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| The user double-clicks "Sign in" | The button is disabled while the request runs | `App.test.tsx`: "disables the button while signing in" |
+| Wrong email or password | The server's message is shown and the password field is cleared | `App.test.tsx`: "shows the server's message…"; also checked live in the browser on 2026-11-10 against the running backend |
+| The server is unreachable | A plain explanation is shown instead of a crash | `App.test.tsx`: "explains when the server cannot be reached" |
+| Signing out while offline | The local session is cleared anyway; the refresh token expires on its own | `api/auth.ts` `logout`; unit test for the online case |
+| Tokens stolen from browser storage | Tokens are kept in memory only, never in localStorage | Code review: `App.tsx`. Trade-off: reloading signs you out (known issue) |
