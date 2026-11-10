@@ -102,6 +102,21 @@ Tests: `npm test`. Type check: `npm run typecheck`. Production build: `npm run b
 | `POST /api/auth/logout` | `{ "refreshToken" }` → revokes it (204) |
 | `GET /api/me` | The signed-in user (header `Authorization: Bearer <access token>`) |
 
+### Catalogue API
+
+All need `Authorization: Bearer <access token>`. Changes are admin-only.
+
+| Endpoint | Who | Purpose |
+|---|---|---|
+| `GET /api/products?q=&category=&status=&sort=&direction=&page=&size=` | all | Search name or SKU, filter, sort (`name`, `sku`, `category`, `price`, `reorderLevel`), page (max 100). Default: active products only |
+| `GET /api/products/categories` | all | Category list for filters |
+| `GET /api/products/{sku}` | all | One product. SKUs are case-sensitive (D1) |
+| `POST /api/products` | admin | Create. Needs a price (D2) and a clean SKU like `SW-ABC-12345` |
+| `PUT /api/products/{sku}` | admin | Edit. Send the `version` you loaded; if someone saved since, the answer is 409 |
+| `POST /api/products/{sku}/archive` · `/unarchive` | admin | `{ "version", "reason" }`. Archived = no new orders or POs; stock and history kept (D3) |
+
+Every change is written to the audit log (who, when, before and after).
+
 What can go wrong and how it's handled: [edge-case register](docs/edge-cases.md).
 
 ### Running the backend tests
