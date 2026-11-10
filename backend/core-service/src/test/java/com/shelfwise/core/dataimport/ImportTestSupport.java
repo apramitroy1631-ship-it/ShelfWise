@@ -12,7 +12,8 @@ final class ImportTestSupport {
 
     static void emptyDatabase(DatabaseClient db) {
         db.sql("""
-                TRUNCATE import_issues, raw_import_records, import_runs, stock_movements, inventory, products,
+                TRUNCATE import_issues, raw_import_records, import_runs, po_approvals, po_lines, purchase_orders,
+                         order_lines, customer_orders, stock_movements, inventory, products,
                          suppliers, refresh_tokens, users, stores CASCADE
                 """).then().block(Duration.ofSeconds(30));
     }

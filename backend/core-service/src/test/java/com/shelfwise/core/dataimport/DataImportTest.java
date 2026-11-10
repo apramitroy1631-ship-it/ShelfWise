@@ -59,11 +59,14 @@ class DataImportTest {
         assertThat(results.get(CatalogueImporter.SUPPLIERS)).isEqualTo(new FileResult(CatalogueImporter.SUPPLIERS, 25, 0, 0));
         assertThat(results.get("products.csv")).isEqualTo(new FileResult("products.csv", 800, 0, 0));
         assertThat(results.get("inventory.csv")).isEqualTo(new FileResult("inventory.csv", 4000, 0, 0));
+        // 15,000 records = 14,960 real orders + 40 identical copies skipped (D8)
+        assertThat(results.get("orders.json")).isEqualTo(new FileResult("orders.json", 14960, 40, 0));
+        assertThat(results.get("purchase_orders.json")).isEqualTo(new FileResult("purchase_orders.json", 300, 0, 0));
     }
 
     @Test
     void theOriginalOfEveryAddedRecordIsKept() {
-        assertThat(count("SELECT count(*) FROM raw_import_records")).isEqualTo(5 + 12 + 800 + 4000);
+        assertThat(count("SELECT count(*) FROM raw_import_records")).isEqualTo(5 + 12 + 800 + 4000 + 14960 + 300);
         // the trailing space of a variant SKU survives in the kept original
         assertThat(count("SELECT count(*) FROM raw_import_records WHERE payload->>'sku' = 'SW-SNK-00091 '")).isEqualTo(6);
     }
@@ -170,7 +173,124 @@ class DataImportTest {
         assertThat(count("SELECT count(*) FROM inventory WHERE quantity <= reorder_level")).isEqualTo(1073);
     }
 
+    // --- customer orders ---------------------------------------------------
+
+    /** The headline check: every order decision together gives the revenue derived in D8, D10 and D11. */
+    @Test
+    void deliveredRevenueMatchesTheDecisions_D8_D10_D11() {
+        assertThat(count("""
+                SELECT sum(total_amount) FROM customer_orders
+                WHERE status = 'DELIVERED' AND review_status IS DISTINCT FROM 'NEEDS_REVIEW'
+                """)).isEqualTo(14_538_055L);   // ₹1,45,38,055
+    }
+
+    @Test
+    void identicalDuplicatesAreImportedOnce_D8() {
+        assertThat(count("SELECT count(*) FROM customer_orders")).isEqualTo(14960);
+        assertThat(issues("D8")).isEqualTo(40);
+    }
+
+    @Test
+    void everyOrderDateFormatIsRead_D9() {
+        assertThat(instant("SELECT created_at FROM customer_orders WHERE id = 'ORD-009788'"))   // "Jun 29, 2026 07:41 PM"
+                .isEqualTo(OffsetDateTime.parse("2026-06-29T19:41+05:30").toInstant());
+        assertThat(instant("SELECT created_at FROM customer_orders WHERE id = 'ORD-005142'"))   // "10/03/2026 00:24", day first
+                .isEqualTo(OffsetDateTime.parse("2026-03-10T00:24+05:30").toInstant());
+        assertThat(instant("SELECT created_at FROM customer_orders WHERE id = 'ORD-012704'"))   // epoch number 1788736318000
+                .isEqualTo(java.time.Instant.ofEpochMilli(1788736318000L));
+    }
+
+    @Test
+    void negativeQuantityOrdersAreKeptAsReceivedAndQueuedForReview_D10() {
+        assertThat(count("SELECT count(*) FROM customer_orders WHERE review_status = 'NEEDS_REVIEW'")).isEqualTo(15);
+        assertThat(count("SELECT total_amount FROM customer_orders WHERE id = 'ORD-011525'")).isEqualTo(-1073);
+        assertThat(count("SELECT qty FROM order_lines WHERE order_id = 'ORD-011525'")).isEqualTo(-1);
+    }
+
+    @Test
+    void missingPricesAreFilledFromSalesHistory_D11() {
+        assertThat(count("SELECT count(*) FROM order_lines WHERE price_source = 'SALES_HISTORY'")).isEqualTo(20);
+        // ORD-001422: chips sold 49 other times at ₹24, so ₹5,508 becomes ₹5,532
+        assertThat(count("SELECT unit_price FROM order_lines WHERE order_id = 'ORD-001422' AND product_sku = 'SW-SNK-00007'")).isEqualTo(24);
+        assertThat(count("SELECT total_amount FROM customer_orders WHERE id = 'ORD-001422'")).isEqualTo(5532);
+        assertThat(count("SELECT count(*) FROM customer_orders WHERE id = 'ORD-001422' AND review_status IS NULL")).isEqualTo(1);
+    }
+
+    @Test
+    void unknownProductsAreKeptWithoutALinkAndNotReviewed_D12() {
+        assertThat(count("SELECT count(*) FROM order_lines WHERE product_sku IS NULL")).isEqualTo(25);
+        assertThat(text("SELECT sku_text FROM order_lines WHERE order_id = 'ORD-004223' AND product_sku IS NULL")).isEqualTo("SW-ZZZ-92676");
+        assertThat(count("SELECT count(*) FROM customer_orders WHERE id = 'ORD-004223' AND review_status IS NULL")).isEqualTo(1);
+    }
+
+    @Test
+    void messySkusInOrdersFindTheirProduct_D13() {
+        assertThat(issues("D13")).isEqualTo(30);
+        assertThat(text("SELECT product_sku FROM order_lines WHERE order_id = 'ORD-010060' AND sku_text = 'sw-snk-00078'")).isEqualTo("SW-SNK-00078");
+        // ORD-007387 spelled a variant but was sold at the clean price: matched by price (D1 step 4)
+        assertThat(text("SELECT product_sku FROM order_lines WHERE order_id = 'ORD-007387' AND sku_text = 'sw-hom-00033'"))
+                .isEqualTo("SW-HOM-00033");
+    }
+
+    @Test
+    void repeatedLinesAreMerged_D14() {
+        assertThat(issues("D14")).isEqualTo(35);
+        // ORD-012701: SW-SNK-00024 as 6 x ₹40 and 1 x ₹40 becomes 7 x ₹40
+        assertThat(count("SELECT qty FROM order_lines WHERE order_id = 'ORD-012701' AND product_sku = 'SW-SNK-00024'")).isEqualTo(7);
+    }
+
+    @Test
+    void importedOrdersNeverChangeStock_D29() {
+        assertThat(count("SELECT count(*) FROM stock_movements WHERE reason <> 'IMPORT_CORRECTION'")).isZero();
+    }
+
+    // --- purchase orders ---------------------------------------------------
+
+    @Test
+    void receivingStatusFollowsTheQuantities_D21() {
+        assertThat(text("SELECT status FROM purchase_orders WHERE id = 'PO-0210'")).isEqualTo("APPROVED");
+        assertThat(issues("D21")).isEqualTo(1);
+    }
+
+    @Test
+    void approvalOrderComesFromTheTime_D31() {
+        // PO-0003 lists U10 first, but U11 approved 11 hours earlier
+        assertThat(text("SELECT approver_id FROM po_approvals WHERE po_id = 'PO-0003' AND step = 1")).isEqualTo("U11");
+        assertThat(issues("D31")).isEqualTo(3);   // PO-0070, PO-0139, PO-0177: same second
+    }
+
+    @Test
+    void storeManagerAndSelfApprovalsNeverCount_D18_D19() {
+        assertThat(count("SELECT count(*) FROM po_approvals WHERE NOT counts")).isEqualTo(8);
+        assertThat(text("SELECT compliance_flag FROM purchase_orders WHERE id = 'PO-0135'")).isEqualTo("SELF_APPROVAL");
+    }
+
+    @Test
+    void wronglyApprovedPurchaseOrdersAreFlaggedNotRewritten_D17_D18_D19() {
+        assertThat(count("SELECT count(*) FROM purchase_orders WHERE compliance_flag = 'SINGLE_APPROVAL'")).isEqualTo(6);
+        assertThat(count("SELECT count(*) FROM purchase_orders WHERE compliance_flag = 'INVALID_APPROVER'")).isEqualTo(7);
+        assertThat(count("SELECT count(*) FROM purchase_orders WHERE compliance_flag = 'SELF_APPROVAL'")).isEqualTo(1);
+    }
+
+    /** The user's progress rule: complete = keep, partly received = may finish, nothing received or self-approved = re-approve. */
+    @Test
+    void onlyUnstartedOrSelfApprovedPurchaseOrdersNeedReapproval() {
+        List<String> needReapproval = db.sql("SELECT id FROM purchase_orders WHERE requires_reapproval ORDER BY id")
+                .map((row, meta) -> row.get(0, String.class)).all().collectList().block(Duration.ofSeconds(10));
+        assertThat(needReapproval).containsExactly("PO-0116", "PO-0135", "PO-0258");
+    }
+
+    @Test
+    void approvalsByTheNowInactiveApproverStayValid_D20() {
+        assertThat(count("SELECT count(*) FROM po_approvals WHERE approver_id = 'U12' AND counts")).isEqualTo(3);
+        assertThat(issues("D20")).isEqualTo(3);
+    }
+
     // --- helpers -----------------------------------------------------------
+
+    private java.time.Instant instant(String sql) {
+        return db.sql(sql).map((row, meta) -> row.get(0, OffsetDateTime.class)).one().block(Duration.ofSeconds(10)).toInstant();
+    }
 
     private long issues(String decision) {
         return count("SELECT count(*) FROM import_issues WHERE decision_code = '" + decision + "'");

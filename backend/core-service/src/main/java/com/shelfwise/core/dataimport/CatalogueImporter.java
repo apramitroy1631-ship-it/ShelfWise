@@ -49,6 +49,13 @@ class CatalogueImporter {
         return new SkuResolver(rawSkuToPrice);
     }
 
+    /** Catalogue price per stored SKU (null if empty, D2): the reference D11 compares sales history against. */
+    static Map<String, BigDecimal> pricesByStoredSku(List<Row> productRows) {
+        Map<String, BigDecimal> prices = new java.util.HashMap<>();
+        productRows.forEach(row -> prices.put(SkuResolver.storedSku(row.get("sku")), decimalOrNull(row.get("price_inr"))));
+        return prices;
+    }
+
     /** D24: there is no suppliers file, so suppliers are created from the IDs, named after them. */
     Mono<FileResult> importSuppliers(long runId, List<Row> productRows) {
         Set<String> ids = new TreeSet<>();
