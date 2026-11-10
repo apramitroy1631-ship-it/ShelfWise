@@ -117,6 +117,16 @@ All need `Authorization: Bearer <access token>`. Changes are admin-only.
 
 Every change is written to the audit log (who, when, before and after).
 
+### Inventory API
+
+Store managers see and change only their own store; admins and finance see all stores; only admins and the store's managers change stock.
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/inventory?storeId=&q=&lowOnly=&recountOnly=&sort=&direction=&page=&size=` | Stock list; `lowOnly` = at or below reorder level |
+| `GET /api/inventory/{storeId}/{sku}` · `/history` | One item, and every change to it with its reason |
+| `POST /api/inventory/{storeId}/{sku}/adjustments` | `{ "type": "DAMAGED" \| "RECOUNT" \| "OTHER", "quantity", "note" }`. Damaged removes N; recount sets the counted number and clears "recount needed"; other is ± N with a required note. Never below 0 (409) |
+
 What can go wrong and how it's handled: [edge-case register](docs/edge-cases.md).
 
 ### Running the backend tests
