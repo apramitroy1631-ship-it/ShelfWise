@@ -127,6 +127,15 @@ Store managers see and change only their own store; admins and finance see all s
 | `GET /api/inventory/{storeId}/{sku}` · `/history` | One item, and every change to it with its reason |
 | `POST /api/inventory/{storeId}/{sku}/adjustments` | `{ "type": "DAMAGED" \| "RECOUNT" \| "OTHER", "quantity", "note" }`. Damaged removes N; recount sets the counted number and clears "recount needed"; other is ± N with a required note. Never below 0 (409) |
 
+### Orders API
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/orders?storeId=&status=&q=&from=&to=&page=&size=` | Orders, newest first; `q` matches order ID or customer name; `from`/`to` are IST dates. Phones masked; `stuck` = open longer than 7 days (remote config, D32) |
+| `GET /api/orders/{id}` | One order with its lines. Full phone only for the store's own managers (D16) |
+| `POST /api/orders` | Store managers, own store. `{ "customerName", "customerPhone": "+91 9876543210", "lines": [{ "sku", "qty" }] }` plus header `Idempotency-Key`. Stock is taken at creation; if any line is short, nothing is saved (409) |
+| `POST /api/orders/{id}/status` | `{ "to", "version" }`. Pending → Packed → Shipped → Delivered; Cancelled only from Pending or Packed, and it returns the stock (D29) |
+
 What can go wrong and how it's handled: [edge-case register](docs/edge-cases.md).
 
 ### Running the backend tests

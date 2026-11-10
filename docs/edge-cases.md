@@ -106,6 +106,23 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | An import-corrected row stays flagged forever | A recount sets the counted quantity and clears "recount needed" (D5) | `InventoryApiTest.recountSetsTheCountedQuantityAndClearsTheFlag_D5` |
 | Leftover stock of an archived product can't be cleared | Adjustments are allowed on archived products (D3) | `InventoryApiTest.archivedProductsCanStillBeWrittenOff_D3` |
 
+## Orders (M11, M12)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| Customers order the last units at the same moment | Stock taken with the atomic "only if enough is left" update per line; refused orders roll back completely | `OrdersApiTest.overlappingOrdersNeverOversell_M12` (5 orders for the last 3 → 3 succeed, stock 0) |
+| One line is short and the others are already taken | The whole order is one transaction: nothing saved, no stock moved | `OrdersApiTest.ifAnyLineIsShortNothingIsSavedAndNoStockMoves` |
+| An archived, unpriced, unknown product or a quantity of 0 is ordered | Refused by the "can this be sold?" rule (D30) | `OrdersApiTest.onlySellableProductsCanBeOrdered_D30` |
+| A double tap or network retry creates two orders | Idempotency key: the retry returns the first order, stock taken once (D8) | `OrdersApiTest.retryingWithTheSameIdempotencyKeyCreatesOneOrder_D8` |
+| The same product is added twice in the form | Combined into one line (D14) | `OrdersApiTest.theSameProductTwiceBecomesOneLine_D14` |
+| A later price change rewrites old bills | Each line keeps its price at the time of sale (D15) | `OrdersApiTest.creatingAnOrderTakesStockAndSnapshotsPrices_D29_D15` |
+| An order skips a step or a shipped order is cancelled | Only the brief's lifecycle is allowed (409 otherwise) | `OrdersApiTest.ordersMoveThroughTheirLifecycleOnly` |
+| Cancelling twice returns stock twice | The status change is atomic; the second cancel is 409 | `OrdersApiTest.cancellingGivesTheStockBackOnce_D29` |
+| Two people act on the same order from stale screens | Version check, 409 | `OrdersApiTest.aStaleVersionIsRefused` |
+| Customer phone numbers leak | Masked in lists and to head office; full only to the store's managers (D16) | `OrdersApiTest.phonesAreMaskedExceptForTheStoresOwnManager_D16` |
+| Orders forgotten in "pending" for months | Flagged "stuck" after the remote-config limit (D32) | `OrdersApiTest.oldOpenOrdersAreFlaggedStuck_D32` |
+| Admin or finance creates customer orders, or a manager acts on another store | Only the store's managers create; store scope checked on the server | `OrdersApiTest.onlyStoreManagersCreateOrdersInTheirOwnStore`, `phonesAreMasked...` (403 for another store) |
+
 ## Web app: sign-in
 
 | What could go wrong | How it's handled | Proof |
