@@ -32,6 +32,19 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | Deployed with the local development signing key | Start-up fails if `JWT_SECRET` is shorter than 32 bytes; deployment must set its own | Start-up check in `AuthProperties`; deployment checklist (to add) |
 | Repeated password guessing | **Not handled yet**: rate limiting is listed in known issues | — |
 
+## Data import (slice 1: stores and users)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| The import is run twice (or the service restarts) | Insert-only by natural key: existing records are skipped (D28) | `StoreAndUserImportTest.runningTheImportAgainAddsNothing_D28` |
+| A re-run overwrites a change made in the app | Existing records are never updated (D28) | `StoreAndUserImportTest.reRunNeverOverwritesChangesMadeInTheApp_D28` |
+| The import fails half-way | The whole run is one transaction; nothing from a failed run is kept | `DataImportService` (transactional); failure test to add with the larger files |
+| The original data is lost by corrections | Every added record is also stored exactly as received | `StoreAndUserImportTest.importsAllFiveStoresAndTwelveUsers` (17 raw records) |
+| The inactive user (U12) becomes able to sign in | Imported as inactive and logged (D20, D27) | `StoreAndUserImportTest.inactiveUserStaysInactive_D20_D27`, `importedUsersCanSignInExceptTheInactiveOne` |
+| A store's second manager is treated as less than a manager | Both are full managers; the file's manager is a "main contact" label only (D26) | `StoreAndUserImportTest.storesWithTwoManagersKeepTheFileManagerAsMainContact_D26` |
+| The demo password is stored readable | Stored as a BCrypt hash; the import refuses to run without `DEMO_PASSWORD` (D25) | `StoreAndUserImportTest.passwordsAreStoredHashedNeverInPlainText_D25` |
+| A user row has an unknown role, bad `active` value or a manager without a store | Row rejected and logged with its line number; the rest continues | `StoreAndUserImporter.validateUser`; test with a bad file to add |
+
 ## Web app: sign-in
 
 | What could go wrong | How it's handled | Proof |

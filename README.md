@@ -57,7 +57,23 @@ The first run builds the images and takes a few minutes; later runs take seconds
 | PostgreSQL | `localhost:5432`, database `shelfwise` (local development credentials in `docker-compose.yml`) |
 | RabbitMQ management | http://localhost:15672 (`guest` / `guest`, local only) |
 
-On start-up the core service applies the database migrations automatically (Flyway).
+On start-up the core service applies the database migrations (Flyway) and imports the provided data from `data/`. Re-starting is safe: the import only adds records that aren't there yet and never overwrites changes made in the app (D28).
+
+### Demo accounts
+
+All imported users share the local demo password **`ShelfWise-Demo-2026`** (set by `DEMO_PASSWORD` in `docker-compose.yml`, stored hashed; D25).
+
+| Email | Role | Store |
+|---|---|---|
+| `rohit.menon@shelfwise.example` | Admin | all |
+| `arjun.rao@shelfwise.example` | Store manager | S01 |
+| `imran.sheikh@shelfwise.example` | Store manager | S01 (second manager, D26) |
+| `sneha.reddy@shelfwise.example` | Store manager | S02 |
+| `meera.joshi@shelfwise.example` | Finance approver | all |
+| `anil.gupta@shelfwise.example` | Finance approver | all |
+| `pooja.bansal@shelfwise.example` | Finance approver, **inactive**: sign-in is refused (D20, D27) | — |
+
+The other users in `data/users.csv` work the same way.
 
 Stop everything with `docker compose down`, or `docker compose down -v` to also delete the local database.
 
@@ -83,7 +99,7 @@ Tests: `npm test`. Type check: `npm run typecheck`. Production build: `npm run b
 | `POST /api/auth/logout` | `{ "refreshToken" }` → revokes it (204) |
 | `GET /api/me` | The signed-in user (header `Authorization: Bearer <access token>`) |
 
-Demo accounts and their password arrive with the data import (D25). What can go wrong and how it's handled: [edge-case register](docs/edge-cases.md).
+What can go wrong and how it's handled: [edge-case register](docs/edge-cases.md).
 
 ### Running the backend tests
 
