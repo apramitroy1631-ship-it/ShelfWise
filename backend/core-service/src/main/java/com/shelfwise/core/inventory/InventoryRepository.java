@@ -79,6 +79,22 @@ public class InventoryRepository {
                 .map((row, meta) -> row.get(0, Integer.class)).one();
     }
 
+    /**
+     * Goods received from a supplier: adds stock, creating the store's stock row if this product
+     * was never stocked there. One statement, so concurrent receipts can't lose an update.
+     */
+    public Mono<Integer> receive(String storeId, String sku, int qty) {
+        return db.sql("""
+                        INSERT INTO inventory (store_id, sku, quantity, reorder_level)
+                        SELECT :store, :sku, :qty, p.reorder_level FROM products p WHERE p.sku = :sku
+                        ON CONFLICT (store_id, sku) DO UPDATE
+                           SET quantity = inventory.quantity + EXCLUDED.quantity, version = inventory.version + 1, updated_at = now()
+                        RETURNING quantity
+                        """)
+                .bind("store", storeId).bind("sku", sku).bind("qty", qty)
+                .map((row, meta) -> row.get(0, Integer.class)).one();
+    }
+
     /** Recount: sets the counted quantity and clears "recount needed" (D5). Returns {old, new} in one statement. */
     public Mono<int[]> setCounted(String storeId, String sku, int counted) {
         return db.sql("""
