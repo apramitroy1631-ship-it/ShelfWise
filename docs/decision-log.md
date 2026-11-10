@@ -135,10 +135,25 @@ Fixed by the brief: **Java + Spring Boot WebFlux (used reactively)** for the bac
 - **Why feature folders, not layer folders:** one feature's code sits together, so it's easier to read, explain and change live, and the folders can be split out later as services if ever needed.
 - **At 10×:** extract the busiest feature (likely reporting/dashboard, reading from a replica) into its own service first. Keep orders and inventory together for as long as they share a transaction.
 
+## DL-10 Web tooling: React + TypeScript + Vite, tested with Vitest
+*Locked 2026-11-10*
+- **Options:** Vite, Next.js, Create React App (retired).
+- **Chosen:** React 19 with TypeScript, built by **Vite**, with unit tests in **Vitest** + Testing Library.
+  - Exact versions are pinned and locked (`package-lock.json`); each was released at least two weeks before adoption.
+  - In development, Vite forwards `/api` to the core service, so the browser sees one origin and no CORS setup is needed.
+- **Why:**
+  - The web app is a signed-in internal tool (no SEO, no server rendering needed), so a static single-page app built by Vite is the simplest fit.
+  - TypeScript catches API-shape mistakes at build time.
+  - Vitest shares Vite's config, so tests run with no extra tooling.
+- **Rejected:** Next.js, whose server rendering and routing conventions add complexity this app doesn't need; Create React App, which is no longer maintained.
+- **Trade-offs:**
+  - The session is held **in memory**, so reloading the page signs the user out. That's safe (nothing is readable from storage) but less convenient. To revisit with the token-storage choice: an httpOnly cookie for the refresh token, which needs a same-origin deployment.
+  - Deployment needs either same-origin hosting or CORS on the core service.
+- **At 10×:** a component library and a design system, route-based code splitting, and end-to-end tests in a real browser on every change.
+
 ---
 
 ## Still to lock
 - Mobile framework (proposed: React Native with Expo).
-- Web tooling (proposed: React + TypeScript + Vite).
 - CI/CD (GitHub Actions needs a GitHub repository, so nothing is pushed until approved).
 - Logging, monitoring and tracing across services.
