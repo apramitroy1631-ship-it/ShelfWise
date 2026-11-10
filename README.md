@@ -34,7 +34,8 @@ How the web and mobile apps look (colours, status chips, layouts, light and dark
 
 The provided data files are profiled and every issue found has an explicit handling decision:
 
-- **[Data findings and decisions (D1–D32)](docs/data-findings.md)**. This is the basis of the import report.
+- **[Data findings and decisions (D1–D32)](docs/data-findings.md)**: what's wrong in the data and why each handling was chosen.
+- **[Import report](docs/import-report.md)**: what the import actually did, with counts from the import log. Delivered revenue after all decisions: ₹1,45,38,055.
 
 Guiding principles from those decisions:
 - Keep the original: imported records are stored as received; corrections sit alongside, never overwriting.
