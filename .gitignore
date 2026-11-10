@@ -1,0 +1,39 @@
+# --- Java / Maven / Gradle ---
+target/
+build/
+.gradle/
+*.class
+*.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+!**/.mvn/wrapper/maven-wrapper.jar
+
+# --- Node / React / Expo ---
+node_modules/
+dist/
+.expo/
+web-build/
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+
+# --- Test output ---
+coverage/
+playwright-report/
+test-results/
+
+# --- Secrets and local config (never commit real values) ---
+.env
+.env.*
+!.env.example
+
+# --- IDE / OS ---
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+logs/
