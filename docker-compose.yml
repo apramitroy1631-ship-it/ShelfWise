@@ -1,0 +1,64 @@
+# ShelfWise: everything for local development with one command.
+#
+#   docker compose up -d --build
+#
+# The passwords below are LOCAL DEVELOPMENT defaults only; real environments set their own.
+# File storage (S3-compatible) is added once its local image is decided (see docs/decision-log.md, DL-04).
+name: shelfwise
+
+services:
+  postgres:
+    image: postgres:17.6
+    environment:
+      POSTGRES_DB: ${DB_NAME:-shelfwise}
+      POSTGRES_USER: ${DB_USER:-shelfwise}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-shelfwise}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  rabbitmq:
+    image: rabbitmq:4.1-management
+    ports:
+      - "5672:5672"     # messaging (core service -> notification service, DL-03)
+      - "15672:15672"   # management UI: http://localhost:15672 (guest / guest, local only)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  core-service:
+    build:
+      context: ./backend
+      dockerfile: core-service/Dockerfile
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-shelfwise}
+      DB_USER: ${DB_USER:-shelfwise}
+      DB_PASSWORD: ${DB_PASSWORD:-shelfwise}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  notification-service:
+    build:
+      context: ./backend
+      dockerfile: notification-service/Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  pgdata:

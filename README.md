@@ -13,7 +13,7 @@ Staff use it to run their shops: store managers handle stock, customer orders an
 | Notification service | Java, Spring Boot WebFlux, Maven |
 | Database | PostgreSQL via R2DBC, Flyway migrations |
 | Messaging | RabbitMQ with a transactional outbox |
-| File storage | S3-compatible: MinIO locally, Cloudflare R2 deployed |
+| File storage | S3-compatible: SeaweedFS locally, Cloudflare R2 deployed |
 | Auth | Spring Security (reactive), access + refresh tokens, BCrypt |
 | Remote config | Own settings table + `/config` endpoint |
 | Web app | React (all roles) |
@@ -42,7 +42,35 @@ Guiding principles from those decisions:
 
 ## How to run
 
-_To be added._ Goal: one command locally, running in under 15 minutes from this README.
+**You need:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) (on Windows, with WSL). Nothing else; Java and Maven run inside the containers.
+
+```bash
+docker compose up -d --build
+```
+
+The first run builds the images and takes a few minutes; later runs take seconds.
+
+| What | Where |
+|---|---|
+| Core service health | http://localhost:8080/actuator/health |
+| Notification service health | http://localhost:8081/actuator/health |
+| PostgreSQL | `localhost:5432`, database `shelfwise` (local development credentials in `docker-compose.yml`) |
+| RabbitMQ management | http://localhost:15672 (`guest` / `guest`, local only) |
+
+On start-up the core service applies the database migrations automatically (Flyway).
+
+Stop everything with `docker compose down`, or `docker compose down -v` to also delete the local database.
+
+### Running the backend tests
+
+Needs Java 21 and Docker running (tests start a throwaway PostgreSQL):
+
+```bash
+cd backend
+./mvnw verify
+```
+
+Each service can also be built and tested on its own, e.g. `./mvnw -pl core-service -am verify`.
 
 ## How AI tools were used
 
