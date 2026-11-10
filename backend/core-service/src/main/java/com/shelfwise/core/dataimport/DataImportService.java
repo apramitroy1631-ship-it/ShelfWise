@@ -1,6 +1,8 @@
 package com.shelfwise.core.dataimport;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,12 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.reactive.TransactionalOperator;
 
+import com.shelfwise.core.dataimport.CsvFile.Row;
+
 import reactor.core.publisher.Mono;
 
 /**
  * Runs an import of the provided data files. Each run is one transaction: if anything fails,
- * nothing from that run is kept, and the failure is recorded on the run.
- * Slice 1: stores and users. Products, stock, orders and purchase orders follow (D1-D32).
+ * nothing from that run is kept. Order matters because of references:
+ * stores, users, suppliers, products, stock. Orders and purchase orders follow (D8-D32).
  */
 @Service
 @EnableConfigurationProperties(ImportProperties.class)
@@ -27,14 +31,20 @@ public class DataImportService {
     private final ImportProperties properties;
     private final ImportLog importLog;
     private final StoreAndUserImporter storesAndUsers;
+    private final CatalogueImporter catalogue;
     private final TransactionalOperator transaction;
 
     public DataImportService(ImportProperties properties, ImportLog importLog, StoreAndUserImporter storesAndUsers,
-                             ReactiveTransactionManager transactionManager) {
+                             CatalogueImporter catalogue, ReactiveTransactionManager transactionManager) {
         this.properties = properties;
         this.importLog = importLog;
         this.storesAndUsers = storesAndUsers;
+        this.catalogue = catalogue;
         this.transaction = TransactionalOperator.create(transactionManager);
+    }
+
+    /** The files read in one run, exactly as written. */
+    private record ImportFiles(List<Row> stores, List<Row> users, List<Row> products, List<Row> inventory) {
     }
 
     /** Insert-only run (D28): adds what is new, skips what already exists, never overwrites. */
@@ -42,26 +52,35 @@ public class DataImportService {
         if (properties.demoPassword() == null || properties.demoPassword().isBlank()) {
             return Mono.error(new IllegalStateException("DEMO_PASSWORD must be set to import users (D25)"));
         }
-        if (!Files.isDirectory(properties.dataDir())) {
-            return Mono.error(new IllegalStateException("Import data folder not found: " + properties.dataDir().toAbsolutePath()));
+        Path dir = properties.dataDir();
+        if (!Files.isDirectory(dir)) {
+            return Mono.error(new IllegalStateException("Import data folder not found: " + dir.toAbsolutePath()));
         }
         return Mono.zip(
-                        CsvFile.read(properties.dataDir().resolve(StoreAndUserImporter.STORES_FILE)),
-                        CsvFile.read(properties.dataDir().resolve(StoreAndUserImporter.USERS_FILE)))
-                .flatMap(files -> {
-                    var stores = files.getT1();
-                    var users = files.getT2();
-                    return importLog.startRun("INSERT_ONLY").flatMap(runId ->
-                            storesAndUsers.importStores(runId, stores)
-                                    .zipWith(storesAndUsers.importUsers(runId, users, properties.demoPassword()))
-                                    .flatMap(results -> storesAndUsers.linkMainContacts(runId, stores, users)
-                                            .thenReturn(List.of(results.getT1(), results.getT2())))
-                                    .flatMap(results -> importLog.finishRun(runId, "SUCCEEDED", Map.of("files", results))
-                                            .thenReturn(results)));
-                })
+                        CsvFile.read(dir.resolve(StoreAndUserImporter.STORES_FILE)),
+                        CsvFile.read(dir.resolve(StoreAndUserImporter.USERS_FILE)),
+                        CsvFile.read(dir.resolve(CatalogueImporter.PRODUCTS_FILE)),
+                        CsvFile.read(dir.resolve(CatalogueImporter.INVENTORY_FILE)))
+                .map(t -> new ImportFiles(t.getT1(), t.getT2(), t.getT3(), t.getT4()))
+                .flatMap(files -> importLog.startRun("INSERT_ONLY")
+                        .flatMap(runId -> runSteps(runId, files)
+                                .flatMap(results -> importLog.finishRun(runId, "SUCCEEDED", Map.of("files", results))
+                                        .thenReturn(results))))
                 .as(transaction::transactional)
                 .doOnNext(results -> results.forEach(r -> log.info("Import {}: {} added, {} skipped (already present), {} rejected",
                         r.file(), r.added(), r.skipped(), r.rejected())))
                 .doOnError(e -> log.error("Import failed; nothing from this run was kept: {}", e.getMessage()));
+    }
+
+    private Mono<List<FileResult>> runSteps(long runId, ImportFiles files) {
+        List<FileResult> results = new ArrayList<>();
+        SkuResolver skus = CatalogueImporter.resolverFor(files.products());
+        return storesAndUsers.importStores(runId, files.stores()).doOnNext(results::add)
+                .then(storesAndUsers.importUsers(runId, files.users(), properties.demoPassword()).doOnNext(results::add))
+                .then(storesAndUsers.linkMainContacts(runId, files.stores(), files.users()))
+                .then(catalogue.importSuppliers(runId, files.products()).doOnNext(results::add))
+                .then(catalogue.importProducts(runId, files.products()).doOnNext(results::add))
+                .then(catalogue.importInventory(runId, files.inventory(), skus).doOnNext(results::add))
+                .then(Mono.fromSupplier(() -> List.copyOf(results)));
     }
 }

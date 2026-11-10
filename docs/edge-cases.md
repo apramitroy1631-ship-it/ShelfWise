@@ -45,6 +45,20 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | The demo password is stored readable | Stored as a BCrypt hash; the import refuses to run without `DEMO_PASSWORD` (D25) | `StoreAndUserImportTest.passwordsAreStoredHashedNeverInPlainText_D25` |
 | A user row has an unknown role, bad `active` value or a manager without a store | Row rejected and logged with its line number; the rest continues | `StoreAndUserImporter.validateUser`; test with a bad file to add |
 
+## Data import (slice 2: suppliers, products, stock)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| A SKU with a trailing space or in lowercase duplicates a product (12 pairs) | Kept as separate products; the variant is stored trimmed and lowercase (D1) | `DataImportTest.variantSkusAreSeparateLowercaseProducts_D1`, `SkuResolverTest` |
+| A stock row is attached to the wrong one of a pair | Stock and PO rows match by exact spelling (D1 step 3) | `DataImportTest.variantStockRowsBelongToTheVariantProduct_D1_D4` |
+| A messy SKU in an order points at the wrong product | Order lines use the matching ladder, with the sold price as tie-break (D1 steps 2–5) | `SkuResolverTest` (orders are imported in slice 3) |
+| A product has no price | Imported with no price and flagged; blocked from sale until an admin sets one (D2) | `DataImportTest.productsWithoutAPriceAreImportedAndFlagged_D2` |
+| An archived product loses its stock | Stock and history kept (D3) | `DataImportTest.archivedProductsKeepTheirStatus_D3` |
+| Negative stock breaks the "never below 0" rule | Imported as 0, flagged for recount, with a history entry (D5) | `DataImportTest.negativeStockBecomesZeroWithACorrectionInHistory_D5` |
+| A date is misread (6 formats, day/month order, 12 AM/PM, epoch) | One shared date reader; unreadable values are rejected, never guessed (D6, D9) | `ImportDatesTest` (16 cases), `DataImportTest.everyCountDateIsReadAsAnExactMoment_D6` |
+| No suppliers file exists | Suppliers created from the IDs, named after them (D24) | `DataImportTest.suppliersAreCreatedFromTheirIds_D24` |
+| A re-run undoes an admin's price, unarchive or recount | Insert-only: existing rows are never updated; no second correction entry (D28) | `DataImportRerunTest.reRunNeverOverwritesChangesMadeInTheApp_D28` |
+
 ## Web app: sign-in
 
 | What could go wrong | How it's handled | Proof |

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ShelfWise UI v3 dark</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+body{margin:0;background:#05080F;font-family:Inter,system-ui,sans-serif;color:#E6E9F2}
+.page{max-width:720px;margin:0 auto;padding:24px 16px 40px}
+.page h1{font-size:18px;font-weight:600;margin:0 0 4px;color:#F3F5FA}
+.page .note{font-size:13px;color:#A3ACC2;margin:0 0 16px}
+.page .note a{color:#7C96F2}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.dk{font-feature-settings:"tnum" 1;color:#E6E9F2;font-size:12px}
+.dk .chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:500;white-space:nowrap}
+.dk .chip .ti{font-size:12px}
+.dk table{width:100%;border-collapse:collapse;table-layout:fixed}
+.dk td{padding:0 8px;height:40px;border-bottom:1px solid #1C2640;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dk th{padding:0 8px;height:34px;font-size:11px;font-weight:500;color:#A3ACC2;text-align:left;border-bottom:1px solid #24304D;background:#0F1628}
+.dk .ctl{border:1px solid #2A3756;background:#0F1628;border-radius:7px;padding:5px 8px;color:#C9D0E0;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.dk .cb{width:13px;height:13px;border:1.5px solid #4B5878;border-radius:3px;display:inline-block;vertical-align:middle;box-sizing:border-box}
+.dk .nav{padding:7px 8px;border-radius:7px;display:flex;align-items:center;gap:7px}
+.dk .card{background:#121A2E;border:1px solid #24304D;border-radius:9px}
+.sw{display:grid;grid-template-columns:repeat(auto-fit,minmax(74px,1fr));gap:6px;margin:0 0 14px}
+.sw div div:first-child{height:34px;border-radius:7px;border:1px solid #24304D}
+.sw span{font-size:10.5px;color:#A3ACC2;display:block;margin-top:3px;line-height:1.35}
+.web{border-radius:12px;overflow:hidden;border:1px solid #24304D;display:grid;grid-template-columns:132px minmax(0,1fr);background:#0B1020;margin-bottom:12px}
+.bottom{display:grid;grid-template-columns:minmax(0,1fr) 186px;gap:12px;align-items:start}
+@media (max-width:640px){.web{grid-template-columns:1fr}.web>.side{display:none}.bottom{grid-template-columns:1fr}.bottom>.phone{max-width:220px}}
+</style>
+</head>
+<body>
+<div class="page">
+<h1>ShelfWise UI v3: dark theme</h1>
+<p class="note">Locked 2026-11-10 (DL-11). Static mockup, not app code. Full spec: <a href="../design-system.md">design-system.md</a> · Light theme: <a href="ui-v3-light.html">ui-v3-light.html</a></p>
+<h2 class="sr-only">ShelfWise v3 dark mockups: web orders screen, purchase order approval card and mobile inventory screen.</h2>
+
+<div class="sw">
+<div><div style="background:#080D1A"></div><span>Sidebar<br>#080D1A</span></div>
+<div><div style="background:#0B1020"></div><span>Canvas<br>#0B1020</span></div>
+<div><div style="background:#121A2E"></div><span>Card<br>#121A2E</span></div>
+<div><div style="background:#24304D"></div><span>Border<br>#24304D</span></div>
+<div><div style="background:#3B5BDB"></div><span>Button<br>#3B5BDB</span></div>
+<div><div style="background:#7C96F2"></div><span>Accent text<br>#7C96F2</span></div>
+<div><div style="background:#E6E9F2"></div><span>Text<br>#E6E9F2</span></div>
+<div><div style="background:#A3ACC2"></div><span>Text 2<br>#A3ACC2</span></div>
+</div>
+
+<div class="dk web">
+<div class="side" style="background:#080D1A;color:#97A2BE;padding:12px 8px;display:flex;flex-direction:column;gap:2px;border-right:1px solid #1C2640;">
+<div style="color:#FFFFFF;font-weight:600;font-size:13px;padding:0 6px 10px;display:flex;align-items:center;gap:6px;"><span style="width:18px;height:18px;border-radius:5px;background:#3B5BDB;display:inline-flex;align-items:center;justify-content:center;font-size:11px;">S</span>ShelfWise</div>
+<div style="background:#121A2E;border:1px solid #24304D;border-radius:7px;padding:6px 8px;margin-bottom:8px;color:#E6E9F2;"><div style="font-size:10px;color:#97A2BE">Store</div><div style="display:flex;align-items:center;">All 5 stores<i class="ti ti-selector" aria-hidden="true" style="margin-left:auto"></i></div></div>
+<div class="nav"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</div>
+<div class="nav" style="background:#16224A;color:#FFFFFF;box-shadow:inset 2px 0 0 #7C96F2;border-radius:0 7px 7px 0"><i class="ti ti-receipt" aria-hidden="true"></i>Orders</div>
+<div class="nav"><i class="ti ti-box" aria-hidden="true"></i>Inventory</div>
+<div class="nav"><i class="ti ti-tag" aria-hidden="true"></i>Catalogue</div>
+<div class="nav"><i class="ti ti-file-invoice" aria-hidden="true"></i>Purchase orders<span style="margin-left:auto;background:#F59E0B;color:#2A1A00;border-radius:999px;padding:0 6px;font-size:10px">4</span></div>
+<div class="nav"><i class="ti ti-truck-delivery" aria-hidden="true"></i>Suppliers</div>
+<div class="nav"><i class="ti ti-settings" aria-hidden="true"></i>Settings</div>
+<div style="margin-top:auto;border-top:1px solid #1C2640;padding:10px 6px 0;display:flex;align-items:center;gap:7px;"><span style="width:26px;height:26px;border-radius:50%;background:#3B5BDB;color:#FFFFFF;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px">AK</span><div><div style="color:#E6E9F2">Anita K.</div><div style="font-size:10px">Admin</div></div><i class="ti ti-moon" aria-hidden="true" style="margin-left:auto;color:#7C96F2;font-size:15px"></i></div>
+</div>
+<div style="min-width:0;">
+<div style="background:#0F1628;border-bottom:1px solid #1C2640;padding:7px 12px;display:flex;align-items:center;gap:8px;">
+<div class="ctl" style="flex:1;color:#6F7A94"><i class="ti ti-search" aria-hidden="true"></i>Search orders, products, POs</div>
+<span style="position:relative;font-size:18px;color:#C9D0E0;padding:0 4px"><i class="ti ti-bell" aria-hidden="true"></i><span style="position:absolute;top:-3px;right:-4px;background:#EF4444;color:#FFFFFF;border-radius:999px;font-size:9.5px;padding:0 4px;line-height:14px">3</span></span>
+</div>
+<div style="background:#16224A;color:#C7D2FE;font-size:11.5px;padding:6px 12px;border-bottom:1px solid #24345F;"><i class="ti ti-info-circle" aria-hidden="true"></i> Scheduled maintenance tonight, 11 pm to 11:30 pm</div>
+<div style="padding:12px;">
+<div style="display:flex;align-items:center;margin-bottom:10px;"><div><div style="font-size:16px;font-weight:600;color:#F3F5FA">Orders</div><div style="font-size:11px;color:#A3ACC2">All stores · 1 Oct to 30 Oct 2026</div></div>
+<span class="ctl" style="margin-left:auto;margin-right:6px"><i class="ti ti-download" aria-hidden="true"></i>Export CSV</span>
+<span style="background:#3B5BDB;color:#FFFFFF;padding:6px 11px;border-radius:7px;font-weight:500;white-space:nowrap"><i class="ti ti-plus" aria-hidden="true"></i> New order</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:7px;margin-bottom:10px;">
+<div class="card" style="padding:8px 10px;"><div style="font-size:10.5px;color:#A3ACC2">Revenue</div><div style="display:flex;align-items:end;"><span style="font-size:16px;font-weight:600">₹18.4L</span><svg width="44" height="18" style="margin-left:auto" aria-hidden="true"><polyline fill="none" stroke="#7C96F2" stroke-width="1.5" points="0,14 7,12 14,13 21,9 28,10 35,6 44,4"/></svg></div><div style="font-size:10px;color:#4ADE80">▲ 6.2% <span style="color:#6F7A94">vs prev 30d</span></div></div>
+<div class="card" style="padding:8px 10px;"><div style="font-size:10.5px;color:#A3ACC2">Orders</div><div style="display:flex;align-items:end;"><span style="font-size:16px;font-weight:600">1,284</span><svg width="44" height="18" style="margin-left:auto" aria-hidden="true"><polyline fill="none" stroke="#7C96F2" stroke-width="1.5" points="0,12 7,13 14,10 21,11 28,8 35,9 44,7"/></svg></div><div style="font-size:10px;color:#4ADE80">▲ 3.1% <span style="color:#6F7A94">vs prev 30d</span></div></div>
+<div class="card" style="padding:8px 10px;"><div style="font-size:10.5px;color:#A3ACC2">Avg order</div><div style="display:flex;align-items:end;"><span style="font-size:16px;font-weight:600">₹1,433</span><svg width="44" height="18" style="margin-left:auto" aria-hidden="true"><polyline fill="none" stroke="#7C96F2" stroke-width="1.5" points="0,6 7,8 14,7 21,9 28,8 35,10 44,11"/></svg></div><div style="font-size:10px;color:#FBBF24">▼ 1.4% <span style="color:#6F7A94">vs prev 30d</span></div></div>
+<div class="card" style="padding:8px 10px;border-color:#5B2328;"><div style="font-size:10.5px;color:#A3ACC2">Low stock</div><div style="font-size:16px;font-weight:600;color:#F87171">17 items</div><div style="font-size:10px;color:#7C96F2">View in inventory →</div></div>
+</div>
+<div class="card" style="border-radius:10px;overflow:hidden;">
+<div style="display:flex;gap:6px;padding:8px;border-bottom:1px solid #24304D;flex-wrap:wrap;align-items:center;">
+<span class="ctl" style="flex:1;min-width:120px;color:#6F7A94"><i class="ti ti-search" aria-hidden="true"></i>Order ID or customer</span>
+<span class="ctl">Status: Any<i class="ti ti-chevron-down" aria-hidden="true"></i></span>
+<span class="ctl">Store: All<i class="ti ti-chevron-down" aria-hidden="true"></i></span>
+<span class="ctl"><i class="ti ti-calendar" aria-hidden="true"></i>Last 30 days</span>
+<span class="ctl"><i class="ti ti-arrows-sort" aria-hidden="true"></i>Newest</span>
+</div>
+<div style="background:#16224A;color:#C7D2FE;padding:6px 10px;display:flex;align-items:center;gap:10px;font-size:11.5px;border-bottom:1px solid #24345F;">1 selected<span style="margin-left:auto"><i class="ti ti-package" aria-hidden="true"></i> Mark packed</span><span><i class="ti ti-download" aria-hidden="true"></i> Export</span></div>
+<table>
+<tr><th style="width:14px"><span class="cb"></span></th><th style="width:20%">Order</th><th>Customer</th><th style="width:13%">Date</th><th style="width:16%;text-align:right">Amount</th><th style="width:92px">Status</th></tr>
+<tr><td><span class="cb"></span></td><td>ORD-10421</td><td>Rahul Mehta</td><td style="color:#A3ACC2">30 Oct</td><td style="text-align:right">₹4,250</td><td><span class="chip" style="background:#3A2C0C;color:#FCD34D"><i class="ti ti-clock" aria-hidden="true"></i>Pending</span></td></tr>
+<tr style="box-shadow:inset 3px 0 0 #7C96F2;background:#141F3D"><td><span class="cb" style="background:#3B5BDB;border-color:#3B5BDB;position:relative"><i class="ti ti-check" aria-hidden="true" style="color:#FFFFFF;font-size:10px;position:absolute;top:-1px;left:0"></i></span></td><td>ORD-10420</td><td>Priya Nair</td><td style="color:#A3ACC2">30 Oct</td><td style="text-align:right">₹12,980</td><td><span class="chip" style="background:#3A2C0C;color:#FCD34D"><i class="ti ti-clock" aria-hidden="true"></i>Pending</span></td></tr>
+<tr><td><span class="cb"></span></td><td>ORD-10419</td><td>Arjun Rao</td><td style="color:#A3ACC2">29 Oct</td><td style="text-align:right">₹2,640</td><td><span class="chip" style="background:#222C5C;color:#B4C0FF"><i class="ti ti-package" aria-hidden="true"></i>Packed</span></td></tr>
+<tr><td><span class="cb"></span></td><td>ORD-10418</td><td>Sneha Iyer</td><td style="color:#A3ACC2">29 Oct</td><td style="text-align:right">₹7,315</td><td><span class="chip" style="background:#0E3A37;color:#5EEAD4"><i class="ti ti-truck" aria-hidden="true"></i>Shipped</span></td></tr>
+<tr><td><span class="cb"></span></td><td>ORD-10417</td><td>Vikram Shah</td><td style="color:#A3ACC2">28 Oct</td><td style="text-align:right">₹860</td><td><span class="chip" style="background:#103A24;color:#86EFAC"><i class="ti ti-circle-check" aria-hidden="true"></i>Delivered</span></td></tr>
+<tr><td style="border-bottom:none"><span class="cb"></span></td><td style="border-bottom:none">ORD-10416</td><td style="border-bottom:none">Kavya Reddy</td><td style="color:#A3ACC2;border-bottom:none">28 Oct</td><td style="text-align:right;border-bottom:none">₹2,115</td><td style="border-bottom:none"><span class="chip" style="background:#252B38;color:#CBD2DE"><i class="ti ti-circle-x" aria-hidden="true"></i>Cancelled</span></td></tr>
+</table>
+<div style="display:flex;align-items:center;padding:8px 10px;border-top:1px solid #24304D;color:#A3ACC2;font-size:11.5px;">1–20 of 1,284<span style="margin-left:auto;display:flex;gap:4px;"><span class="ctl" style="padding:3px 7px"><i class="ti ti-chevron-left" aria-hidden="true"></i></span><span class="ctl" style="padding:3px 9px;background:#3B5BDB;color:#FFFFFF;border-color:#3B5BDB">1</span><span class="ctl" style="padding:3px 9px">2</span><span class="ctl" style="padding:3px 9px">3</span><span class="ctl" style="padding:3px 7px"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></span></div>
+</div>
+</div></div></div>
+
+<div class="dk bottom">
+<div class="card" style="border-radius:12px;overflow:hidden;">
+<div style="padding:12px 14px;border-bottom:1px solid #1C2640;display:flex;align-items:start;">
+<div><div style="font-size:11px;color:#A3ACC2">Purchase order</div><div style="font-size:15px;font-weight:600;color:#F3F5FA">PO-2026-0312</div><div style="color:#A3ACC2;margin-top:2px">Fresh Farms Pvt Ltd · Indiranagar store</div></div>
+<div style="margin-left:auto;text-align:right"><div style="font-size:18px;font-weight:600;color:#F3F5FA">₹74,600</div><span class="chip" style="background:#3A2C0C;color:#FCD34D;margin-top:3px"><i class="ti ti-users" aria-hidden="true"></i>Needs 2 approvers</span></div>
+</div>
+<div style="padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #1C2640;">
+<div style="text-align:center;width:70px"><div style="width:22px;height:22px;border-radius:50%;background:#22C55E;color:#04210F;display:inline-flex;align-items:center;justify-content:center"><i class="ti ti-check" aria-hidden="true"></i></div><div style="font-size:10.5px;margin-top:3px">Submitted</div><div style="font-size:10px;color:#6F7A94">Ravi, mgr</div></div>
+<div style="flex:1;height:2px;background:#22C55E;margin-bottom:24px"></div>
+<div style="text-align:center;width:70px"><div style="width:22px;height:22px;border-radius:50%;background:#22C55E;color:#04210F;display:inline-flex;align-items:center;justify-content:center"><i class="ti ti-check" aria-hidden="true"></i></div><div style="font-size:10.5px;margin-top:3px">Approver 1</div><div style="font-size:10px;color:#6F7A94">Meera, 28 Oct</div></div>
+<div style="flex:1;height:2px;background:#2A3756;margin-bottom:24px"></div>
+<div style="text-align:center;width:70px"><div style="width:22px;height:22px;border-radius:50%;border:2px solid #7C96F2;color:#7C96F2;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;font-size:10px">2</div><div style="font-size:10.5px;margin-top:3px;color:#B4C0FF;font-weight:500">Approver 2</div><div style="font-size:10px;color:#6F7A94">You</div></div>
+<div style="flex:1;height:2px;background:#2A3756;margin-bottom:24px"></div>
+<div style="text-align:center;width:70px"><div style="width:22px;height:22px;border-radius:50%;border:2px solid #2A3756;display:inline-flex;box-sizing:border-box"></div><div style="font-size:10.5px;margin-top:3px;color:#A3ACC2">Receiving</div><div style="font-size:10px;color:#6F7A94">0 of 6 lines</div></div>
+</div>
+<div style="padding:10px 14px;color:#C9D0E0;display:flex;gap:14px;border-bottom:1px solid #1C2640;flex-wrap:wrap"><span><i class="ti ti-list" aria-hidden="true"></i> 6 lines</span><span><i class="ti ti-paperclip" aria-hidden="true"></i> invoice.pdf</span><span style="color:#F87171"><i class="ti ti-alert-triangle" aria-hidden="true"></i> 4 items below threshold</span></div>
+<div style="padding:12px 14px;display:flex;gap:8px;">
+<span style="flex:1;text-align:center;border:1px solid #EF4444;color:#F87171;border-radius:8px;padding:9px;font-weight:500"><i class="ti ti-x" aria-hidden="true"></i> Reject with reason</span>
+<span style="flex:1;text-align:center;background:#3B5BDB;color:#FFFFFF;border-radius:8px;padding:9px;font-weight:500"><i class="ti ti-check" aria-hidden="true"></i> Approve</span>
+</div>
+</div>
+<div class="phone" style="border-radius:26px;border:7px solid #2A2F3A;background:#0B1020;overflow:hidden;">
+<div style="background:#080D1A;color:#FFFFFF;padding:12px 12px 10px;border-bottom:1px solid #1C2640"><div style="display:flex;align-items:center;"><div><div style="font-size:10.5px;color:#97A2BE">Koramangala</div><div style="font-size:15px;font-weight:600">Inventory</div></div><span style="margin-left:auto;position:relative;font-size:18px"><i class="ti ti-bell" aria-hidden="true"></i><span style="position:absolute;top:-3px;right:-5px;background:#EF4444;border-radius:999px;font-size:9px;padding:0 4px;line-height:13px">2</span></span></div>
+<div style="background:#121A2E;border:1px solid #24304D;border-radius:8px;padding:7px 9px;margin-top:8px;color:#6F7A94;font-size:11.5px"><i class="ti ti-search" aria-hidden="true"></i> Search products</div></div>
+<div style="padding:8px 10px 0;display:flex;gap:5px;"><span class="chip" style="background:#E6E9F2;color:#0B1020">All</span><span class="chip" style="background:#121A2E;color:#F87171;border:1px solid #5B2328"><i class="ti ti-alert-triangle" aria-hidden="true"></i>Low 17</span></div>
+<div style="padding:8px 10px;display:flex;flex-direction:column;gap:6px;">
+<div class="card" style="border-radius:10px;padding:9px 10px;display:flex;align-items:center;min-height:30px"><div><div style="font-weight:500">Basmati rice 5kg</div><div style="color:#A3ACC2;font-size:11px">SKU 10234</div></div><span style="margin-left:auto;font-size:15px;font-weight:600">42</span><i class="ti ti-chevron-right" aria-hidden="true" style="color:#4B5878;margin-left:4px"></i></div>
+<div class="card" style="border-radius:10px;padding:9px 10px;display:flex;align-items:center;min-height:30px;border-color:#5B2328;box-shadow:inset 3px 0 0 #EF4444"><div><div style="font-weight:500">Sunflower oil 1L</div><div style="color:#F87171;font-size:11px"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Below 10</div></div><span style="margin-left:auto;font-size:15px;font-weight:600;color:#F87171">3</span><i class="ti ti-chevron-right" aria-hidden="true" style="color:#4B5878;margin-left:4px"></i></div>
+<div class="card" style="border-radius:10px;padding:9px 10px;display:flex;align-items:center;min-height:30px"><div><div style="font-weight:500">Toor dal 1kg</div><div style="color:#A3ACC2;font-size:11px">SKU 10871</div></div><span style="margin-left:auto;font-size:15px;font-weight:600">28</span><i class="ti ti-chevron-right" aria-hidden="true" style="color:#4B5878;margin-left:4px"></i></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);padding:7px 0 9px;border-top:1px solid #1C2640;background:#080D1A;color:#6F7A94;font-size:9.5px;text-align:center;">
+<div><i class="ti ti-home" aria-hidden="true" style="font-size:18px;display:block"></i>Home</div>
+<div style="color:#7C96F2;font-weight:500"><i class="ti ti-box" aria-hidden="true" style="font-size:18px;display:block"></i>Stock</div>
+<div><i class="ti ti-receipt" aria-hidden="true" style="font-size:18px;display:block"></i>Orders</div>
+<div><i class="ti ti-file-invoice" aria-hidden="true" style="font-size:18px;display:block"></i>Invoices</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
