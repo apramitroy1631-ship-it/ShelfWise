@@ -50,7 +50,7 @@ Guiding principles from those decisions:
 docker compose up -d --build
 ```
 
-The first run builds the images and takes a few minutes; later runs take seconds.
+The first run builds the images and takes a few minutes. On the first start the core service also imports all the provided data (about 50 seconds, ~48,000 order rows) before it reports healthy; later starts skip what's already imported and take seconds.
 
 | What | Where |
 |---|---|

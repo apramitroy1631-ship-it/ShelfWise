@@ -59,6 +59,25 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | No suppliers file exists | Suppliers created from the IDs, named after them (D24) | `DataImportTest.suppliersAreCreatedFromTheirIds_D24` |
 | A re-run undoes an admin's price, unarchive or recount | Insert-only: existing rows are never updated; no second correction entry (D28) | `DataImportRerunTest.reRunNeverOverwritesChangesMadeInTheApp_D28` |
 
+## Data import (slice 3: customer orders and purchase orders)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| Revenue is overstated or understated by bad order data | All order decisions applied together; delivered revenue (excluding the review queue) is exactly ₹1,45,38,055 | `DataImportTest.deliveredRevenueMatchesTheDecisions_D8_D10_D11`; also checked in the live database |
+| Duplicate orders double-count revenue | Identical copies imported once; copies that differ are rejected for review (D8) | `DataImportTest.identicalDuplicatesAreImportedOnce_D8` |
+| Order dates misread (5 formats incl. JSON numbers) | Shared date reader (D9) | `DataImportTest.everyOrderDateFormatIsRead_D9` |
+| Negative quantities corrupt revenue | Order kept as received, placed in the admin review queue, excluded from revenue (D10) | `DataImportTest.negativeQuantityOrdersAreKeptAsReceivedAndQueuedForReview_D10` |
+| A missing price is guessed | Filled only from evidence: bill total, then one consistent sales-history price within ±30 days equal to the catalogue price; otherwise review (D11) | `DataImportTest.missingPricesAreFilledFromSalesHistory_D11` |
+| An unknown product breaks the import or the revenue | Line kept with no product link, counted, no review (D12) | `DataImportTest.unknownProductsAreKeptWithoutALinkAndNotReviewed_D12` |
+| A messy SKU matches the wrong product | D1 ladder, with the sold price as tie-break (D13) | `DataImportTest.messySkusInOrdersFindTheirProduct_D13` |
+| The same product appears twice in one order | Merged when prices match; never averaged otherwise (D14) | `DataImportTest.repeatedLinesAreMerged_D14` |
+| Importing old orders changes stock a second time | Imported orders never move stock (D29) | `DataImportTest.importedOrdersNeverChangeStock_D29` |
+| A PO's status contradicts what was received | Receiving status derived from quantities (D21) | `DataImportTest.receivingStatusFollowsTheQuantities_D21` |
+| Approval order taken from list position | Ordered by time; same-second approvals noted (D31) | `DataImportTest.approvalOrderComesFromTheTime_D31` |
+| A store manager's or creator's approval counts | Never counts (D18, D19) | `DataImportTest.storeManagerAndSelfApprovalsNeverCount_D18_D19` |
+| Past rule-breaking approvals are rewritten, or money keeps flowing on them | Flagged, not rewritten; only unstarted or self-approved POs need re-approval (the progress rule) | `DataImportTest.wronglyApprovedPurchaseOrdersAreFlaggedNotRewritten_D17_D18_D19`, `onlyUnstartedOrSelfApprovedPurchaseOrdersNeedReapproval` |
+| An inactive approver's past approvals are discarded | They stay valid (D20) | `DataImportTest.approvalsByTheNowInactiveApproverStayValid_D20` |
+
 ## Web app: sign-in
 
 | What could go wrong | How it's handled | Proof |
