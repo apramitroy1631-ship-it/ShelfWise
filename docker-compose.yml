@@ -44,6 +44,13 @@ services:
       DB_NAME: ${DB_NAME:-shelfwise}
       DB_USER: ${DB_USER:-shelfwise}
       DB_PASSWORD: ${DB_PASSWORD:-shelfwise}
+      # Import the provided data on start-up; re-runs only add new records (D28).
+      IMPORT_ON_STARTUP: "true"
+      IMPORT_DATA_DIR: /data
+      # Shared demo starting password for imported users (D25). Local/demo only.
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-ShelfWise-Demo-2026}
+    volumes:
+      - ./data:/data:ro   # the provided dataset, read-only
     ports:
       - "8080:8080"
     depends_on:
