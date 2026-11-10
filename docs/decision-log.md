@@ -114,6 +114,22 @@ Fixed by the brief: **Java + Spring Boot WebFlux (used reactively)** for the bac
 - **Trade-off:** the folder boundary is a rule, not a physical wall, so CI will check that no folder references another.
 - **At 10×:** with separate teams, split into separate repositories with independent release cycles and publish the API contract as a versioned package.
 
+## DL-09 Service architecture: modular monolith core + one event-driven notification service
+*Locked 2026-11-10*
+- **Options:** a single monolith; a modular monolith plus a separate notification service; full microservices (catalogue, inventory, orders, purchasing… each separate).
+- **Chosen:**
+  - **Core service = modular monolith.** One deployable application, organised by **feature folders** (`auth/`, `catalogue/`, `inventory/`, `orders/`, `purchasing/`, `files/`, `dashboard/`, `config/`). Each folder holds that feature's API, logic and data access together.
+  - **Notification service = separate microservice.** It consumes events from RabbitMQ (DL-03) and maintains the grouped notifications (D7).
+- **Why not full microservices:**
+  - Creating an order and taking stock must happen in **one database transaction** (D29); that's what guarantees the last unit can't be sold twice (PIP objective 2).
+  - Splitting orders and inventory would need distributed coordination (sagas, compensation) and would bring back exactly the race conditions we're designing out.
+  - At about 41 orders a day across 5 stores, the extra deployment, monitoring and debugging cost brings no benefit.
+- **Why not a single monolith:**
+  - The brief requires "a notification service that reacts to events from the core service".
+  - Isolation matters: if notifications fail or slow down, sales and stock keep working, and the service catches up from the queue afterwards.
+- **Why feature folders, not layer folders:** one feature's code sits together, so it's easier to read, explain and change live, and the folders can be split out later as services if ever needed.
+- **At 10×:** extract the busiest feature (likely reporting/dashboard, reading from a replica) into its own service first. Keep orders and inventory together for as long as they share a transaction.
+
 ---
 
 ## Still to lock
