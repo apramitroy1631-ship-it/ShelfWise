@@ -28,6 +28,12 @@ shelfwise:
     jwt-secret: ${JWT_SECRET:local-development-only-secret-do-not-use-elsewhere}
     access-token-ttl: 15m
     refresh-token-ttl: 7d
+  import:
+    # When true, the provided data files are imported on start-up. Re-runs only add new records (D28).
+    enabled: ${IMPORT_ON_STARTUP:false}
+    data-dir: ${IMPORT_DATA_DIR:../data}
+    # Starting password given to imported users (D25). Required when importing; never logged.
+    demo-password: ${DEMO_PASSWORD:}
 
 server:
   port: ${SERVER_PORT:8080}
