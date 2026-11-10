@@ -34,7 +34,8 @@ public class ImportLog {
     }
 
     public Mono<Void> finishRun(long runId, String status, Object summary) {
-        return db.sql("UPDATE import_runs SET status = :status, finished_at = now(), summary = :summary WHERE id = :id")
+        // clock_timestamp(), not now(): inside the run's transaction now() would still be the start time
+        return db.sql("UPDATE import_runs SET status = :status, finished_at = clock_timestamp(), summary = :summary WHERE id = :id")
                 .bind("status", status)
                 .bind("summary", toJson(summary))
                 .bind("id", runId)

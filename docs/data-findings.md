@@ -345,7 +345,7 @@ e.g. ORD-006345 has SW-HOM-00055 ×1 twice.
 - **Decision (2026-11-06): merge and add up the quantities.**
   - One line per product per order, with qty = sum and the same unit price (e.g. 6 × ₹40 + 1 × ₹40 → 7 × ₹40).
   - Totals and revenue **don't change**. The import report lists all 35 with their original lines.
-  - Merging happens only when the repeated lines have the **same unit price**. If a future file has the same product at **different** prices in one order, those lines are kept separate and flagged, never averaged.
+  - Merging happens only when the repeated lines have the **same unit price**. If a future file has the same product at **different** prices in one order, the prices are never averaged. *Amended 2026-11-10 while building the import: because the database allows one line per product per order (the rule above), such an order is **rejected and listed for review** rather than kept with two lines. It does not occur in the current data.*
   - Order of rules: matching (D1) → missing-price fill (D11) → merge (D14).
   - Future app orders: adding the same product twice in the order form combines it into one line with the summed quantity. The database allows one line per product per order. This is an edge-case test.
 

@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 /**
  * Runs an import of the provided data files. Each run is one transaction: if anything fails,
  * nothing from that run is kept. Order matters because of references:
- * stores, users, suppliers, products, stock. Orders and purchase orders follow (D8-D32).
+ * stores, users, suppliers, products, stock, customer orders, purchase orders.
  */
 @Service
 @EnableConfigurationProperties(ImportProperties.class)
@@ -32,14 +32,19 @@ public class DataImportService {
     private final ImportLog importLog;
     private final StoreAndUserImporter storesAndUsers;
     private final CatalogueImporter catalogue;
+    private final OrderImporter orders;
+    private final PurchaseOrderImporter purchaseOrders;
     private final TransactionalOperator transaction;
 
     public DataImportService(ImportProperties properties, ImportLog importLog, StoreAndUserImporter storesAndUsers,
-                             CatalogueImporter catalogue, ReactiveTransactionManager transactionManager) {
+                             CatalogueImporter catalogue, OrderImporter orders, PurchaseOrderImporter purchaseOrders,
+                             ReactiveTransactionManager transactionManager) {
         this.properties = properties;
         this.importLog = importLog;
         this.storesAndUsers = storesAndUsers;
         this.catalogue = catalogue;
+        this.orders = orders;
+        this.purchaseOrders = purchaseOrders;
         this.transaction = TransactionalOperator.create(transactionManager);
     }
 
@@ -81,6 +86,10 @@ public class DataImportService {
                 .then(catalogue.importSuppliers(runId, files.products()).doOnNext(results::add))
                 .then(catalogue.importProducts(runId, files.products()).doOnNext(results::add))
                 .then(catalogue.importInventory(runId, files.inventory(), skus).doOnNext(results::add))
+                .then(orders.importOrders(runId, properties.dataDir().resolve(OrderImporter.ORDERS_FILE), skus,
+                        CatalogueImporter.pricesByStoredSku(files.products())).doOnNext(results::add))
+                .then(purchaseOrders.importPurchaseOrders(runId,
+                        properties.dataDir().resolve(PurchaseOrderImporter.PURCHASE_ORDERS_FILE), skus).doOnNext(results::add))
                 .then(Mono.fromSupplier(() -> List.copyOf(results)));
     }
 }

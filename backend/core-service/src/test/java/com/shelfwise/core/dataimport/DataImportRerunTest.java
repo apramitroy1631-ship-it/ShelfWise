@@ -41,7 +41,7 @@ class DataImportRerunTest {
             assertThat(result.added()).isZero();
             assertThat(result.rejected()).isZero();
         });
-        assertThat(second.stream().mapToInt(FileResult::skipped).sum()).isEqualTo(5 + 12 + 25 + 800 + 4000);
+        assertThat(second.stream().mapToInt(FileResult::skipped).sum()).isEqualTo(5 + 12 + 25 + 800 + 4000 + 15000 + 300);
         assertThat(ImportTestSupport.number(db, "SELECT count(*) FROM products")).isEqualTo(800);
     }
 
