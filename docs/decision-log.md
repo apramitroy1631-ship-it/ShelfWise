@@ -49,10 +49,10 @@ Fixed by the brief: **Java + Spring Boot WebFlux (used reactively)** for the bac
   - Kafka was rejected as heavy for 5 stores.
 - **At 10×:** Kafka if event replay or very high throughput is needed; partition by store.
 
-## DL-04 File storage: S3-compatible (MinIO locally, Cloudflare R2 deployed)
-*Locked 2026-11-10*
+## DL-04 File storage: S3-compatible (SeaweedFS locally, Cloudflare R2 deployed)
+*Locked 2026-11-10. **Amended 2026-11-10:** the original local choice was MinIO, but MinIO no longer publishes free container images (none on Docker Hub or Quay), so the local store is now **SeaweedFS**: free, open source, S3-compatible and actively published. The application code is unchanged, because it only uses the S3 API.*
 - **Options:** object storage (S3 API), files in the database.
-- **Chosen:** the S3 API through the AWS SDK's async (non-blocking) client. **MinIO** runs in Docker locally, and **Cloudflare R2** is used when deployed.
+- **Chosen:** the S3 API through the AWS SDK's async (non-blocking) client. **SeaweedFS** runs in Docker locally, and **Cloudflare R2** is used when deployed.
 - **Why:**
   - Invoices up to 20 MB stay out of the database and its backups.
   - One code path works in both environments.
