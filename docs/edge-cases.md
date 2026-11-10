@@ -78,6 +78,22 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | Past rule-breaking approvals are rewritten, or money keeps flowing on them | Flagged, not rewritten; only unstarted or self-approved POs need re-approval (the progress rule) | `DataImportTest.wronglyApprovedPurchaseOrdersAreFlaggedNotRewritten_D17_D18_D19`, `onlyUnstartedOrSelfApprovedPurchaseOrdersNeedReapproval` |
 | An inactive approver's past approvals are discarded | They stay valid (D20) | `DataImportTest.approvalsByTheNowInactiveApproverStayValid_D20` |
 
+## Catalogue (M09)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| A store manager or finance user changes products | POST and PUT on `/api/products/**` need the admin role (403 otherwise) | `CatalogueApiTest.storeManagersCannotChangeTheCatalogue` |
+| Two admins edit the same product at once and one silently overwrites the other | Every edit carries the version it was loaded at; a stale version gets 409 | `CatalogueApiTest.anEditFromAStaleVersionIsRefused`, `simultaneousEditsLetExactlyOneWin` |
+| A new product is created without a price | Rejected (400); only imported products may lack a price (D2) | `CatalogueApiTest.newProductsMustHaveAPriceACleanSkuAndAnActiveSupplier` |
+| A new SKU recreates the D1 problem (differs only by case) | Rejected (409); new SKUs must use the clean format | `CatalogueApiTest.aSkuThatDiffersOnlyByCaseIsRefused_D1` |
+| An admin removes a product's price | Refused: a price can change but not be removed | `CatalogueApiTest.aPriceCanBeChangedButNotRemoved` |
+| Archive or unarchive is clicked twice | The second is 409; nothing changes | `CatalogueApiTest.archiveAndUnarchiveAreAuditedAndCannotBeRepeated_D3` |
+| A search for `50%` or `_` matches everything | Wildcards in the search text are escaped | `CatalogueApiTest.searchTreatsPercentAsAPlainCharacter` |
+| Sorting by an arbitrary column (SQL injection) | Sort keys come from a fixed list; anything else is 400 | `CatalogueApiTest.rejectsUnknownSortAndOversizedPages` |
+| A huge page size overloads the server | Page size capped at 100 | same test |
+| `SW-HOM-00033` and `sw-hom-00033` are confused | Lookup is exact and case-sensitive (D1) | `CatalogueApiTest.skuLookupIsCaseSensitive_D1` |
+| A change leaves no trace | Every create, edit, price set, archive and unarchive is in the audit log, in the same transaction | `CatalogueApiTest.adminCreatesAProductAndItIsAudited` and others |
+
 ## Web app: sign-in
 
 | What could go wrong | How it's handled | Proof |
