@@ -31,6 +31,9 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/refresh", "/api/auth/logout").permitAll()
                         .pathMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
+                        // only admins change the catalogue; everyone signed in may browse it
+                        .pathMatchers(HttpMethod.POST, "/api/products", "/api/products/**").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
                         .anyExchange().authenticated())
                 .oauth2ResourceServer(resourceServer -> resourceServer.jwt(jwt -> jwt
                         .jwtDecoder(jwtDecoder)
