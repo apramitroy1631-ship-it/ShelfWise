@@ -1,0 +1,17 @@
+# Notification service settings (local defaults; override with environment variables).
+spring:
+  application:
+    name: notification-service
+
+server:
+  port: ${SERVER_PORT:8081}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

@@ -6,6 +6,9 @@
 *.cmd text eol=crlf
 *.ps1 text eol=crlf
 
+# Provided dataset: stored exactly as received, never converted (see data/README.md).
+data/** -text
+
 # Binary files: never touch.
 *.png binary
 *.jpg binary

