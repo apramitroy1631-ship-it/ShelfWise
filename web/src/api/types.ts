@@ -88,3 +88,22 @@ export type PoApproval = { approverId: string; approverName: string; decision: '
 export type PoDetail = { summary: PoSummary; createdBy: string; createdByName: string; closedReason: string | null; lines: PoLine[]; approvals: PoApproval[] };
 
 export type PoSuggestion = { sku: string; productName: string; supplierId: string; quantity: number; reorderLevel: number; suggestedQty: number; unitCost: number };
+
+// Dashboard (M22). Revenue = delivered orders only; dates are IST days.
+export type TrendPoint = { period: string; storeId: string; revenue: number; orders: number };
+
+export type DashboardSummary = {
+  storeId: string | null;
+  from: string | null;
+  to: string | null;
+  revenue: number;
+  deliveredOrders: number;
+  orderCount: number;
+  ordersByStatus: Record<string, number>;
+  lowStockCount: number;
+  outOfStockCount: number;
+  topProducts: { sku: string; name: string; units: number; revenue: number }[];
+  unknownProducts: { units: number; revenue: number };
+  trendBy: 'day' | 'month';
+  trend: TrendPoint[];
+};

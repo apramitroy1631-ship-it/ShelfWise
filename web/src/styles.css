@@ -243,3 +243,31 @@ input.qty { width: 76px; text-align: right; }
   .panel.side { position: static; max-height: none; }
   .content { padding: 16px; }
 }
+
+/* Chart colours (dataviz reference palette, blue slot): own steps for light and dark, not an automatic flip */
+:root { --chart-1: #2a78d6; --chart-1-strong: #184f95; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) { --chart-1: #3987e5; --chart-1-strong: #86b6ef; } }
+:root[data-theme='dark'] { --chart-1: #3987e5; --chart-1-strong: #86b6ef; }
+
+/* Dashboard (M22): one hue for magnitude (dataviz: sequential = one hue), text stays in text colours */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.tile-value { font-size: 24px; font-weight: 600; color: var(--text); }
+.dash-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr); gap: 12px; align-items: start; }
+.dash-grid:not(:has(> :nth-child(2))) { grid-template-columns: 1fr; }
+@media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+.panel h2 { font-size: 15px; margin: 0; }
+label.inline { display: inline-flex; align-items: center; gap: 6px; color: var(--text-2); }
+.chart { width: 100%; height: auto; display: block; }
+.chart-axis { stroke: var(--border); stroke-width: 1; }
+.chart-tick { fill: var(--text-muted); font-size: 10px; }
+.chart-bar { fill: var(--chart-1); }
+.chart-bar.active { fill: var(--chart-1-strong); }
+.chart g:focus-visible { outline: none; }
+.chart g:focus-visible .chart-bar { fill: var(--chart-1-strong); }
+.chart-readout { color: var(--text-2); min-height: 1.4em; margin: 0 0 4px; }
+.store-bars { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.store-bars li { display: grid; grid-template-columns: 36px 1fr auto; gap: 8px; align-items: center; }
+.store-bar-track { height: 10px; background: var(--surface-sub); border-radius: 4px; overflow: hidden; }
+.store-bar { display: block; height: 100%; background: var(--chart-1); border-radius: 0 4px 4px 0; }
+td.mono { white-space: nowrap; }

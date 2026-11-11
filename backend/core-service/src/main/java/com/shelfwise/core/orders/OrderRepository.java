@@ -62,6 +62,25 @@ public class OrderRepository {
         return bindAll(db.sql("SELECT count(*) FROM customer_orders" + w.sql), w.params).map((row, meta) -> row.get(0, Long.class)).one();
     }
 
+    /** A row of the CSV export: the order plus how many units it holds. */
+    public record ExportRow(OrderRow order, long units) {
+    }
+
+    /**
+     * Every order matching the list filters, newest first, streamed row by row (no page limit).
+     * Orders still waiting for admin review are left out (D10).
+     */
+    public Flux<ExportRow> exportRows(Search s) {
+        Where w = where(s);
+        String counted = "(review_status IS NULL OR review_status = 'CORRECTED')";
+        String sql = "SELECT " + COLUMNS + ", (SELECT coalesce(sum(l.qty), 0) FROM order_lines l WHERE l.order_id = customer_orders.id) AS units"
+                + " FROM customer_orders" + (w.sql.isEmpty() ? " WHERE " + counted : w.sql + " AND " + counted)
+                + " ORDER BY created_at DESC, id DESC";
+        return bindAll(db.sql(sql), w.params)
+                .map((row, meta) -> new ExportRow(toOrder(row), row.get("units", Long.class)))
+                .all();
+    }
+
     public Mono<OrderRow> find(String id) {
         return db.sql("SELECT " + COLUMNS + " FROM customer_orders WHERE id = :id").bind("id", id).map((row, meta) -> toOrder(row)).one();
     }
