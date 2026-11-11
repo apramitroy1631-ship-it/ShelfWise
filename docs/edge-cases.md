@@ -123,6 +123,28 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | Orders forgotten in "pending" for months | Flagged "stuck" after the remote-config limit (D32) | `OrdersApiTest.oldOpenOrdersAreFlaggedStuck_D32` |
 | Admin or finance creates customer orders, or a manager acts on another store | Only the store's managers create; store scope checked on the server | `OrdersApiTest.onlyStoreManagersCreateOrdersInTheirOwnStore`, `phonesAreMasked...` (403 for another store) |
 
+## Purchase orders (M19)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| Two finance approvers click "Approve" at the same moment | Each change first claims the PO by its version; the loser gets 409. The database's unique rules (one approval per person, one per step) are the backstop (D31) | `PurchaseOrdersApiTest.twoApproversAtTheSameMomentCountOnce_D31` (4 clicks at once → 1 approval, 1 event) |
+| The same person approves twice to pass the ₹50,000 rule | Refused (409); the second approval must come from someone else (D31) | `PurchaseOrdersApiTest.aboveTheLimitTwoDifferentApproversAreNeeded` |
+| The creator approves their own PO | Refused (403, D19) | `PurchaseOrdersApiTest.onlyFinanceDecidesAndNeverOnTheirOwnPo_D19` |
+| A manager or admin approves | Only finance decides (403) | same test |
+| Head office changes the ₹50,000 limit | Read from remote config on every decision; no redeploy | `PurchaseOrdersApiTest.theSecondApprovalLimitComesFromRemoteConfig` |
+| A rejection with no explanation | Reason required (400); stored in the audit log | `PurchaseOrdersApiTest.aRejectionNeedsAReasonAndIsAudited` |
+| Goods arrive for an imported PO that was wrongly approved | Blocked until finance re-approves (D17-D19); the compliance flag stays visible | `PurchaseOrdersApiTest.aFlaggedPoMustBeReapprovedBeforeGoodsArrive_D17_D19` |
+| Finance rejects the re-approval of a partly received PO | The PO is closed; goods already received stay | `PurchaseOrdersApiTest.rejectingTheReapprovalOfAPartlyReceivedPoClosesIt` |
+| More received than ordered, or a product that isn't on the PO | Refused (409 / 400); atomic "only if it stays within the order" update plus a database check; nothing moves | `PurchaseOrdersApiTest.cantReceiveMoreThanOrderedOrAProductNotOnThePo` |
+| The same delivery is recorded twice at once | Version claim: one goes in, stock moves once | `PurchaseOrdersApiTest.twoReceiptsAtTheSameMomentCountOnce` |
+| Goods arrive for a product the store never stocked | Its stock row is created with the product's reorder level | `PurchaseOrdersApiTest.receivingAProductNeverStockedInTheStoreCreatesItsStockRow` |
+| A PO waits for goods for months | Flagged "stuck" after 30 days (remote config); the manager can close it with a reason, audited (D22) | `PurchaseOrdersApiTest.aStuckPoCanBeClosedWithAReason_D22` |
+| A draft mixes suppliers, or has archived, unknown or zero-quantity products | Refused; nothing saved. Repeated lines are merged (D14) | `PurchaseOrdersApiTest.aDraftIsForOneSupplierAndActiveKnownProducts` |
+| An expired draft is submitted | Refused (409, D22) | `PurchaseOrdersApiTest.anExpiredDraftCantBeSubmitted_D22` |
+| A manager sees or acts on another store's POs | Store scope checked on the server (403) | `PurchaseOrdersApiTest.storeScopeAndRolesAreCheckedOnTheServer` |
+| A decision is saved but its notification is lost (or the other way round) | The event is written to the outbox in the same transaction | `PurchaseOrdersApiTest.draftSubmitApproveAndReceiveInParts_D21` (checks the events) |
+| App PO numbers clash with imported ones | App POs are numbered from PO-10000 (imported: PO-0001 to PO-0300) | `V3__purchase_order_numbers.sql` |
+
 ## Web app: sign-in
 
 | What could go wrong | How it's handled | Proof |

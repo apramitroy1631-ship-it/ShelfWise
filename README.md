@@ -138,6 +138,21 @@ Store managers see and change only their own store; admins and finance see all s
 
 What can go wrong and how it's handled: [edge-case register](docs/edge-cases.md).
 
+### Purchase orders API
+
+| Endpoint | Who | Purpose |
+|---|---|---|
+| `GET /api/purchase-orders?storeId=&status=&supplierId=&q=&page=&size=` | all (managers: own store) | POs, newest first, with `validApprovals`, `approvalsNeeded`, `requiresReapproval` and `stuck` |
+| `GET /api/purchase-orders/{id}` | all (managers: own store) | One PO with its lines and approvals (in time order, D31) |
+| `GET /api/purchase-orders/suggestions?storeId=` | all | Low-stock items of one store with a suggested quantity (back up to twice the reorder level) |
+| `POST /api/purchase-orders` | store manager | Draft for own store: `{ "supplierId", "lines": [{ "sku", "qty" }] }`. One supplier, active products only; unit cost = catalogue cost today |
+| `POST /api/purchase-orders/{id}/submit` | manager of that store, admin | `{ "version" }`. Draft → Submitted (an expired draft can't be submitted, D22) |
+| `POST /api/purchase-orders/{id}/decision` | finance | `{ "decision": "APPROVED" or "REJECTED", "reason", "version" }`. Above ₹50,000 (remote config) two **different** approvers; never the PO's creator; a rejection needs a reason. Also re-approves imported POs flagged by D17-D19 |
+| `POST /api/purchase-orders/{id}/receive` | manager of that store, admin | `{ "lines": [{ "sku", "qty" }], "version" }`. Any part of the order; never above what was ordered. Stock goes up; status becomes Partially received / Received (D21). Blocked while re-approval is needed |
+| `POST /api/purchase-orders/{id}/close` | manager of that store, admin | `{ "reason", "version" }`. Only a stuck PO (approved, waiting more than 30 days, D22). Goods already received stay |
+
+Every change sends the PO's `version`; if someone else changed it first the answer is 409 (reload and try again). Each step writes an event to the outbox for the notification service ([event contract](docs/events.md)).
+
 ### Running the backend tests
 
 Needs Java 21 and Docker running (tests start a throwaway PostgreSQL):
