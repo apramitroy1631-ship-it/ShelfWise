@@ -1,0 +1,5 @@
+# Test-only overrides (loaded on top of src/main/resources/application.yml).
+shelfwise:
+  messaging:
+    # Most tests call the handler directly; EventListenerTest switches the consumer on with its own broker.
+    consumer-enabled: false

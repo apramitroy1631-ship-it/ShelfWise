@@ -49,6 +49,10 @@ services:
       IMPORT_DATA_DIR: /data
       # Shared demo starting password for imported users (D25). Local/demo only.
       DEMO_PASSWORD: ${DEMO_PASSWORD:-ShelfWise-Demo-2026}
+      # Signs access tokens; the notification service checks them with the SAME key.
+      JWT_SECRET: ${JWT_SECRET:-local-development-only-secret-do-not-use-elsewhere}
+      # The outbox relay publishes events here (DL-03). If RabbitMQ is down, events wait in the outbox.
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq:5672
     volumes:
       - ./data:/data:ro   # the provided dataset, read-only
     ports:
@@ -61,9 +65,20 @@ services:
     build:
       context: ./backend
       dockerfile: notification-service/Dockerfile
+    environment:
+      # Own 'notifications' schema in the same PostgreSQL server (DL-12).
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-shelfwise}
+      DB_USER: ${DB_USER:-shelfwise}
+      DB_PASSWORD: ${DB_PASSWORD:-shelfwise}
+      JWT_SECRET: ${JWT_SECRET:-local-development-only-secret-do-not-use-elsewhere}
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq:5672
     ports:
       - "8081:8081"
     depends_on:
+      postgres:
+        condition: service_healthy
       rabbitmq:
         condition: service_healthy
 

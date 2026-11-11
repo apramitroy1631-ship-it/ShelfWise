@@ -165,6 +165,28 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | A large export runs the server out of memory | Rows are streamed from the database as they are read | `OrderExport` (streamed `Flux`); full-chain export of 14,945 orders in `DashboardApiTest` |
 | Indian names show as garbled letters in Excel | UTF-8 with a byte-order mark | `OrderController.export` |
 
+## Notifications (M21)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| Day one floods managers with ~1,400 low-stock messages | Grouped per store + type with a live count (D7): 2 notifications per store | `NotificationsTest.aStoresManagersSeeOneGroupedNotificationPerType_D7`; live check 2026-11-11 (S01: 40 out, 144 low; total 1,046 as in D7) |
+| A change is saved but its event is lost (crash between save and send) | Transactional outbox: the event is saved in the same transaction; the relay sends it later | Live check 2026-11-11: PO-10000's events waited in the outbox while no relay ran and arrived when it came back |
+| A code path changes stock but forgets to send an event | A database trigger writes the marker on every inventory update that crosses a line | `OutboxRelayTest.theDatabaseMarksStockHealthChangesOnlyWhenAnItemCrossesALine` |
+| The same event arrives twice (at-least-once) | Event ids are recorded; a repeat changes nothing | `NotificationsTest.repeatedOrLateEventsChangeNothing`, `EventListenerTest.anEventPublishedTwiceIsAppliedOnce` |
+| An older count arrives after a newer one | Each snapshot carries `asOf`; older ones are ignored | `NotificationsTest.repeatedOrLateEventsChangeNothing` |
+| Two copies of the core service publish the same events | `FOR UPDATE SKIP LOCKED`: each relay takes different rows | `OutboxRelayTest.twoRelaysAtOnceNeverPublishAnEventTwice` |
+| Many stock changes in one store send a burst of messages | Markers are merged: one current-count message per store per batch | `OutboxRelayTest.markersBecomeOneMessageWithTheCurrentCounts_D7` |
+| A restocked item keeps nagging | Unread again only when a count goes UP; at 0 the notification clears | `NotificationsTest.aGroupIsUnreadAgainOnlyWhenItsCountGoesUp_D7` |
+| A manager reads the bell while an increase is on its way, and misses it | "New" is the time the notification service applied the increase, not when it was computed | Same test (it failed before this fix) |
+| One of S01's two managers reading hides it from the other | Each person has their own "seen up to" time | `NotificationsTest.twoManagersOfOneStoreEachHaveTheirOwnUnreadState` |
+| A first of two approvals tells the store "approved" | Only final outcomes reach the store | `NotificationsTest.theStoreHearsOnlyFinalPoDecisions` |
+| Grouping hides how long finance has left POs waiting | The finance text shows the oldest waiting age | `NotificationsTest.financeSeesWaitingPosWithTheOldestAge_D7` |
+| A broken message blocks the queue for ever | After 3 retries it goes to the dead-letter queue for a person to look at | `EventListenerTest.aMessageThatCantBeHandledGoesToTheDeadLetterQueue` |
+| RabbitMQ is down | The core keeps selling (events wait in the outbox); the notification service keeps serving the bell and reconnects (2 s up to 30 s) | Retry code in `OutboxRelay` and `EventListener`; not yet proved by an automated test (known gap) |
+| A forged or foreign token reads notifications | Same signing key and issuer as the core service are required | `NotificationsTest.theBellNeedsAValidTokenFromTheCoreService` |
+| A manager marks another store's notification | Only your own audience can be marked (404 otherwise) | `NotificationsTest.nobodyCanMarkAnotherStoresNotification` |
+| A newly received product (never stocked in the store) arrives below its reorder level | The trigger only watches updates, so it isn't counted until the next change or the nightly recompute (M23) | Known gap, closed by M23 |
+
 ## Web app: sign-in
 
 | What could go wrong | How it's handled | Proof |

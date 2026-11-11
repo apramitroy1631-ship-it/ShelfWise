@@ -175,6 +175,18 @@ What the figures mean (decided 2026-11-11):
 - **Low-stock count** = items at or below their reorder level right now (1,046, of which 190 out of stock); archived products don't count. It isn't date-ranged.
 - Orders waiting for admin review (D10, 15 imported orders) are left out of every figure and the export until reviewed.
 
+### Notifications API (notification service, port 8081)
+
+The core service publishes events through RabbitMQ ([event contract](docs/events.md)); the notification service keeps grouped notifications the D7 way and serves the bell (DL-12). Send the same access token as for the core service.
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/notifications` | Your notifications, newest change first, with `unreadCount`. Store managers: their store's "out of stock", "running low" and PO decisions. Finance: "need your approval" and "need a second approval", with the oldest waiting age |
+| `POST /api/notifications/{id}/read` | Mark one as read (it becomes unread again only if its count goes up) |
+| `POST /api/notifications/read-all` | Mark all as read |
+
+On day one (after the import) each store manager sees 2 grouped notifications instead of about 1,400 single ones; e.g. S01: "... and 39 other items are out of stock in S01", "... and 143 other items are running low in S01". RabbitMQ's own screen is at http://localhost:15672 (guest / guest, local only).
+
 ### Running the backend tests
 
 Needs Java 21 and Docker running (tests start a throwaway PostgreSQL):

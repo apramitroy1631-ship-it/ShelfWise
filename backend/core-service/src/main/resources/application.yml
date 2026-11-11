@@ -35,6 +35,15 @@ shelfwise:
     # Starting password given to imported users (D25). Required when importing; never logged.
     demo-password: ${DEMO_PASSWORD:}
 
+  messaging:
+    # RabbitMQ (DL-03). The default is the local docker-compose broker; deployed environments set RABBITMQ_URI.
+    rabbit-uri: ${RABBITMQ_URI:amqp://guest:guest@localhost:5672}
+    exchange: shelfwise.events
+    # Publishes the outbox to RabbitMQ. Off in tests that don't need a broker.
+    relay-enabled: ${OUTBOX_RELAY_ENABLED:true}
+    relay-interval: 2s
+    batch-size: 100
+
 server:
   port: ${SERVER_PORT:8080}
 

@@ -1,0 +1,5 @@
+# Test-only overrides (loaded on top of src/main/resources/application.yml).
+shelfwise:
+  messaging:
+    # Most tests have no RabbitMQ; the relay tests switch it on with their own broker container.
+    relay-enabled: false

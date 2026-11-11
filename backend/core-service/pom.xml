@@ -51,6 +51,13 @@
             <artifactId>r2dbc-postgresql</artifactId>
         </dependency>
 
+        <!-- Non-blocking RabbitMQ client (DL-03); publishes the outbox to the broker. Uses Boot's managed amqp-client. -->
+        <dependency>
+            <groupId>io.projectreactor.rabbitmq</groupId>
+            <artifactId>reactor-rabbitmq</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+
         <!-- Reads the provided CSV files exactly as written (no trimming: trailing spaces matter, D1). -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -97,6 +104,11 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-r2dbc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-rabbitmq</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

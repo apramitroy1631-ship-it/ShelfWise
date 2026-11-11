@@ -107,3 +107,18 @@ export type DashboardSummary = {
   trendBy: 'day' | 'month';
   trend: TrendPoint[];
 };
+
+// Served by the notification service (DL-12), grouped the D7 way.
+export type NotificationKind = 'OUT_OF_STOCK' | 'RUNNING_LOW' | 'NEEDS_APPROVAL' | 'NEEDS_SECOND_APPROVAL' | 'PO_DECISION';
+
+export type NotificationItem = {
+  id: number;
+  kind: NotificationKind;
+  text: string;
+  count: number | null;
+  ref: string | null;
+  unread: boolean;
+  at: string;
+};
+
+export type NotificationFeed = { unreadCount: number; items: NotificationItem[] };
