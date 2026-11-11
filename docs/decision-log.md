@@ -187,7 +187,19 @@ Fixed by the brief: **Java + Spring Boot WebFlux (used reactively)** for the bac
 - **Messaging client:** `reactor-rabbitmq` 1.5.6 (non-blocking, fits WebFlux). Trade-off: the library has had no release since 2023; it wraps the maintained `amqp-client` (version managed by Spring Boot). Fallback if it ever breaks: Spring AMQP on a separate thread pool.
 - **At 10x:** separate database (or user) for the notification service; per-person preferences (mute a type); push to mobile (Expo) and email from the same records.
 
+## DL-13 Mobile: React Native with Expo (SDK 58)
+*Locked 2026-11-11 (user chose the recommended option)*
+- **Options:** React Native + Expo, Flutter.
+- **Chosen:** React Native with **Expo SDK 58** (`expo` pinned to 58.0.21, released at least two weeks before adoption), TypeScript, tested with Jest (`jest-expo`) and React Native Testing Library. Own folder `mobile/`, own CI workflow, no code shared with `web/` (DL-08).
+- **Why:**
+  - Same language and React patterns as the web app, so API shapes and conventions carry over and are easy to explain.
+  - Expo EAS builds an installable Android app without Android Studio (brief: "installable mobile build"); already part of the hosting plan (DL-07).
+  - The browser preview (`npx expo start --web`) lets us check screens quickly on a laptop.
+- **Sign-in on the phone:** the refresh token is kept in the phone's secure storage (Keychain / Keystore via `expo-secure-store`), so managers stay signed in; the 15-minute access token stays in memory. Head-office roles are pointed to the web app.
+- **Navigation:** simple state-based bottom tabs (at most 5, labelled), like the web app's state-based screens; no router library needed for 3-4 screens.
+- **Trade-offs:** Flutter would give smoother UI out of the box but a second language and type set to keep in sync. The browser preview needs the core service to allow its origin (`CORS_ALLOWED_ORIGINS`, empty by default); real phones don't need CORS.
+- **At 10x:** offline queue for stock counts, push notifications (Expo Notifications) from the notification service, barcode scanning for SKUs.
+
 ## Still to lock
-- Mobile framework (proposed: React Native with Expo).
 - CI/CD (GitHub Actions needs a GitHub repository, so nothing is pushed until approved).
 - Logging, monitoring and tracing across services.
