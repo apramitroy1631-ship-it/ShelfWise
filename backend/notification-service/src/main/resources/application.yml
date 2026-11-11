@@ -1,7 +1,39 @@
-# Notification service settings (local defaults; override with environment variables).
+# Notification service settings. Values that differ per environment come from environment variables;
+# the defaults below are for local development only.
 spring:
   application:
     name: notification-service
+
+  # Own tables in the 'notifications' schema of the same PostgreSQL server (DL-12). The SQL always names the
+  # schema, so the core service's tables are never touched and the two can move to separate databases later.
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:shelfwise}
+    username: ${DB_USER:shelfwise}
+    password: ${DB_PASSWORD:shelfwise}
+  flyway:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:shelfwise}
+    user: ${DB_USER:shelfwise}
+    password: ${DB_PASSWORD:shelfwise}
+    schemas: notifications
+    default-schema: notifications
+    create-schemas: true
+
+  webflux:
+    problemdetails:
+      enabled: true
+
+shelfwise:
+  auth:
+    # MUST be the same key as the core service's JWT_SECRET: this service only checks tokens, it never issues them.
+    jwt-secret: ${JWT_SECRET:local-development-only-secret-do-not-use-elsewhere}
+  messaging:
+    rabbit-uri: ${RABBITMQ_URI:amqp://guest:guest@localhost:5672}
+    exchange: shelfwise.events
+    queue: notification-service.events
+    # Messages that still fail after retries go here for a person to look at, instead of blocking the queue.
+    dead-letter-exchange: shelfwise.events.dead
+    dead-letter-queue: notification-service.dead
+    consumer-enabled: ${NOTIFICATION_CONSUMER_ENABLED:true}
 
 server:
   port: ${SERVER_PORT:8081}

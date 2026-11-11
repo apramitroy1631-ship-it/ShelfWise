@@ -6,7 +6,9 @@ export default defineConfig({
   server: {
     port: 5173,
     // In development, /api calls go to the core service, so the browser sees one origin (no CORS needed).
+    // The bell is served by the notification service (DL-12); this more specific rule must come first.
     proxy: {
+      '/api/notifications': 'http://localhost:8081',
       '/api': 'http://localhost:8080',
     },
   },
