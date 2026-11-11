@@ -104,8 +104,11 @@ class InventoryApiTest {
                 .jsonPath("$.item.quantity").isEqualTo(35)
                 .jsonPath("$.movement.delta").isEqualTo(-2)
                 .jsonPath("$.movement.reason").isEqualTo("ADJUSTMENT_DAMAGED")
-                .jsonPath("$.movement.actorUserId").isEqualTo("U03");
-        get(manager, "/api/inventory/S01/SW-SNK-00091/history").jsonPath("$[0].quantityAfter").isEqualTo(35);
+                .jsonPath("$.movement.actorUserId").isEqualTo("U03")
+                .jsonPath("$.movement.actorName").isEqualTo("Arjun Rao");                    // N6: names on screen
+        get(manager, "/api/inventory/S01/SW-SNK-00091/history")
+                .jsonPath("$[0].quantityAfter").isEqualTo(35)
+                .jsonPath("$[0].actorName").isEqualTo("Arjun Rao");
     }
 
     @Test

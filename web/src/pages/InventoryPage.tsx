@@ -172,7 +172,7 @@ function StockPanel({ item, canAdjust, onChanged, onClose }: { item: StockItem; 
             <li key={m.id}>
               <strong className={m.delta < 0 ? 'neg' : 'pos'}>{m.delta > 0 ? `+${m.delta}` : m.delta}</strong> → {m.quantityAfter}
               <span> · {reasonLabel(m.reason)}{m.referenceId ? ` ${m.referenceId}` : ''}</span>
-              <div className="muted small">{dateTime(m.at)}{m.actorUserId ? ` · ${m.actorUserId}` : ''}{m.note ? ` · ${m.note}` : ''}</div>
+              <div className="muted small">{dateTime(m.at)}{m.actorUserId ? ` · ${m.actorName ?? m.actorUserId}` : ' · System'}{m.note ? ` · ${m.note}` : ''}</div>
             </li>
           ))}
         </ul>

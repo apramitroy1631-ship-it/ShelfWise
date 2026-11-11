@@ -113,7 +113,8 @@ public class InventoryRepository {
         DatabaseClient.GenericExecuteSpec spec = db.sql("""
                         INSERT INTO stock_movements (store_id, sku, delta, quantity_after, reason, note, reference_type, reference_id, actor_user_id)
                         VALUES (:store, :sku, :delta, :after, :reason, :note, :refType, :refId, :actor)
-                        RETURNING id, delta, quantity_after, reason, note, reference_type, reference_id, actor_user_id, created_at
+                        RETURNING id, delta, quantity_after, reason, note, reference_type, reference_id, actor_user_id,
+                                  (SELECT u.name FROM users u WHERE u.id = actor_user_id) AS actor_name, created_at
                         """)
                 .bind("store", storeId).bind("sku", sku).bind("delta", delta).bind("after", quantityAfter).bind("reason", reason);
         spec = note == null ? spec.bindNull("note", String.class) : spec.bind("note", note);
@@ -125,9 +126,11 @@ public class InventoryRepository {
 
     public Flux<Movement> history(String storeId, String sku, int page, int size) {
         return db.sql("""
-                        SELECT id, delta, quantity_after, reason, note, reference_type, reference_id, actor_user_id, created_at
-                        FROM stock_movements WHERE store_id = :store AND sku = :sku
-                        ORDER BY created_at DESC, id DESC LIMIT :limit OFFSET :offset
+                        SELECT m.id, m.delta, m.quantity_after, m.reason, m.note, m.reference_type, m.reference_id, m.actor_user_id,
+                               u.name AS actor_name, m.created_at
+                        FROM stock_movements m LEFT JOIN users u ON u.id = m.actor_user_id
+                        WHERE m.store_id = :store AND m.sku = :sku
+                        ORDER BY m.created_at DESC, m.id DESC LIMIT :limit OFFSET :offset
                         """)
                 .bind("store", storeId).bind("sku", sku).bind("limit", size).bind("offset", (long) page * size)
                 .map((row, meta) -> toMovement(row)).all();
@@ -177,7 +180,7 @@ public class InventoryRepository {
     private static Movement toMovement(Row row) {
         return new Movement(row.get("id", Long.class), row.get("delta", Integer.class), row.get("quantity_after", Integer.class),
                 row.get("reason", String.class), row.get("note", String.class), row.get("reference_type", String.class),
-                row.get("reference_id", String.class), row.get("actor_user_id", String.class),
+                row.get("reference_id", String.class), row.get("actor_user_id", String.class), row.get("actor_name", String.class),
                 row.get("created_at", OffsetDateTime.class));
     }
 }

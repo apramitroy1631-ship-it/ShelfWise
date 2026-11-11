@@ -173,7 +173,7 @@ function PoDetailPage({ id, user, onBack }: { id: string; user: UserSummary; onB
           <div>
             <div className="muted small">Purchase order</div>
             <h1 className="mono" style={{ fontSize: 18 }}>{s.id}</h1>
-            <div className="text-2">Supplier {s.supplierId} · Store {s.storeId} · created {dateTime(s.createdAt)} by {po.createdBy}</div>
+            <div className="text-2">Supplier {s.supplierId} · Store {s.storeId} · created {dateTime(s.createdAt)} by {po.createdByName ?? po.createdBy}</div>
           </div>
           <div className="po-amount">
             <p className="big">{money(s.totalAmount)}</p>
@@ -229,7 +229,7 @@ function PoDetailPage({ id, user, onBack }: { id: string; user: UserSummary; onB
             {po.approvals.map((a, i) => (
               <li key={i}>
                 {a.decision === 'APPROVED' ? <Chip kind="success" icon={IconCheck}>Approved</Chip> : <Chip kind="danger" icon={IconX}>Rejected</Chip>}
-                {' '}by {a.approverId}{a.step ? ` (approval ${a.step})` : ''}{a.counts ? '' : ' · no longer counts'}
+                {' '}by {a.approverName ?? a.approverId}{a.step ? ` (approval ${a.step})` : ''}{a.counts ? '' : ' · no longer counts'}
                 <div className="muted small">{dateTime(a.decidedAt)}</div>
               </li>
             ))}
@@ -250,13 +250,13 @@ function Tracker({ po, canDecideHere, unitsOrdered, unitsReceived }: { po: PoDet
   const deciding = s.status === 'SUBMITTED' || s.requiresReapproval;
   const approved = !deciding && ['APPROVED', 'PARTIALLY_RECEIVED', 'RECEIVED', 'CLOSED'].includes(s.status);
 
-  const steps: Step[] = [{ label: 'Submitted', who: po.createdBy, state: s.status === 'DRAFT' ? 'current' : 'done' }];
+  const steps: Step[] = [{ label: 'Submitted', who: po.createdByName ?? po.createdBy, state: s.status === 'DRAFT' ? 'current' : 'done' }];
   for (let n = 1; n <= Math.max(1, s.approvalsNeeded); n++) {
     const a = counting.find((x) => x.step === n) ?? counting[n - 1];
     let state: Step['state'] = 'todo';
     let who = 'Finance';
-    if (a) { state = 'done'; who = `${a.approverId}, ${dateTime(a.decidedAt).split(',')[0]}`; }
-    else if (s.status === 'REJECTED' && n === counting.length + 1) { state = 'failed'; who = rejection ? `Rejected by ${rejection.approverId}` : 'Rejected'; }
+    if (a) { state = 'done'; who = `${a.approverName ?? a.approverId}, ${dateTime(a.decidedAt).split(',')[0]}`; }
+    else if (s.status === 'REJECTED' && n === counting.length + 1) { state = 'failed'; who = rejection ? `Rejected by ${rejection.approverName ?? rejection.approverId}` : 'Rejected'; }
     else if (approved) { state = 'done'; who = 'Approved'; }
     else if (deciding && n === counting.length + 1) { state = 'current'; who = 'Waiting'; }
     steps.push({ label: s.approvalsNeeded > 1 ? `Approver ${n}` : 'Approval', who, state });

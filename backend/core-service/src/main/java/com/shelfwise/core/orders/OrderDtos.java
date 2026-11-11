@@ -57,6 +57,7 @@ public final class OrderDtos {
             String id,
             String storeId,
             String placedBy,
+            String placedByName,      // for display (N6); placedBy stays the identifier
             String status,
             String customerName,
             String customerPhone,

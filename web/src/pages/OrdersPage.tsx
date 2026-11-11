@@ -234,7 +234,7 @@ function OrderPanel({ id, canAct, onChanged, onClose }: { id: string; canAct: bo
         <>
           <div className="flags"><OrderStatusChip status={order.status} /> {order.stuck && <Chip kind="warn" icon={IconClock}>Stuck</Chip>}</div>
           <p style={{ margin: 0 }}>{order.customerName} · {order.customerPhone}</p>
-          <p className="muted" style={{ margin: 0 }}>Store {order.storeId} · placed {dateTime(order.createdAt)} by {order.placedBy}</p>
+          <p className="muted" style={{ margin: 0 }}>Store {order.storeId} · placed {dateTime(order.createdAt)} by {order.placedByName ?? order.placedBy}</p>
           {order.reviewStatus === 'NEEDS_REVIEW' && <p className="notice danger">This imported order is waiting for admin review and isn't counted in revenue.</p>}
           <div className="listing">
             <table>

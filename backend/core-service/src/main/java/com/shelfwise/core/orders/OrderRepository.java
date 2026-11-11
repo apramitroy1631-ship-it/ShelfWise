@@ -40,6 +40,15 @@ public class OrderRepository {
         this.db = db;
     }
 
+    /** A person's name for display (N6); the ID if the user is unknown. */
+    public Mono<String> userName(String userId) {
+        return db.sql("SELECT name FROM users WHERE id = :id")
+                .bind("id", userId)
+                .map((row, meta) -> row.get("name", String.class))
+                .one()
+                .defaultIfEmpty(userId);
+    }
+
     public Flux<OrderRow> search(Search s) {
         Where w = where(s);
         return bindAll(db.sql("SELECT " + COLUMNS + " FROM customer_orders" + w.sql

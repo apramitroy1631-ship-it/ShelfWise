@@ -16,6 +16,7 @@ function detail(overrides: Partial<PoDetail['summary']> = {}, approvals: PoDetai
       requiresReapproval: false, stuck: false, version: 4, ...overrides,
     },
     createdBy: 'U03',
+    createdByName: 'Arjun Rao',
     closedReason: null,
     lines: [
       { sku: 'SW-RIC-10234', productName: 'Basmati rice 5kg', qtyOrdered: 10, qtyReceived: 0, unitCost: 5000, lineTotal: 50000 },
@@ -25,7 +26,7 @@ function detail(overrides: Partial<PoDetail['summary']> = {}, approvals: PoDetai
   };
 }
 
-const FIRST_APPROVAL = { approverId: 'U10', decision: 'APPROVED' as const, decidedAt: '2026-10-29T06:00:00Z', counts: true, step: 1 };
+const FIRST_APPROVAL = { approverId: 'U10', approverName: 'Anil Gupta', decision: 'APPROVED' as const, decidedAt: '2026-10-29T06:00:00Z', counts: true, step: 1 };
 
 function json(status: number, body?: unknown) {
   return new Response(body === undefined ? null : JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
@@ -65,6 +66,9 @@ describe('purchase orders', () => {
     const tracker = screen.getByRole('list', { name: 'Progress' });
     expect(within(tracker).getByText('Approver 2').closest('li')).toHaveAttribute('aria-current', 'step');
     expect(within(tracker).getByText('You')).toBeInTheDocument();
+    expect(within(tracker).getByText('Arjun Rao')).toBeInTheDocument();                 // N6: names, not user IDs
+    expect(within(tracker).getByText(/^Anil Gupta,/)).toBeInTheDocument();
+    expect(screen.queryByText(/\bU1[01]\b/)).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Approve' }));
 

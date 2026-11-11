@@ -75,13 +75,27 @@ public class PurchaseOrderRepository {
                 .all();
     }
 
+    /** A person's name for display (N6); the ID if the user is unknown. IDs stay in the data and the audit log. */
+    public Mono<String> userName(String userId) {
+        return db.sql("SELECT name FROM users WHERE id = :id")
+                .bind("id", userId)
+                .map((row, meta) -> row.get("name", String.class))
+                .one()
+                .defaultIfEmpty(userId);
+    }
+
     /** Approvals in time order (D31). */
     public Flux<ApprovalView> approvals(String poId) {
-        return db.sql("SELECT approver_id, decision, decided_at, counts, step FROM po_approvals WHERE po_id = :id ORDER BY decided_at, id")
+        return db.sql("""
+                        SELECT a.approver_id, coalesce(u.name, a.approver_id) AS approver_name, a.decision, a.decided_at, a.counts, a.step
+                        FROM po_approvals a LEFT JOIN users u ON u.id = a.approver_id
+                        WHERE a.po_id = :id ORDER BY a.decided_at, a.id
+                        """)
                 .bind("id", poId)
                 .map((row, meta) -> {
                     Short step = row.get("step", Short.class);
-                    return new ApprovalView(row.get("approver_id", String.class), row.get("decision", String.class),
+                    return new ApprovalView(row.get("approver_id", String.class), row.get("approver_name", String.class),
+                            row.get("decision", String.class),
                             row.get("decided_at", OffsetDateTime.class), Boolean.TRUE.equals(row.get("counts", Boolean.class)),
                             step == null ? null : step.intValue());
                 })

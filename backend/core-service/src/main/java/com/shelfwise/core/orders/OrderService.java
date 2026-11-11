@@ -205,8 +205,8 @@ public class OrderService {
 
     private Mono<OrderDetail> detail(UserAccount user, OrderRow o) {
         boolean ownStoreStaff = user.role() == UserAccount.Role.STORE_MANAGER && o.storeId().equals(user.storeId());
-        return Mono.zip(orders.lines(o.id()).collectList(), stuckAfter())
-                .map(t -> new OrderDetail(o.id(), o.storeId(), o.placedBy(), o.status(), o.customerName(),
+        return Mono.zip(orders.lines(o.id()).collectList(), stuckAfter(), orders.userName(o.placedBy()))
+                .map(t -> new OrderDetail(o.id(), o.storeId(), o.placedBy(), t.getT3(), o.status(), o.customerName(),
                         ownStoreStaff ? o.customerPhone() : maskPhone(o.customerPhone()),    // D16
                         o.totalAmount(), o.createdAt(), o.reviewStatus(), o.source(), isStuck(o, t.getT2()), o.version(), t.getT1()));
     }

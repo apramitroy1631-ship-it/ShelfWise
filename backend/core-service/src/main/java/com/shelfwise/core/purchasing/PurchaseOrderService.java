@@ -345,8 +345,8 @@ public class PurchaseOrderService {
     }
 
     private Mono<Detail> detail(PoRow po) {
-        return Mono.zip(pos.lines(po.id()).collectList(), pos.approvals(po.id()).collectList(), rules())
-                .map(t -> new Detail(summary(po, t.getT3()), po.createdBy(), po.closedReason(), t.getT1(), t.getT2()));
+        return Mono.zip(pos.lines(po.id()).collectList(), pos.approvals(po.id()).collectList(), rules(), pos.userName(po.createdBy()))
+                .map(t -> new Detail(summary(po, t.getT3()), po.createdBy(), t.getT4(), po.closedReason(), t.getT1(), t.getT2()));
     }
 
     private static Summary summary(PoRow po, Rules rules) {
