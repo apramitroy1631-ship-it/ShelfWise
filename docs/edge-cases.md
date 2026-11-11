@@ -145,6 +145,26 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | A decision is saved but its notification is lost (or the other way round) | The event is written to the outbox in the same transaction | `PurchaseOrdersApiTest.draftSubmitApproveAndReceiveInParts_D21` (checks the events) |
 | App PO numbers clash with imported ones | App POs are numbered from PO-10000 (imported: PO-0001 to PO-0300) | `V3__purchase_order_numbers.sql` |
 
+## Dashboard and CSV export (M22)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| The dashboard disagrees with the import decisions | Figures are computed from the orders on every request (nothing stored that could drift); the test runs on the real provided data | `DashboardApiTest.revenueIsDeliveredOrdersOnlyAndMatchesTheImportDecisions` (₹1,45,38,055) |
+| Orders that may still be cancelled inflate revenue | Revenue counts delivered orders only (user decision 2026-11-11) | Same test |
+| Cancellations disappear from the order count | Order count includes every status, with a split by status | `DashboardApiTest.theOrderCountIncludesEveryStatusAndLeavesOutOrdersWaitingForReview_D10` |
+| Orders with wrong quantities (waiting for review) distort figures or the export | Left out until an admin reviews them (D10) | Same test; `theCsvLeavesOutOrdersWaitingForReviewAndRespectsStoreScope_D10` |
+| Unknown product codes vanish from top products | Shown separately under their own heading (D12) | `DashboardApiTest.topProductsAreRankedByRevenueWithUnitsAndUnknownProductsSeparate_D12` (₹15,994) |
+| Archived products inflate the low-stock count | Left out, same rule as notifications (D3, D7) | `DashboardApiTest.lowStockCountMatchesD7` (1,046 / 190) |
+| An order late in the evening IST lands on the wrong day (UTC) | Date ranges and trend days are IST days (D9) | `DashboardApiTest.dateRangesAreIstDays_D9` |
+| Store figures don't add up to the chain total | Same rules per store and in total | `DashboardApiTest.storesAndTrendAddUpToTheTotal` |
+| A manager sees another store's figures or export | Store scope checked on the server (403) | `DashboardApiTest.managersSeeOnlyTheirOwnStore`, `theCsvLeavesOut...` |
+| "to" before "from", or an unknown trend unit | Refused (400) | `DashboardApiTest.badRangesAreRefused` |
+| The export leaks customer phone numbers | Phones are always masked in the file, even for the store's own managers (D16) | `DashboardApiTest.theCsvHasEveryFilteredOrderWithMaskedPhones_D16` |
+| A customer name like `=HYPERLINK(...)` runs as a formula in Excel (CSV injection) | Text starting with = + - @ is prefixed with an apostrophe | `OrderExportTest.textThatExcelWouldRunAsAFormulaIsMadePlain` |
+| Names with commas, quotes or line breaks break the columns | Quoted per RFC 4180 | `OrderExportTest.commasQuotesAndLineBreaksAreQuoted` |
+| A large export runs the server out of memory | Rows are streamed from the database as they are read | `OrderExport` (streamed `Flux`); full-chain export of 14,945 orders in `DashboardApiTest` |
+| Indian names show as garbled letters in Excel | UTF-8 with a byte-order mark | `OrderController.export` |
+
 ## Web app: sign-in
 
 | What could go wrong | How it's handled | Proof |

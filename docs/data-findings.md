@@ -209,7 +209,7 @@ e.g. ORD-000212, ORD-000486, ORD-001327.
   - Identical copies: import one, skip the rest, and count the skips in the import report (40).
   - Same ID but different content: import **neither** and flag the conflict for review, because we can't know which copy is true. This doesn't happen in the current data; the rule protects against new data.
   - The database keeps the order ID unique, so a duplicate can never get in.
-  - **Revenue effect** (no stored revenue figure exists; it's always calculated from orders): DELIVERED revenue ₹1,45,62,704 → **₹1,45,30,337** (−₹32,367 across 31 orders); delivered count 13,036 → 13,005. The import report shows this before-and-after. *(Revenue = DELIVERED orders only is an assumption, to confirm when the dashboard is built.)*
+  - **Revenue effect** (no stored revenue figure exists; it's always calculated from orders): DELIVERED revenue ₹1,45,62,704 → **₹1,45,30,337** (−₹32,367 across 31 orders); delivered count 13,036 → 13,005. The import report shows this before-and-after. *(Revenue = DELIVERED orders only: **confirmed by the user on 2026-11-11** when the dashboard was built. Order count = all orders split by status; top products ranked by revenue with units.)*
   - Dependencies:
     - ORD-006289 also has a missing price, which is handled by D11.
     - The 4 open duplicates have their stock counted once; when it's subtracted depends on D29.

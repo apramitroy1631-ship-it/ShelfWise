@@ -161,6 +161,20 @@ What can go wrong and how it's handled: [edge-case register](docs/edge-cases.md)
 
 Every change sends the PO's `version`; if someone else changed it first the answer is 409 (reload and try again). Each step writes an event to the outbox for the notification service ([event contract](docs/events.md)).
 
+### Dashboard and CSV export API
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/dashboard?storeId=&from=&to=&trendBy=` | Revenue, order count (split by status), top 10 products, low-stock count and the trend per store and day (or month). Dates are IST days; no dates = everything. Ranges over 92 days default to a monthly trend. Managers get their own store |
+| `GET /api/orders/export.csv?storeId=&status=&q=&from=&to=` | The filtered order list as a CSV file (same filters as `GET /api/orders`, every page). Phones masked; opens in Excel |
+
+What the figures mean (decided 2026-11-11):
+- **Revenue** = delivered orders only (pending, packed and shipped can still be cancelled). On the provided data: **₹1,45,38,055**.
+- **Order count** = every order placed in the range, with a split by status, so cancellations stay visible.
+- **Top products** = ranked by revenue from delivered orders, units shown too. Lines with unknown product codes (D12) appear separately (₹15,994).
+- **Low-stock count** = items at or below their reorder level right now (1,046, of which 190 out of stock); archived products don't count. It isn't date-ranged.
+- Orders waiting for admin review (D10, 15 imported orders) are left out of every figure and the export until reviewed.
+
 ### Running the backend tests
 
 Needs Java 21 and Docker running (tests start a throwaway PostgreSQL):
