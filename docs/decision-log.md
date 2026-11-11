@@ -60,6 +60,7 @@ Fixed by the brief: **Java + Spring Boot WebFlux (used reactively)** for the bac
   - The file type is checked by its **contents**, not its name: the upload samples include an `.exe` renamed to `.pdf`, a truncated PDF and a 22 MB file.
 - **Trade-off:** one more service; files and the database must be kept consistent (upload first, then record).
 - **At 10×:** add virus scanning, lifecycle rules for old invoices, and short-lived signed download links.
+- **As built (M20):** the app reaches storage through a small `ObjectStorage` interface; the S3 version creates the bucket on first use. A download goes through the core service (with the person's token and the store check), so the storage location is never exposed. Replacing a file keeps the old one as an earlier version.
 
 ## DL-05 Authentication: own, with Spring Security (reactive)
 *Locked 2026-11-10*
