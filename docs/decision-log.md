@@ -174,6 +174,19 @@ Fixed by the brief: **Java + Spring Boot WebFlux (used reactively)** for the bac
 
 ---
 
+## DL-12 Notifications: own schema in the notification service, one record per store + type
+*Locked 2026-11-11 (user chose both recommended options)*
+- **Where the bell reads from.** Options: the notification service serves `GET /api/notifications` from its own tables; or it writes into the core service's tables and the core serves the bell.
+  - **Chosen:** the notification service, with its own `notifications` schema in the same PostgreSQL server. It checks the core service's access token (same signing key, same issuer); it never signs anyone in.
+  - **Why:** keeps the services independent (DL-08, DL-09). If notifications fail, sales and stock keep working; the bell catches up from the queue.
+  - **Trade-off:** the apps call two backends (in development Vite forwards `/api/notifications` to port 8081). The notification service can't re-check the user in the database, so a just-deactivated user can read their notifications until the token expires (15 minutes).
+- **How grouped notifications are stored.** D7 originally said "one record per person + type".
+  - **Chosen:** one record per **store + type** (per **role** for finance), plus each person's "seen up to" time. What people see is exactly D7: one grouped notification per type, live count, unread again only when the count goes up, cleared at 0.
+  - **Why:** the notification service needs no copy of the user list; a newly added manager sees the current groups at once; S01's two managers (D26) share one record but each has their own unread state.
+- **How counts stay right.** Snapshot events carry the whole current count, not "+1" (docs/events.md). A database trigger marks every stock change that crosses a line, so no code path can forget it. Repeated events are skipped by id; late ones by `asOf`. "Unread again" uses the time the notification service applied the increase, so a person who opened the bell while a message was on its way still sees it as new.
+- **Messaging client:** `reactor-rabbitmq` 1.5.6 (non-blocking, fits WebFlux). Trade-off: the library has had no release since 2023; it wraps the maintained `amqp-client` (version managed by Spring Boot). Fallback if it ever breaks: Spring AMQP on a separate thread pool.
+- **At 10x:** separate database (or user) for the notification service; per-person preferences (mute a type); push to mobile (Expo) and email from the same records.
+
 ## Still to lock
 - Mobile framework (proposed: React Native with Expo).
 - CI/CD (GitHub Actions needs a GitHub repository, so nothing is pushed until approved).

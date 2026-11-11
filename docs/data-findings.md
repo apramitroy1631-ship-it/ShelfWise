@@ -167,7 +167,7 @@ ISO with offset 1,710 · ISO no timezone 592 · `dd-Mon-yyyy HH:MM` 580 · `dd/m
 *Corrected 2026-11-06: the first version said 1,058. That check skipped the 15 negative rows.*
 - Facts:
   - 1,073 rows are at or below reorder level. 27 are archived (excluded by D3), which leaves **1,046 rows across 622 products**.
-  - 175 of them are out of stock (including the 15 set to 0 in D5), and 109 are exactly at the level. 30 are D1 variants and 11 are D2 unpriced.
+  - **190** of them are out of stock (including the 15 set to 0 in D5), and 109 are exactly at the level. 30 are D1 variants and 11 are D2 unpriced. *(Corrected 2026-11-11: the first version said 175. The raw file has 182 rows at 0 plus 15 negative rows set to 0 by D5 = 197; minus 7 archived = 190. Found when the live notifications showed 190 across the 5 stores; the 1,046 total was right.)*
   - Per store: S01 184 · S02 197 · S03 215 · S04 235 · S05 215.
   - One notification per row per manager would send **about 1,427** on day one (S01 and S02 have two managers each).
 - Options considered: (a) no alerts on import, only on new drops; (b) the same plus one summary per store; (c) alert every row; (d) **grouped notifications (the user's idea, chosen)**.
@@ -179,14 +179,14 @@ ISO with offset 1,710 · ISO no timezone 592 · `dd-Mon-yyyy HH:MM` 580 · `dd/m
   | Store manager (own store) | Out of stock · Running low · Stuck orders *(D32)* · Stuck POs *(D22)* | "Smart Buy Chips and 39 other items are out of stock in S04" · "42 orders are stuck in S04" · "12 purchase orders are waiting too long" | Live |
   | | Purchase-order decision (**not grouped**: few, each needs action) | "PO-0195 was approved" | Live |
   | Finance approver (all stores) | Needs approval · Needs second approval (over ₹50,000) | "6 purchase orders need your approval · oldest waiting 3 days" | Live |
-  | Admin (all stores) | Stock health · Needs head-office action | "175 items out of stock across 5 stores" · "10 products have no price" | Once a day (nightly job) |
+  | Admin (all stores) | Stock health · Needs head-office action | "190 items out of stock across 5 stores" · "10 products have no price" | Once a day (nightly job) |
 
   - **Low** means at or below the reorder level; **out of stock** means 0. Each item counts in one group only.
   - The count shows the **current** situation, not a pile of past events: it goes down when items are restocked, and the notification clears at 0.
   - A notification becomes unread again only when its count goes **up**.
   - The finance notification shows the oldest waiting item, so that grouping never hides how long money decisions have been waiting.
   - Day one: each store manager gets one notification per type with the imported counts. With D32's stuck-orders group, that's **14 notifications across 7 managers**, instead of about 1,427 messages. The full lists are one tap away.
-  - Technical shape: one record per **person + type**. The notification handler (the backend piece the brief requires) receives every event and updates that record. Only the grouping and the timing differ by role.
+  - Technical shape: ~~one record per **person + type**~~ **one record per store + type (per role for finance), with each person's own "seen up to" time** (changed 2026-11-11 with the user's approval, DL-12; what people see is unchanged). The notification handler (the backend piece the brief requires) receives every event and updates that record. Only the grouping and the timing differ by role.
   - Target screen (to finalise in design): a low-stock list for the store, worst first, with "Draft purchase order from selected" (links to brief feature 6).
   - Scope: the store-manager groups and individual PO decisions are **required** by the brief and come first. The finance and admin groups reuse the same mechanism; if time runs short they go to "known issues / next".
   - The README records these as assumptions: who receives what, admin daily timing, and "at the level counts as low".
