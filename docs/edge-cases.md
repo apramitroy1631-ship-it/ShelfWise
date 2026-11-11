@@ -185,7 +185,22 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | RabbitMQ is down | The core keeps selling (events wait in the outbox); the notification service keeps serving the bell and reconnects (2 s up to 30 s) | Retry code in `OutboxRelay` and `EventListener`; not yet proved by an automated test (known gap) |
 | A forged or foreign token reads notifications | Same signing key and issuer as the core service are required | `NotificationsTest.theBellNeedsAValidTokenFromTheCoreService` |
 | A manager marks another store's notification | Only your own audience can be marked (404 otherwise) | `NotificationsTest.nobodyCanMarkAnotherStoresNotification` |
-| A newly received product (never stocked in the store) arrives below its reorder level | The trigger only watches updates, so it isn't counted until the next change or the nightly recompute (M23) | Known gap, closed by M23 |
+| A newly received product (never stocked in the store) arrives below its reorder level | The trigger only watches updates; the nightly recount (M23) sends the corrected counts | `ScheduledJobsTest.theRecountSendsOneMarkerPerStoreAndKeepsTheCounts` |
+
+## Scheduled jobs (M23)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| Old drafts pile up for months | Drafts untouched for more than 14 days expire nightly, audited (D22) | `ScheduledJobsTest.draftsUntouchedForMoreThan14DaysExpire_D22` |
+| Imported drafts look "just updated" (the import sets the update time) so they never expire | Imported drafts count from their creation date; app drafts from their last change | Same test (PO-0011 vs PO-10002) |
+| A draft someone just worked on expires | Only drafts untouched for the whole limit; submitted POs are never touched | Same test |
+| Two copies of the core service run the job at once and expire or count twice | A Postgres advisory lock: one runs, the other records SKIPPED | `ScheduledJobsTest.twoInstancesAtTheSameMomentRunTheJobOnce` |
+| A user acts on a draft that expired in the meantime | Expiry bumps the version, so the stale screen gets 409; an expired draft can't be submitted | Same tests; `PurchaseOrdersApiTest.anExpiredDraftCantBeSubmitted_D22` |
+| Head office wants a different expiry limit | Remote config, read on every run | `ScheduledJobsTest.theExpiryLimitComesFromRemoteConfig` |
+| A live stock update missed a notification (e.g. first delivery of a product to a store) | The nightly recount sends every store's current counts again | `ScheduledJobsTest.theRecountSendsOneMarkerPerStoreAndKeepsTheCounts` |
+| Nobody knows whether the nightly job ran | Every run (done, skipped, failed) is recorded with its details; admins can list them | `ScheduledJobsTest.aSecondRunFindsNothingMore`, `onlyAdminsRunJobsAndSeeRuns` |
+| A job crashes half-way | One transaction per run: nothing half-done is saved; the failure is recorded | `ScheduledJobs.run` (rollback + FAILED record) |
+| A non-admin runs a job | 403 | `ScheduledJobsTest.onlyAdminsRunJobsAndSeeRuns` |
 
 ## Web app: sign-in
 

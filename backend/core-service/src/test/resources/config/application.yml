@@ -3,3 +3,6 @@ shelfwise:
   messaging:
     # Most tests have no RabbitMQ; the relay tests switch it on with their own broker container.
     relay-enabled: false
+  jobs:
+    # Tests run the jobs directly, never on the clock.
+    enabled: false
