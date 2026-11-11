@@ -1,5 +1,5 @@
 import {
-  IconBox, IconFileInvoice, IconLogout, IconMoon, IconReceipt, IconSun, IconTag, type Icon,
+  IconBox, IconChartBar, IconFileInvoice, IconLogout, IconMoon, IconReceipt, IconSun, IconTag, type Icon,
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { logout, type Role, type Session } from './api/auth';
@@ -7,6 +7,7 @@ import { onSessionChange, query, setSession as storeSession } from './api/client
 import { applyTheme, currentTheme, type Theme } from './lib/theme';
 import { useCounts } from './lib/useList';
 import { CataloguePage } from './pages/CataloguePage';
+import { DashboardPage } from './pages/DashboardPage';
 import { InventoryPage } from './pages/InventoryPage';
 import { LoginPage } from './pages/LoginPage';
 import { OrdersPage } from './pages/OrdersPage';
@@ -20,22 +21,23 @@ const ROLE_LABELS: Record<Role, string> = {
 
 export const STORES = ['S01', 'S02', 'S03', 'S04', 'S05'];
 
-type Screen = 'orders' | 'inventory' | 'catalogue' | 'purchase-orders';
+type Screen = 'dashboard' | 'orders' | 'inventory' | 'catalogue' | 'purchase-orders';
 
 /**
  * Menu by role (docs/navigation-and-workflows.md, N2). Finance gets a focused menu: purchase orders and
  * read-only inventory. Menus are a convenience; the server checks role and store on every request.
- * Dashboard, Suppliers and Settings join when their APIs exist.
+ * Suppliers and Settings join when their APIs exist.
  */
 const MENU: { id: Screen; label: string; icon: Icon; roles: Role[] }[] = [
+  { id: 'dashboard', label: 'Dashboard', icon: IconChartBar, roles: ['ADMIN', 'FINANCE_APPROVER'] },
   { id: 'orders', label: 'Orders', icon: IconReceipt, roles: ['ADMIN', 'STORE_MANAGER'] },
   { id: 'inventory', label: 'Inventory', icon: IconBox, roles: ['ADMIN', 'STORE_MANAGER', 'FINANCE_APPROVER'] },
   { id: 'catalogue', label: 'Catalogue', icon: IconTag, roles: ['ADMIN', 'STORE_MANAGER'] },
   { id: 'purchase-orders', label: 'Purchase orders', icon: IconFileInvoice, roles: ['ADMIN', 'STORE_MANAGER', 'FINANCE_APPROVER'] },
 ];
 
-/** Where each role starts (N1). Admin moves to the Dashboard once it exists. */
-const LANDING: Record<Role, Screen> = { ADMIN: 'orders', STORE_MANAGER: 'orders', FINANCE_APPROVER: 'purchase-orders' };
+/** Where each role starts (N1). */
+const LANDING: Record<Role, Screen> = { ADMIN: 'dashboard', STORE_MANAGER: 'orders', FINANCE_APPROVER: 'purchase-orders' };
 
 /**
  * Top level of the web app: sign in, then the sidebar layout from the design system (§5).
@@ -110,6 +112,7 @@ export function App() {
         </div>
       </nav>
       <main className="content">
+        {screen === 'dashboard' && <DashboardPage user={user} store={scope} />}
         {screen === 'orders' && <OrdersPage user={user} store={scope} />}
         {screen === 'inventory' && <InventoryPage user={user} store={scope} />}
         {screen === 'catalogue' && <CataloguePage user={user} />}

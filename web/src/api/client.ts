@@ -35,6 +35,29 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   return (response.status === 204 ? undefined : await response.json()) as T;
 }
 
+/**
+ * Downloads a file (e.g. the CSV export) with the signed-in user's token, then hands it to the browser to save.
+ * Uses the server's file name when it sends one.
+ */
+export async function downloadFile(path: string, fallbackName: string): Promise<void> {
+  let response = await send(path, {});
+  if (response.status === 401 && session && (await refresh())) {
+    response = await send(path, {});
+  }
+  if (!response.ok) {
+    throw new ApiError(await message(response), response.status);
+  }
+  const name = /filename="([^"]+)"/.exec(response.headers.get('Content-Disposition') ?? '')?.[1] ?? fallbackName;
+  const url = URL.createObjectURL(await response.blob());
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 async function send(path: string, init: RequestInit): Promise<Response> {
   const headers = new Headers(init.headers);
   if (init.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json');

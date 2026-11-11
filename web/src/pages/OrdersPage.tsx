@@ -1,7 +1,7 @@
-import { IconAlertTriangle, IconClock, IconPackage, IconPlus, IconTruck, IconX } from '@tabler/icons-react';
+import { IconAlertTriangle, IconClock, IconDownload, IconPackage, IconPlus, IconTruck, IconX } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import type { UserSummary } from '../api/auth';
-import { api, query } from '../api/client';
+import { api, downloadFile, query } from '../api/client';
 import type { OrderDetail, OrderStatus, OrderSummary } from '../api/types';
 import { Chip, Kpi, ListState, ORDER_STATUSES, OrderStatusChip, Pager, SearchBox, orderStatusLabel } from '../components/ui';
 import { dateTime, money } from '../lib/format';
@@ -38,6 +38,7 @@ export function OrdersPage({ user, store }: { user: UserSummary; store: string }
   const [reload, setReload] = useState(0);
   const [bulkMessage, setBulkMessage] = useState<string | null>(null);
   const [bulkBusy, setBulkBusy] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   useEffect(() => { setPage(0); setChecked(new Map()); }, [store]);
 
@@ -102,10 +103,18 @@ export function OrdersPage({ user, store }: { user: UserSummary; store: string }
           <h1>Orders</h1>
           <p>{store ? `Store ${store}` : 'All 5 stores'}{from || to ? ` · ${from || '…'} to ${to || 'today'}` : ''}</p>
         </div>
-        {user.role === 'STORE_MANAGER' && !creating && (
-          <div className="page-actions"><button type="button" onClick={() => setCreating(true)}><IconPlus size={15} aria-hidden="true" />New order</button></div>
-        )}
+        <div className="page-actions">
+          <button type="button" className="secondary"
+                  onClick={() => downloadFile(`/api/orders/export.csv${query({ ...filters, status })}`, 'orders.csv')
+                    .then(() => setExportError(null)).catch((e: Error) => setExportError(e.message))}>
+            <IconDownload size={15} aria-hidden="true" />Export CSV
+          </button>
+          {user.role === 'STORE_MANAGER' && !creating && (
+            <button type="button" onClick={() => setCreating(true)}><IconPlus size={15} aria-hidden="true" />New order</button>
+          )}
+        </div>
       </header>
+      {exportError && <p className="error" role="alert">{exportError}</p>}
 
       {creating && (
         <NewOrderForm storeId={user.storeId ?? ''}
