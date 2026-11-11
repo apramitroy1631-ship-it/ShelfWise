@@ -274,7 +274,7 @@ function Tracker({ po, canDecideHere, unitsOrdered, unitsReceived }: { po: PoDet
   return (
     <ol className="tracker" aria-label="Progress">
       {steps.map((st, i) => (
-        <li key={st.label} className={`${st.state}${i > 0 && steps[i - 1].state === 'done' && st.state !== 'todo' ? ' line-done' : ''}`}
+        <li key={st.label} className={`${st.state}${i > 0 && steps[i - 1].state === 'done' && st.state === 'done' ? ' line-done' : ''}`}
             aria-current={st.state === 'current' ? 'step' : undefined}>
           <span className="dot" aria-hidden="true">
             {st.state === 'done' ? <IconCheck size={13} stroke={3} /> : st.state === 'failed' ? <IconX size={13} stroke={3} /> : i + 1}
