@@ -52,3 +52,19 @@ export type OrderSummary = {
 export type OrderLine = { sku: string; productSku: string | null; productName: string | null; qty: number; unitPrice: number; lineTotal: number };
 
 export type OrderDetail = OrderSummary & { placedBy: string; source: string; lines: OrderLine[] };
+
+export type PoStatus = 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED' | 'PARTIALLY_RECEIVED' | 'RECEIVED' | 'EXPIRED' | 'CLOSED';
+
+export type PoSummary = {
+  id: string; storeId: string; supplierId: string; status: PoStatus; totalAmount: number; createdAt: string; stuck: boolean; version: number;
+};
+
+export type PoLine = { sku: string; productName: string | null; qtyOrdered: number; qtyReceived: number; unitCost: number; lineTotal: number };
+
+export type PoDetail = { summary: PoSummary; createdByName: string | null; closedReason: string | null; lines: PoLine[] };
+
+/** A supplier invoice file on a PO (M20). Newest first; exactly one is current, older ones are kept. */
+export type Invoice = {
+  id: string; fileName: string; contentType: 'application/pdf' | 'image/png' | 'image/jpeg'; sizeBytes: number;
+  current: boolean; uploadedBy: string; uploadedByName: string; uploadedAt: string;
+};
