@@ -164,6 +164,7 @@ public class PurchaseOrderService {
                             .then(pos.markSubmitted(id))
                             .then(outbox.add("PURCHASE_ORDER", id, "PurchaseOrderSubmitted", event(po, Map.of(
                                     "submittedBy", user.id()))))
+                            .then(approvalQueueChanged())
                             .then(load(id));
                 })
                 .flatMap(this::detail)
@@ -216,7 +217,8 @@ public class PurchaseOrderService {
                                             "reason", reason == null ? "" : reason,
                                             "reapproval", reapproval,
                                             "validApprovals", after.validApprovals(),
-                                            "approvalsNeeded", needed)))))
+                                            "approvalsNeeded", needed))))
+                                    .then(approvalQueueChanged()))
                             .then(load(id));
                 })
                 .flatMap(this::detail)
@@ -333,6 +335,11 @@ public class PurchaseOrderService {
         return Mono.zip(settings.integer("purchaseOrders.secondApprovalAboveInr", 50_000),
                         settings.integer("purchaseOrders.stuckAfterDays", 30))
                 .map(t -> new Rules(t.getT1(), t.getT2()));
+    }
+
+    /** Marker for finance's grouped "needs approval" notifications (D7); the relay sends the current counts. */
+    private Mono<Void> approvalQueueChanged() {
+        return outbox.add("FINANCE", "FINANCE", "ApprovalQueueChanged", Map.of());
     }
 
     private Mono<PoRow> load(String id) {
