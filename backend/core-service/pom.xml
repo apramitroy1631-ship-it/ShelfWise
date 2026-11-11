@@ -58,6 +58,18 @@
             <version>1.5.6</version>
         </dependency>
 
+        <!-- File storage over the S3 API (DL-04): SeaweedFS locally, Cloudflare R2 when deployed. -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.57.13</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>netty-nio-client</artifactId>
+            <version>2.57.13</version>
+        </dependency>
+
         <!-- Reads the provided CSV files exactly as written (no trimming: trailing spaces matter, D1). -->
         <dependency>
             <groupId>org.apache.commons</groupId>
