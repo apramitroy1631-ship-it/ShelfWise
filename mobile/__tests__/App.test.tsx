@@ -49,7 +49,7 @@ describe('mobile app', () => {
 
   it("signs in and shows the manager's own store stock, with low items marked", async () => {
     const fetchMock = backend();
-    global.fetch = fetchMock as unknown as typeof fetch;
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
     await signIn();
 
     expect(await screen.findByText('Home Basics Iodised Salt 1kg')).toBeTruthy();
@@ -59,7 +59,7 @@ describe('mobile app', () => {
   });
 
   it("shows the server's message when sign-in is refused", async () => {
-    global.fetch = backend({ '/api/auth/login': () => json(401, { detail: 'Invalid email or password' }) }) as unknown as typeof fetch;
+    globalThis.fetch = backend({ '/api/auth/login': () => json(401, { detail: 'Invalid email or password' }) }) as unknown as typeof fetch;
     await signIn();
 
     expect(await screen.findByText('Invalid email or password')).toBeTruthy();
@@ -67,7 +67,7 @@ describe('mobile app', () => {
 
   it('records a damaged write-off with the reason the server needs', async () => {
     let sent: unknown = null;
-    global.fetch = backend({
+    globalThis.fetch = backend({
       '/api/inventory/S01/SW-GRO-00055/adjustments': (init) => {
         sent = JSON.parse(String(init?.body));
         return json(200, { item: { ...STOCK.items[0], quantity: 1 } });
@@ -84,7 +84,7 @@ describe('mobile app', () => {
   });
 
   it('sends head-office users to the web app', async () => {
-    global.fetch = backend({ '/api/auth/login': () => json(200, { ...SESSION, user: { ...SESSION.user, role: 'ADMIN', storeId: null } }) }) as unknown as typeof fetch;
+    globalThis.fetch = backend({ '/api/auth/login': () => json(200, { ...SESSION, user: { ...SESSION.user, role: 'ADMIN', storeId: null } }) }) as unknown as typeof fetch;
     await signIn();
 
     expect(await screen.findByText(/The mobile app is for store managers/)).toBeTruthy();

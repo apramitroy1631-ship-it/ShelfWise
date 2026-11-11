@@ -190,7 +190,7 @@ On day one (after the import) each store manager sees 2 grouped notifications in
 ### Mobile app (store managers)
 
 React Native + Expo SDK 58 (DL-13). Store managers sign in and see their own store's stock (search, "low stock only",
-adjustments with a reason: damaged, recount, other) and the catalogue. Orders come next.
+adjustments with a reason: damaged, recount, other), their orders (list, status changes, new order with an idempotency key) and the catalogue.
 
 ```bash
 cd mobile

@@ -33,3 +33,22 @@ export type StockItem = {
   lastCountedAt: string | null;
   version: number;
 };
+
+export type OrderStatus = 'PENDING' | 'PACKED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+
+export type OrderSummary = {
+  id: string;
+  storeId: string;
+  status: OrderStatus;
+  customerName: string;
+  customerPhone: string;
+  totalAmount: number;
+  createdAt: string;
+  reviewStatus: string | null;
+  stuck: boolean;
+  version: number;
+};
+
+export type OrderLine = { sku: string; productSku: string | null; productName: string | null; qty: number; unitPrice: number; lineTotal: number };
+
+export type OrderDetail = OrderSummary & { placedBy: string; source: string; lines: OrderLine[] };

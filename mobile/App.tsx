@@ -5,18 +5,20 @@ import { logout, onSessionChange, restoreSession } from './src/api/client';
 import type { Session } from './src/api/types';
 import { CatalogueScreen } from './src/screens/CatalogueScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
+import { OrdersScreen } from './src/screens/OrdersScreen';
 import { StockScreen } from './src/screens/StockScreen';
 import { colors, State, styles } from './src/ui';
 
-type Tab = 'stock' | 'catalogue';
+type Tab = 'orders' | 'stock' | 'catalogue';
 const TABS: { id: Tab; label: string; icon: string }[] = [
+  { id: 'orders', label: 'Orders', icon: '▤' },
   { id: 'stock', label: 'Stock', icon: '▦' },
   { id: 'catalogue', label: 'Catalogue', icon: '☰' },
 ];
 
 /**
  * ShelfWise for store managers (mobile). Sign in, then bottom tabs (at most 5, labelled, design system).
- * Orders come next. Head-office roles use the web app.
+ * Head-office roles use the web app.
  */
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -54,6 +56,7 @@ export default function App() {
         </Pressable>
       </View>
       <View style={{ flex: 1 }}>
+        {tab === 'orders' && <OrdersScreen user={user} />}
         {tab === 'stock' && <StockScreen user={user} />}
         {tab === 'catalogue' && <CatalogueScreen />}
       </View>
