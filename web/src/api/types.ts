@@ -62,3 +62,28 @@ export type OrderSummary = {
 export type OrderLine = { sku: string; productSku: string | null; productName: string | null; qty: number; unitPrice: number; lineTotal: number };
 
 export type OrderDetail = Omit<OrderSummary, never> & { placedBy: string; source: string; lines: OrderLine[] };
+
+export type PoStatus = 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED' | 'PARTIALLY_RECEIVED' | 'RECEIVED' | 'CLOSED';
+
+export type PoSummary = {
+  id: string;
+  storeId: string;
+  supplierId: string;
+  status: PoStatus;
+  totalAmount: number;
+  createdAt: string;
+  validApprovals: number;
+  approvalsNeeded: number;
+  complianceFlag: string | null;
+  requiresReapproval: boolean;
+  stuck: boolean;
+  version: number;
+};
+
+export type PoLine = { sku: string; productName: string | null; qtyOrdered: number; qtyReceived: number; unitCost: number; lineTotal: number };
+
+export type PoApproval = { approverId: string; decision: 'APPROVED' | 'REJECTED'; decidedAt: string; counts: boolean; step: number | null };
+
+export type PoDetail = { summary: PoSummary; createdBy: string; closedReason: string | null; lines: PoLine[]; approvals: PoApproval[] };
+
+export type PoSuggestion = { sku: string; productName: string; supplierId: string; quantity: number; reorderLevel: number; suggestedQty: number; unitCost: number };

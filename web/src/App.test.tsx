@@ -104,6 +104,20 @@ describe('sign-in', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/auth/logout', expect.objectContaining({ body: JSON.stringify({ refreshToken: 'refresh' }) }));
   });
 
+  it('switches to the dark theme and remembers the choice on this device', async () => {
+    vi.stubGlobal('fetch', backend());
+    render(<App />);
+    await signIn('arjun@test.example', 'secret');
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Switch to dark theme' }));
+
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(localStorage.getItem('shelfwise.theme')).toBe('dark');
+    expect(screen.getByRole('button', { name: 'Switch to light theme' })).toBeInTheDocument();
+    localStorage.removeItem('shelfwise.theme');
+    delete document.documentElement.dataset.theme;
+  });
+
   it('refreshes an expired access token once and retries the request', async () => {
     let ordersCalls = 0;
     const fetchMock = backend({
