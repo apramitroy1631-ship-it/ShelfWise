@@ -45,6 +45,7 @@ function backend(po: PoDetail, after?: PoDetail) {
       return Promise.resolve(json(200, { items: [po.summary], page: 0, size: 20, totalItems: 1, totalPages: 1 }));
     }
     if (path === `/api/purchase-orders/${po.summary.id}`) return Promise.resolve(json(200, po));
+    if (path === `/api/purchase-orders/${po.summary.id}/invoices`) return Promise.resolve(json(200, []));
     return Promise.resolve(json(404, { detail: 'not mocked' }));
   });
   vi.stubGlobal('fetch', fetchMock);
