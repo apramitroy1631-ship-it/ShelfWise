@@ -28,7 +28,7 @@ Menus are a convenience, not security: every action is still checked on the serv
 | Settings: remote config *(M27, not built yet)* | ✓ | — | — |
 
 - **Store switcher** (top of the sidebar): Admin and Finance pick *All 5 stores* or one store, and every screen follows it. Managers see their own store, fixed.
-- **Top bar:** the notification bell (N4). Global search comes later, if time allows.
+- **Top bar:** the notification bell (N4). No global search in v1 (N5).
 - **Sidebar footer:** name, role, light/dark toggle, sign out.
 - **Menu counts:** Purchase orders shows how many POs wait for this person (finance: awaiting approval; managers: approved and waiting for goods).
 
@@ -97,8 +97,10 @@ Who gets which group comes from **D7** ([data findings](data-findings.md)) and t
 - **Header:** store name, the bell (N4) and search.
 - Purchase-order drafting and approvals are web-only in v1 (managers draft at a desk; finance approves on the web).
 
-## 6. Still open
+## 6. Further decisions (2026-11-11)
 
-- Global search in the top bar (orders, products, POs in one box): nice to have, after the core features.
-- Showing people's names instead of user IDs (e.g. "created by U07") needs a small user-lookup API.
-- Whether finance also gets mobile access (currently web only).
+| # | Question | Decision |
+|---|---|---|
+| N5 | Global search in the top bar? | **Not in v1.** If it's ever built, it is **admin-only by default**, and any wider use must be discussed first. Reason: **privacy between stores**. A store manager must never find another store's orders or POs through a shortcut. Every search, global or per list, stays scoped on the server by role and store (managers: own store only). Each list keeps its own search. Recorded under known issues / next steps. |
+| N6 | User IDs or names on screen? | **Names.** Responses that show a person (PO creator, approvers, order placed by, stock history actor) return the name alongside the ID, so screens read "Meera Joshi", not "U09". IDs stay in the data and the audit log. |
+| N7 | Finance on mobile? | **Web only.** Mobile is for store managers (brief). Finance approves on the web, where the full PO page fits. |
