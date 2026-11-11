@@ -93,6 +93,8 @@ npm run dev
 Open http://localhost:5173. `/api` calls are forwarded to the core service on port 8080.
 Tests: `npm test`. Type check: `npm run typecheck`. Production build: `npm run build`.
 
+Where each role lands, what is in each menu, and the steps of every workflow: **[Navigation and workflows](docs/navigation-and-workflows.md)**.
+
 Screens follow the [design system](docs/design-system.md) (UI v3, light and dark):
 - **Orders, Inventory, Catalogue:** KPI cards that double as quick filters, search and filters, numbered pages. Orders also has a date range and bulk status moves (each order is sent with its own version, so a conflict is reported per order).
 - **Purchase orders:** a list with KPIs; a detail page with the approval tracker (Submitted → Approver 1 → Approver 2 above ₹50,000 → Receiving); finance approves or rejects with a reason; managers draft from low-stock items (one supplier per PO), submit, receive in parts and close a stuck PO.

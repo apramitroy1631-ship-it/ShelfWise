@@ -23,6 +23,21 @@ export const STORES = ['S01', 'S02', 'S03', 'S04', 'S05'];
 type Screen = 'orders' | 'inventory' | 'catalogue' | 'purchase-orders';
 
 /**
+ * Menu by role (docs/navigation-and-workflows.md, N2). Finance gets a focused menu: purchase orders and
+ * read-only inventory. Menus are a convenience; the server checks role and store on every request.
+ * Dashboard, Suppliers and Settings join when their APIs exist.
+ */
+const MENU: { id: Screen; label: string; icon: Icon; roles: Role[] }[] = [
+  { id: 'orders', label: 'Orders', icon: IconReceipt, roles: ['ADMIN', 'STORE_MANAGER'] },
+  { id: 'inventory', label: 'Inventory', icon: IconBox, roles: ['ADMIN', 'STORE_MANAGER', 'FINANCE_APPROVER'] },
+  { id: 'catalogue', label: 'Catalogue', icon: IconTag, roles: ['ADMIN', 'STORE_MANAGER'] },
+  { id: 'purchase-orders', label: 'Purchase orders', icon: IconFileInvoice, roles: ['ADMIN', 'STORE_MANAGER', 'FINANCE_APPROVER'] },
+];
+
+/** Where each role starts (N1). Admin moves to the Dashboard once it exists. */
+const LANDING: Record<Role, Screen> = { ADMIN: 'orders', STORE_MANAGER: 'orders', FINANCE_APPROVER: 'purchase-orders' };
+
+/**
  * Top level of the web app: sign in, then the sidebar layout from the design system (§5).
  * The session is kept in memory only, so reloading the page signs you out (see known issues).
  */
@@ -35,7 +50,7 @@ export function App() {
   useEffect(() => onSessionChange(setSession), []);
 
   if (!session) {
-    return <LoginPage onSignedIn={(s) => { storeSession(s); setScreen('orders'); setStore(''); }} />;
+    return <LoginPage onSignedIn={(s) => { storeSession(s); setScreen(LANDING[s.user.role]); setStore(''); }} />;
   }
 
   const { user } = session;
@@ -53,12 +68,7 @@ export function App() {
     setTheme(next);
   }
 
-  const menu: { id: Screen; label: string; icon: Icon }[] = [
-    { id: 'orders', label: 'Orders', icon: IconReceipt },
-    { id: 'inventory', label: 'Inventory', icon: IconBox },
-    { id: 'catalogue', label: 'Catalogue', icon: IconTag },
-    { id: 'purchase-orders', label: 'Purchase orders', icon: IconFileInvoice },
-  ];
+  const menu = MENU.filter((m) => m.roles.includes(user.role));
 
   return (
     <div className="shell">
