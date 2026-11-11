@@ -6,6 +6,8 @@ import { logout, type Role, type Session } from './api/auth';
 import { onSessionChange, query, setSession as storeSession } from './api/client';
 import { applyTheme, currentTheme, type Theme } from './lib/theme';
 import { useCounts } from './lib/useList';
+import type { NotificationItem } from './api/types';
+import { NotificationBell } from './components/NotificationBell';
 import { CataloguePage } from './pages/CataloguePage';
 import { DashboardPage } from './pages/DashboardPage';
 import { InventoryPage } from './pages/InventoryPage';
@@ -48,6 +50,7 @@ export function App() {
   const [screen, setScreen] = useState<Screen>('orders');
   const [store, setStore] = useState('');      // head office: '' = all 5 stores
   const [theme, setTheme] = useState<Theme>(currentTheme);
+  const [inventoryView, setInventoryView] = useState({ low: false, key: 0 });   // a stock notification opens 'low' (D7)
 
   useEffect(() => onSessionChange(setSession), []);
 
@@ -62,6 +65,16 @@ export function App() {
   async function handleSignOut() {
     if (session) await logout(session.refreshToken);
     storeSession(null);
+  }
+
+  /** Opening a notification goes where you act on it: stock groups to Inventory (low), PO ones to Purchase orders. */
+  function openNotification(item: NotificationItem) {
+    if (item.kind === 'OUT_OF_STOCK' || item.kind === 'RUNNING_LOW') {
+      setInventoryView((v) => ({ low: true, key: v.key + 1 }));
+      setScreen('inventory');
+    } else {
+      setScreen('purchase-orders');
+    }
   }
 
   function toggleTheme() {
@@ -112,9 +125,12 @@ export function App() {
         </div>
       </nav>
       <main className="content">
+        <div className="topbar">
+          <NotificationBell onOpenItem={openNotification} />
+        </div>
         {screen === 'dashboard' && <DashboardPage user={user} store={scope} />}
         {screen === 'orders' && <OrdersPage user={user} store={scope} />}
-        {screen === 'inventory' && <InventoryPage user={user} store={scope} />}
+        {screen === 'inventory' && <InventoryPage key={inventoryView.key} user={user} store={scope} startView={inventoryView.low ? 'low' : 'all'} />}
         {screen === 'catalogue' && <CataloguePage user={user} />}
         {screen === 'purchase-orders' && <PurchaseOrdersPage user={user} store={scope} />}
       </main>

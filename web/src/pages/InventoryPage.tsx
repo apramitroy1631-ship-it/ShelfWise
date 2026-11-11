@@ -12,10 +12,10 @@ const SIZE = 20;
 type View = 'all' | 'low' | 'recount';
 
 /** Inventory (M10): stock per store, KPI quick filters, adjustments with a reason, and the history of changes. */
-export function InventoryPage({ user, store }: { user: UserSummary; store: string }) {
+export function InventoryPage({ user, store, startView = 'all' }: { user: UserSummary; store: string; startView?: View }) {
   const canAdjust = user.role !== 'FINANCE_APPROVER';
   const [text, setText] = useState('');
-  const [view, setView] = useState<View>('all');
+  const [view, setView] = useState<View>(startView);
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<StockItem | null>(null);
   const [reload, setReload] = useState(0);
