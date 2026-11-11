@@ -91,6 +91,7 @@ Fixed by the brief: **Java + Spring Boot WebFlux (used reactively)** for the bac
   - our own limits: draft expiry 14 days (D22), stuck PO 30 days (D22), stuck order 7 days (D32)
   - the first-login password switch (D25)
 - **Trade-off:** changes reach apps within about a minute, not instantly. Firebase was rejected because it's mobile-centric and adds a vendor.
+- **Built 2026-11-11 (M27):** `/api/config` (public settings, no sign-in), admin `GET/PUT /api/admin/settings` with a rule per setting, version check and audit. The server reads settings on every request (no cache yet: changes apply at once); the apps poll every 60 s and on focus / foreground.
 - **At 10×:** a dedicated feature-flag service with percentage rollouts; push config changes instead of polling.
 
 ## DL-07 Hosting: Railway + Cloudflare R2 + Expo EAS

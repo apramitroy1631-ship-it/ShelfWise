@@ -1,10 +1,11 @@
 import {
-  IconBox, IconChartBar, IconFileInvoice, IconLogout, IconMoon, IconReceipt, IconSun, IconTag, type Icon,
+  IconAlertTriangle, IconBox, IconChartBar, IconFileInvoice, IconLogout, IconMoon, IconReceipt, IconSettings, IconSun, IconTag, type Icon,
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { logout, type Role, type Session } from './api/auth';
 import { onSessionChange, query, setSession as storeSession } from './api/client';
 import { applyTheme, currentTheme, type Theme } from './lib/theme';
+import { bannerText, useConfig } from './lib/useConfig';
 import { useCounts } from './lib/useList';
 import type { NotificationItem } from './api/types';
 import { NotificationBell } from './components/NotificationBell';
@@ -14,6 +15,7 @@ import { InventoryPage } from './pages/InventoryPage';
 import { LoginPage } from './pages/LoginPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { PurchaseOrdersPage } from './pages/PurchaseOrdersPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 const ROLE_LABELS: Record<Role, string> = {
   ADMIN: 'Admin (head office)',
@@ -23,12 +25,12 @@ const ROLE_LABELS: Record<Role, string> = {
 
 export const STORES = ['S01', 'S02', 'S03', 'S04', 'S05'];
 
-type Screen = 'dashboard' | 'orders' | 'inventory' | 'catalogue' | 'purchase-orders';
+type Screen = 'dashboard' | 'orders' | 'inventory' | 'catalogue' | 'purchase-orders' | 'settings';
 
 /**
  * Menu by role (docs/navigation-and-workflows.md, N2). Finance gets a focused menu: purchase orders and
  * read-only inventory. Menus are a convenience; the server checks role and store on every request.
- * Suppliers and Settings join when their APIs exist.
+ * Suppliers joins when its API exists.
  */
 const MENU: { id: Screen; label: string; icon: Icon; roles: Role[] }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: IconChartBar, roles: ['ADMIN', 'FINANCE_APPROVER'] },
@@ -36,6 +38,7 @@ const MENU: { id: Screen; label: string; icon: Icon; roles: Role[] }[] = [
   { id: 'inventory', label: 'Inventory', icon: IconBox, roles: ['ADMIN', 'STORE_MANAGER', 'FINANCE_APPROVER'] },
   { id: 'catalogue', label: 'Catalogue', icon: IconTag, roles: ['ADMIN', 'STORE_MANAGER'] },
   { id: 'purchase-orders', label: 'Purchase orders', icon: IconFileInvoice, roles: ['ADMIN', 'STORE_MANAGER', 'FINANCE_APPROVER'] },
+  { id: 'settings', label: 'Settings', icon: IconSettings, roles: ['ADMIN'] },
 ];
 
 /** Where each role starts (N1). */
@@ -52,10 +55,18 @@ export function App() {
   const [theme, setTheme] = useState<Theme>(currentTheme);
   const [inventoryView, setInventoryView] = useState({ low: false, key: 0 });   // a stock notification opens 'low' (D7)
 
+  const config = useConfig();
+  const banner = bannerText(config);
+
   useEffect(() => onSessionChange(setSession), []);
 
   if (!session) {
-    return <LoginPage onSignedIn={(s) => { storeSession(s); setScreen(LANDING[s.user.role]); setStore(''); }} />;
+    return (
+      <>
+        {banner && <MaintenanceBanner text={banner} />}
+        <LoginPage onSignedIn={(s) => { storeSession(s); setScreen(LANDING[s.user.role]); setStore(''); }} />
+      </>
+    );
   }
 
   const { user } = session;
@@ -125,6 +136,7 @@ export function App() {
         </div>
       </nav>
       <main className="content">
+        {banner && <MaintenanceBanner text={banner} />}
         <div className="topbar">
           <NotificationBell onOpenItem={openNotification} />
         </div>
@@ -133,6 +145,7 @@ export function App() {
         {screen === 'inventory' && <InventoryPage key={inventoryView.key} user={user} store={scope} startView={inventoryView.low ? 'low' : 'all'} />}
         {screen === 'catalogue' && <CataloguePage user={user} />}
         {screen === 'purchase-orders' && <PurchaseOrdersPage user={user} store={scope} />}
+        {screen === 'settings' && <SettingsPage />}
       </main>
     </div>
   );
@@ -145,4 +158,14 @@ function WaitingCount({ role, store }: { role: Role; store: string }) {
   if (!waiting) return null;
   const label = role === 'STORE_MANAGER' ? 'approved, waiting for goods' : 'waiting for approval';
   return <span className="nav-count" aria-label={`${waiting} ${label}`} title={`${waiting} ${label}`}>{waiting}</span>;
+}
+
+/** Remote-config banner (DL-06): an admin switches it on or off in Settings; every open screen shows it within a minute. */
+function MaintenanceBanner({ text }: { text: string }) {
+  return (
+    <div className="maintenance-banner" role="status">
+      <IconAlertTriangle size={16} aria-hidden="true" />
+      <span>{text}</span>
+    </div>
+  );
 }

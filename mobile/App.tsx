@@ -8,6 +8,7 @@ import { LoginScreen } from './src/screens/LoginScreen';
 import { OrdersScreen } from './src/screens/OrdersScreen';
 import { StockScreen } from './src/screens/StockScreen';
 import { colors, State, styles } from './src/ui';
+import { bannerText, useConfig } from './src/useConfig';
 
 type Tab = 'orders' | 'stock' | 'catalogue';
 const TABS: { id: Tab; label: string; icon: string }[] = [
@@ -24,6 +25,7 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [starting, setStarting] = useState(true);
   const [tab, setTab] = useState<Tab>('stock');
+  const banner = bannerText(useConfig());
 
   useEffect(() => {
     onSessionChange(setSession);
@@ -31,7 +33,7 @@ export default function App() {
   }, []);
 
   if (starting) return <View style={[styles.screen, { justifyContent: 'center' }]}><State loading error={null} empty={null} /></View>;
-  if (!session) return (<><StatusBar style="light" /><LoginScreen /></>);
+  if (!session) return (<><StatusBar style="light" />{banner && <Banner text={banner} top />}<LoginScreen /></>);
 
   const { user } = session;
   if (user.role !== 'STORE_MANAGER') {
@@ -55,6 +57,7 @@ export default function App() {
           <Text style={{ color: '#aeb9db', fontSize: 15 }}>Sign out</Text>
         </Pressable>
       </View>
+      {banner && <Banner text={banner} />}
       <View style={{ flex: 1 }}>
         {tab === 'orders' && <OrdersScreen user={user} />}
         {tab === 'stock' && <StockScreen user={user} />}
@@ -69,6 +72,17 @@ export default function App() {
           </Pressable>
         ))}
       </View>
+    </View>
+  );
+}
+
+/** Remote-config banner (DL-06): switched on or off by an admin; reaches the phone within a minute. Icon + words, not colour alone. */
+function Banner({ text, top }: { text: string; top?: boolean }) {
+  return (
+    <View accessibilityRole="alert" style={{ flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: colors.warnBg,
+                                             paddingHorizontal: 16, paddingVertical: 10, paddingTop: top ? 48 : 10 }}>
+      <Text style={{ color: colors.warn, fontSize: 16 }}>⚠</Text>
+      <Text style={{ color: colors.warn, fontWeight: '600', flex: 1 }}>{text}</Text>
     </View>
   );
 }

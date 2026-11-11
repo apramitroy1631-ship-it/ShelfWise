@@ -286,3 +286,8 @@ td.mono { white-space: nowrap; }
 .bell-item .dot { grid-column: 1; grid-row: 1; width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: var(--accent); }
 button.text-action { background: transparent; border: 0; color: var(--accent); padding: 0; font-weight: 500; }
 button.text-action:disabled { color: var(--text-muted); }
+
+/* Maintenance banner (remote config, DL-06): warning colours with an icon, never colour alone */
+.maintenance-banner { display: flex; align-items: center; gap: 8px; padding: 10px 14px; margin-bottom: 12px; border-radius: 8px;
+  background: var(--chip-pending-bg, #fef3c7); color: var(--chip-pending, #92400e); border: 1px solid currentColor; font-weight: 500; }
+.login + .maintenance-banner, body > #root > .maintenance-banner:first-child { margin: 0; border-radius: 0; border-width: 0 0 1px; }
