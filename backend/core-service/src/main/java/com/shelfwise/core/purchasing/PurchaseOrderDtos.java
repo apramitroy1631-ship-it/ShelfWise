@@ -60,12 +60,14 @@ public final class PurchaseOrderDtos {
     public record LineView(String sku, String productName, int qtyOrdered, int qtyReceived, BigDecimal unitCost, BigDecimal lineTotal) {
     }
 
-    public record ApprovalView(String approverId, String decision, OffsetDateTime decidedAt, boolean counts, Integer step) {
+    /** {@code approverName} is for display (N6); {@code approverId} stays the identifier. */
+    public record ApprovalView(String approverId, String approverName, String decision, OffsetDateTime decidedAt, boolean counts, Integer step) {
     }
 
     public record Detail(
             Summary summary,
             String createdBy,
+            String createdByName,
             String closedReason,
             List<LineView> lines,
             List<ApprovalView> approvals) {

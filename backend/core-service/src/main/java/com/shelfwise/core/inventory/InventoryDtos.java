@@ -40,6 +40,7 @@ public final class InventoryDtos {
             String referenceType,
             String referenceId,
             String actorUserId,
+            String actorName,         // for display (N6); null for system changes (import, jobs)
             OffsetDateTime at) {
     }
 

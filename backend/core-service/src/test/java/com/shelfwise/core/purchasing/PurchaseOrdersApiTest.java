@@ -142,6 +142,11 @@ class PurchaseOrdersApiTest {
         assertThat(field(po, "status")).isEqualTo("APPROVED");
         assertThat(field(po, "validApprovals")).isEqualTo(2);
         assertThat(((List<?>) po.get("approvals"))).hasSize(2);
+        // N6: screens show people's names; the IDs stay alongside
+        assertThat(po.get("createdBy")).isEqualTo("U03");
+        assertThat(po.get("createdByName")).isEqualTo("Arjun Rao");
+        List<String> approverNames = ((List<?>) po.get("approvals")).stream().map(a -> (String) ((Map<?, ?>) a).get("approverName")).toList();
+        assertThat(approverNames).containsExactly("Meera Joshi", "Anil Gupta");
     }
 
     /** Remote config (DL-06): raising the limit changes the rule on the next request, with no redeploy. */

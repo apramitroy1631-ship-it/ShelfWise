@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { App } from './App';
@@ -102,6 +102,37 @@ describe('sign-in', () => {
 
     expect(await screen.findByRole('button', { name: 'Sign in' })).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith('/api/auth/logout', expect.objectContaining({ body: JSON.stringify({ refreshToken: 'refresh' }) }));
+  });
+
+  it('starts finance on purchase orders awaiting approval, with a focused menu (N1, N2)', async () => {
+    const fetchMock = backend({
+      '/api/auth/login': () => jsonResponse(200, { ...SESSION, user: { id: 'U09', name: 'Meera Joshi', role: 'FINANCE_APPROVER', storeId: null } }),
+      '/api/purchase-orders': () => jsonResponse(200, { items: [], page: 0, size: 20, totalItems: 0, totalPages: 0 }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    render(<App />);
+    await signIn('meera@test.example', 'secret');
+
+    expect(await screen.findByRole('heading', { name: 'Purchase orders' })).toBeInTheDocument();
+    const menu = screen.getByRole('navigation', { name: 'Main' });
+    expect(within(menu).queryByRole('button', { name: 'Orders' })).not.toBeInTheDocument();
+    expect(within(menu).queryByRole('button', { name: 'Catalogue' })).not.toBeInTheDocument();
+    expect(within(menu).getByRole('button', { name: 'Inventory' })).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/api/purchase-orders?status=SUBMITTED&page=0'), expect.anything());
+  });
+
+  it('switches to the dark theme and remembers the choice on this device', async () => {
+    vi.stubGlobal('fetch', backend());
+    render(<App />);
+    await signIn('arjun@test.example', 'secret');
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Switch to dark theme' }));
+
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(localStorage.getItem('shelfwise.theme')).toBe('dark');
+    expect(screen.getByRole('button', { name: 'Switch to light theme' })).toBeInTheDocument();
+    localStorage.removeItem('shelfwise.theme');
+    delete document.documentElement.dataset.theme;
   });
 
   it('refreshes an expired access token once and retries the request', async () => {

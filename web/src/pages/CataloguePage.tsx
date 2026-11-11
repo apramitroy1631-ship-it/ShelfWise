@@ -1,9 +1,11 @@
+import { IconAlertTriangle, IconArchive, IconCircleCheck, IconPlus } from '@tabler/icons-react';
 import { useEffect, useState, type FormEvent } from 'react';
 import type { UserSummary } from '../api/auth';
 import { api, query } from '../api/client';
-import type { Page, Product } from '../api/types';
-import { Chip, ListState, Pager } from '../components/ui';
+import type { Product } from '../api/types';
+import { Chip, Kpi, ListState, Pager, SearchBox } from '../components/ui';
 import { money } from '../lib/format';
+import { useCounts, useList } from '../lib/useList';
 
 const SIZE = 20;
 
@@ -15,10 +17,8 @@ export function CataloguePage({ user }: { user: UserSummary }) {
   const [status, setStatus] = useState('ACTIVE');
   const [sort, setSort] = useState('name');
   const [page, setPage] = useState(0);
-  const [data, setData] = useState<Page<Product> | null>(null);
   const [categories, setCategories] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Product | 'new' | null>(null);
   const [reload, setReload] = useState(0);
 
@@ -26,21 +26,25 @@ export function CataloguePage({ user }: { user: UserSummary }) {
     api<string[]>('/api/products/categories').then(setCategories).catch(() => setCategories([]));
   }, []);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    api<Page<Product>>(`/api/products${query({ q: text, category, status, sort, page, size: SIZE })}`)
-      .then(setData)
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [text, category, status, sort, page, reload]);
+  const { data, error, loading } = useList<Product>(`/api/products${query({ q: text, category, status, sort, page, size: SIZE })}`, reload);
+  const counts = useCounts({
+    ACTIVE: `/api/products${query({ q: text, category, status: 'ACTIVE', size: 1 })}`,
+    ARCHIVED: `/api/products${query({ q: text, category, status: 'ARCHIVED', size: 1 })}`,
+    ALL: `/api/products${query({ q: text, category, status: 'ALL', size: 1 })}`,
+  }, reload);
+
+  function filter(apply: () => void) {
+    apply();
+    setPage(0);
+  }
 
   async function changeStatus(p: Product, action: 'archive' | 'unarchive') {
+    setActionError(null);
     try {
       await api(`/api/products/${encodeURIComponent(p.sku)}/${action}`, { method: 'POST', body: JSON.stringify({ version: p.version }) });
       setReload((n) => n + 1);
     } catch (e) {
-      setError((e as Error).message);
+      setActionError((e as Error).message);
     }
   }
 
@@ -49,32 +53,17 @@ export function CataloguePage({ user }: { user: UserSummary }) {
       <header className="page-head">
         <div>
           <h1>Catalogue</h1>
-          <p className="muted">{data ? `${data.totalItems.toLocaleString('en-IN')} products` : ' '}</p>
+          <p>Products sold in all 5 stores</p>
         </div>
-        {isAdmin && (
-          <button type="button" onClick={() => setEditing('new')}>
-            New product
-          </button>
+        {isAdmin && !editing && (
+          <div className="page-actions"><button type="button" onClick={() => setEditing('new')}><IconPlus size={15} aria-hidden="true" />New product</button></div>
         )}
       </header>
 
-      <div className="toolbar">
-        <input aria-label="Search products" placeholder="Search name or SKU" value={text} onChange={(e) => { setText(e.target.value); setPage(0); }} />
-        <select aria-label="Category" value={category} onChange={(e) => { setCategory(e.target.value); setPage(0); }}>
-          <option value="">All categories</option>
-          {categories.map((c) => <option key={c}>{c}</option>)}
-        </select>
-        <select aria-label="Status" value={status} onChange={(e) => { setStatus(e.target.value); setPage(0); }}>
-          <option value="ACTIVE">Active</option>
-          <option value="ARCHIVED">Archived</option>
-          <option value="ALL">All</option>
-        </select>
-        <select aria-label="Sort" value={sort} onChange={(e) => setSort(e.target.value)}>
-          <option value="name">Sort: name</option>
-          <option value="sku">Sort: SKU</option>
-          <option value="price">Sort: price</option>
-          <option value="category">Sort: category</option>
-        </select>
+      <div className="kpis" role="group" aria-label="Products by status">
+        <Kpi label="Active" icon={IconCircleCheck} value={counts.ACTIVE ?? null} active={status === 'ACTIVE'} onClick={() => filter(() => setStatus('ACTIVE'))} />
+        <Kpi label="Archived" icon={IconArchive} value={counts.ARCHIVED ?? null} active={status === 'ARCHIVED'} onClick={() => filter(() => setStatus('ARCHIVED'))} />
+        <Kpi label="All products" value={counts.ALL ?? null} active={status === 'ALL'} onClick={() => filter(() => setStatus('ALL'))} />
       </div>
 
       {editing && (
@@ -85,39 +74,62 @@ export function CataloguePage({ user }: { user: UserSummary }) {
           onCancel={() => setEditing(null)}
         />
       )}
+      {actionError && <p className="notice danger" role="alert">{actionError}</p>}
 
-      <ListState loading={loading && !data} error={error} empty={!!data && data.items.length === 0} emptyText="No products match these filters." />
-      {data && data.items.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>SKU</th><th>Name</th><th>Category</th><th className="num">Price</th><th className="num">Reorder at</th><th>Status</th>
-              {isAdmin && <th />}
-            </tr>
-          </thead>
-          <tbody>
-            {data.items.map((p) => (
-              <tr key={p.sku}>
-                <td className="mono">{p.sku}</td>
-                <td>{p.name}</td>
-                <td>{p.category}</td>
-                <td className="num">{p.priceInr === null ? <Chip kind="warn" icon="!">Price not set</Chip> : money(p.priceInr)}</td>
-                <td className="num">{p.reorderLevel}</td>
-                <td>{p.status === 'ARCHIVED' ? <Chip kind="muted" icon="▢">Archived</Chip> : <Chip kind="info" icon="●">Active</Chip>}</td>
-                {isAdmin && (
-                  <td className="actions">
-                    <button type="button" className="secondary" onClick={() => setEditing(p)}>Edit</button>
-                    {p.status === 'ACTIVE'
-                      ? <button type="button" className="secondary" onClick={() => changeStatus(p, 'archive')}>Archive</button>
-                      : <button type="button" className="secondary" onClick={() => changeStatus(p, 'unarchive')}>Unarchive</button>}
-                  </td>
-                )}
+      <div className="listing">
+        <div className="toolbar">
+          <SearchBox label="Search products" placeholder="Search name or SKU" value={text} onChange={(v) => filter(() => setText(v))} />
+          <select aria-label="Category" value={category} onChange={(e) => filter(() => setCategory(e.target.value))}>
+            <option value="">Category: all</option>
+            {categories.map((c) => <option key={c}>{c}</option>)}
+          </select>
+          <select aria-label="Status" value={status} onChange={(e) => filter(() => setStatus(e.target.value))}>
+            <option value="ACTIVE">Active</option>
+            <option value="ARCHIVED">Archived</option>
+            <option value="ALL">All</option>
+          </select>
+          <select aria-label="Sort" value={sort} onChange={(e) => filter(() => setSort(e.target.value))}>
+            <option value="name">Sort: name</option>
+            <option value="sku">Sort: SKU</option>
+            <option value="price">Sort: price</option>
+            <option value="category">Sort: category</option>
+          </select>
+        </div>
+
+        <ListState loading={loading && !data} error={error} empty={!!data && data.items.length === 0} emptyText="No products match these filters."
+                   onClear={text || category ? () => filter(() => { setText(''); setCategory(''); }) : undefined} />
+        {data && data.items.length > 0 && (
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th><th>SKU</th><th>Category</th><th className="num">Price</th><th className="num">Reorder at</th><th>Status</th>
+                {isAdmin && <th />}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-      {data && <Pager page={page} size={SIZE} total={data.totalItems} onPage={setPage} />}
+            </thead>
+            <tbody>
+              {data.items.map((p) => (
+                <tr key={p.sku}>
+                  <td>{p.name}</td>
+                  <td className="mono">{p.sku}</td>
+                  <td className="text-2">{p.category}</td>
+                  <td className="num">{p.priceInr === null ? <Chip kind="warn" icon={IconAlertTriangle}>Price not set</Chip> : money(p.priceInr)}</td>
+                  <td className="num text-2">{p.reorderLevel}</td>
+                  <td>{p.status === 'ARCHIVED' ? <Chip kind="muted" icon={IconArchive}>Archived</Chip> : <Chip kind="success" icon={IconCircleCheck}>Active</Chip>}</td>
+                  {isAdmin && (
+                    <td className="actions">
+                      <button type="button" className="secondary" onClick={() => setEditing(p)}>Edit</button>
+                      {p.status === 'ACTIVE'
+                        ? <button type="button" className="secondary" onClick={() => changeStatus(p, 'archive')}>Archive</button>
+                        : <button type="button" className="secondary" onClick={() => changeStatus(p, 'unarchive')}>Unarchive</button>}
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        {data && data.totalItems > 0 && <Pager page={page} size={SIZE} total={data.totalItems} onPage={setPage} />}
+      </div>
     </section>
   );
 }

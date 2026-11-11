@@ -1,87 +1,100 @@
+import { IconAlertTriangle, IconArchive, IconRefresh, IconX } from '@tabler/icons-react';
 import { useEffect, useState, type FormEvent } from 'react';
 import type { UserSummary } from '../api/auth';
 import { api, query } from '../api/client';
-import type { Movement, Page, StockItem } from '../api/types';
-import { Chip, ListState, Pager } from '../components/ui';
+import type { Movement, StockItem } from '../api/types';
+import { Chip, Kpi, ListState, Pager, SearchBox } from '../components/ui';
 import { dateTime, reasonLabel } from '../lib/format';
+import { useCounts, useList } from '../lib/useList';
 
 const SIZE = 20;
-const STORES = ['S01', 'S02', 'S03', 'S04', 'S05'];
 
-/** Inventory (M10): stock per store, adjustments with a reason, and the history of changes. */
-export function InventoryPage({ user }: { user: UserSummary }) {
-  const headOffice = user.role !== 'STORE_MANAGER';
+type View = 'all' | 'low' | 'recount';
+
+/** Inventory (M10): stock per store, KPI quick filters, adjustments with a reason, and the history of changes. */
+export function InventoryPage({ user, store }: { user: UserSummary; store: string }) {
   const canAdjust = user.role !== 'FINANCE_APPROVER';
-  const [store, setStore] = useState(headOffice ? '' : user.storeId ?? '');
   const [text, setText] = useState('');
-  const [lowOnly, setLowOnly] = useState(false);
-  const [recountOnly, setRecountOnly] = useState(false);
+  const [view, setView] = useState<View>('all');
   const [page, setPage] = useState(0);
-  const [data, setData] = useState<Page<StockItem> | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<StockItem | null>(null);
   const [reload, setReload] = useState(0);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    api<Page<StockItem>>(`/api/inventory${query({ storeId: store, q: text, lowOnly, recountOnly, page, size: SIZE })}`)
-      .then(setData)
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [store, text, lowOnly, recountOnly, page, reload]);
+  useEffect(() => { setPage(0); setSelected(null); }, [store]);
+
+  const base = { storeId: store, q: text };
+  const { data, error, loading } = useList<StockItem>(
+    `/api/inventory${query({ ...base, lowOnly: view === 'low', recountOnly: view === 'recount', page, size: SIZE })}`, reload);
+  const counts = useCounts({
+    all: `/api/inventory${query({ ...base, size: 1 })}`,
+    low: `/api/inventory${query({ ...base, lowOnly: true, size: 1 })}`,
+    recount: `/api/inventory${query({ ...base, recountOnly: true, size: 1 })}`,
+  }, reload);
+
+  function show(next: View) {
+    setView(next);
+    setPage(0);
+  }
 
   return (
     <section className="page">
       <header className="page-head">
         <div>
           <h1>Inventory</h1>
-          <p className="muted">{store ? `Store ${store}` : 'All 5 stores'}{data ? ` · ${data.totalItems.toLocaleString('en-IN')} items` : ''}</p>
+          <p>{store ? `Store ${store}` : 'All 5 stores'}</p>
         </div>
       </header>
 
-      <div className="toolbar">
-        <input aria-label="Search stock" placeholder="Search name or SKU" value={text} onChange={(e) => { setText(e.target.value); setPage(0); }} />
-        {headOffice && (
-          <select aria-label="Store" value={store} onChange={(e) => { setStore(e.target.value); setPage(0); }}>
-            <option value="">All stores</option>
-            {STORES.map((s) => <option key={s}>{s}</option>)}
-          </select>
-        )}
-        <label className="check"><input type="checkbox" checked={lowOnly} onChange={(e) => { setLowOnly(e.target.checked); setPage(0); }} /> Low stock only</label>
-        <label className="check"><input type="checkbox" checked={recountOnly} onChange={(e) => { setRecountOnly(e.target.checked); setPage(0); }} /> Needs recount</label>
+      <div className="kpis" role="group" aria-label="Stock views">
+        <Kpi label="Items stocked" value={counts.all ?? null} active={view === 'all'} onClick={() => show('all')} />
+        <Kpi label="Low stock" icon={IconAlertTriangle} value={counts.low ?? null} alert hint={view === 'low' ? 'Showing low stock' : 'Show low stock →'}
+             active={view === 'low'} onClick={() => show(view === 'low' ? 'all' : 'low')} />
+        <Kpi label="Needs recount" icon={IconRefresh} value={counts.recount ?? null} active={view === 'recount'} onClick={() => show(view === 'recount' ? 'all' : 'recount')} />
       </div>
 
       <div className="split">
         <div className="split-main">
-          <ListState loading={loading && !data} error={error} empty={!!data && data.items.length === 0} emptyText="No stock matches these filters." />
-          {data && data.items.length > 0 && (
-            <table>
-              <thead>
-                <tr><th>Store</th><th>SKU</th><th>Product</th><th className="num">In stock</th><th className="num">Reorder at</th><th>Flags</th></tr>
-              </thead>
-              <tbody>
-                {data.items.map((item) => (
-                  <tr key={item.storeId + item.sku}
-                      className={selected?.sku === item.sku && selected.storeId === item.storeId ? 'selected' : item.low ? 'low' : ''}
-                      onClick={() => setSelected(item)}>
-                    <td>{item.storeId}</td>
-                    <td className="mono">{item.sku}</td>
-                    <td>{item.productName}</td>
-                    <td className="num">{item.quantity}</td>
-                    <td className="num">{item.reorderLevel}</td>
-                    <td className="flags">
-                      {item.low && <Chip kind="danger" icon="▼">Low</Chip>}
-                      {item.recountNeeded && <Chip kind="warn" icon="↻">Recount</Chip>}
-                      {item.productStatus === 'ARCHIVED' && <Chip kind="muted" icon="▢">Archived</Chip>}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          {data && <Pager page={page} size={SIZE} total={data.totalItems} onPage={setPage} />}
+          <div className="listing">
+            <div className="toolbar">
+              <SearchBox label="Search stock" placeholder="Search name or SKU" value={text} onChange={(v) => { setText(v); setPage(0); }} />
+              <select aria-label="Stock view" value={view} onChange={(e) => show(e.target.value as View)}>
+                <option value="all">All items</option>
+                <option value="low">Low stock only</option>
+                <option value="recount">Needs recount</option>
+              </select>
+            </div>
+            <ListState loading={loading && !data} error={error} empty={!!data && data.items.length === 0} emptyText="No stock matches these filters."
+                       onClear={text || view !== 'all' ? () => { setText(''); show('all'); } : undefined} />
+            {data && data.items.length > 0 && (
+              <table>
+                <thead>
+                  <tr>{!store && <th>Store</th>}<th>Product</th><th>SKU</th><th className="num">In stock</th><th className="num">Reorder at</th><th>Flags</th></tr>
+                </thead>
+                <tbody>
+                  {data.items.map((item) => {
+                    const isSelected = selected?.sku === item.sku && selected.storeId === item.storeId;
+                    return (
+                      <tr key={item.storeId + item.sku} className={`clickable${isSelected ? ' selected' : item.low ? ' low' : ''}`} onClick={() => setSelected(item)}>
+                        {!store && <td>{item.storeId}</td>}
+                        <td>{item.productName}<div className="muted small">{item.category}</div></td>
+                        <td className="mono">{item.sku}</td>
+                        <td className={`num${item.low ? ' neg' : ''}`}><strong>{item.quantity}</strong></td>
+                        <td className="num text-2">{item.reorderLevel}</td>
+                        <td>
+                          <div className="flags">
+                            {item.low && <Chip kind="danger" icon={IconAlertTriangle}>Low</Chip>}
+                            {item.recountNeeded && <Chip kind="warn" icon={IconRefresh}>Recount</Chip>}
+                            {item.productStatus === 'ARCHIVED' && <Chip kind="muted" icon={IconArchive}>Archived</Chip>}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+            {data && data.totalItems > 0 && <Pager page={page} size={SIZE} total={data.totalItems} onPage={setPage} />}
+          </div>
         </div>
         {selected && (
           <StockPanel key={selected.storeId + selected.sku} item={selected} canAdjust={canAdjust}
@@ -125,13 +138,14 @@ function StockPanel({ item, canAdjust, onChanged, onClose }: { item: StockItem; 
   }
 
   return (
-    <aside className="panel side">
+    <aside className="panel side" aria-label={item.productName}>
       <div className="panel-head">
         <h2>{item.productName}</h2>
-        <button type="button" className="secondary" onClick={onClose} aria-label="Close">✕</button>
+        <button type="button" className="secondary" onClick={onClose} aria-label="Close"><IconX size={14} aria-hidden="true" /></button>
       </div>
-      <p className="muted mono">{item.sku} · Store {item.storeId}</p>
-      <p className="big">{item.quantity} <span className="muted">in stock (reorder at {item.reorderLevel})</span></p>
+      <p className="muted mono" style={{ margin: 0 }}>{item.sku} · Store {item.storeId}</p>
+      <p className={`big${item.low ? ' neg' : ''}`}>{item.quantity} <span className="muted" style={{ fontSize: 13, fontWeight: 400 }}>in stock · reorder at {item.reorderLevel}</span></p>
+      {item.low && <p className="notice danger" style={{ margin: 0 }}>Below its reorder level. Draft a purchase order from Purchase orders → New draft.</p>}
 
       {canAdjust && (
         <form className="form-grid" onSubmit={submit}>
@@ -145,7 +159,7 @@ function StockPanel({ item, canAdjust, onChanged, onClose }: { item: StockItem; 
           <label>{type === 'RECOUNT' ? 'Counted on shelf' : type === 'DAMAGED' ? 'Units damaged' : 'Change (e.g. -2 or 3)'}
             <input type="number" required value={quantity} onChange={(e) => setQuantity(e.target.value)} />
           </label>
-          <label>Note<input value={note} required={type === 'OTHER'} onChange={(e) => setNote(e.target.value)} /></label>
+          <label className="wide">Note<input value={note} required={type === 'OTHER'} onChange={(e) => setNote(e.target.value)} /></label>
           {error && <p className="error" role="alert">{error}</p>}
           <div className="form-actions"><button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save adjustment'}</button></div>
         </form>
@@ -158,7 +172,7 @@ function StockPanel({ item, canAdjust, onChanged, onClose }: { item: StockItem; 
             <li key={m.id}>
               <strong className={m.delta < 0 ? 'neg' : 'pos'}>{m.delta > 0 ? `+${m.delta}` : m.delta}</strong> → {m.quantityAfter}
               <span> · {reasonLabel(m.reason)}{m.referenceId ? ` ${m.referenceId}` : ''}</span>
-              <div className="muted">{dateTime(m.at)}{m.actorUserId ? ` · ${m.actorUserId}` : ''}{m.note ? ` · ${m.note}` : ''}</div>
+              <div className="muted small">{dateTime(m.at)}{m.actorUserId ? ` · ${m.actorName ?? m.actorUserId}` : ' · System'}{m.note ? ` · ${m.note}` : ''}</div>
             </li>
           ))}
         </ul>

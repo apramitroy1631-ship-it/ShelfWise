@@ -89,7 +89,9 @@ class OrdersApiTest {
         assertThat(number("SELECT count(*) FROM stock_movements WHERE reason = 'ORDER_CREATED' AND reference_id = '" + order.get("id") + "'")).isEqualTo(2);
         // a later price change never rewrites this order (D15)
         run("UPDATE products SET price_inr = 99 WHERE sku = 'SW-SNK-00091'");
-        get(manager, "/api/orders/" + order.get("id")).jsonPath("$.lines[0].unitPrice").isEqualTo(25);
+        get(manager, "/api/orders/" + order.get("id")).jsonPath("$.lines[0].unitPrice").isEqualTo(25)
+                .jsonPath("$.placedBy").isEqualTo("U03")
+                .jsonPath("$.placedByName").isEqualTo("Arjun Rao");                     // N6: names on screen
     }
 
     @Test
