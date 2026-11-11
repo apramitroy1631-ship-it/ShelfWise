@@ -187,6 +187,21 @@ The core service publishes events through RabbitMQ ([event contract](docs/events
 
 On day one (after the import) each store manager sees 2 grouped notifications instead of about 1,400 single ones; e.g. S01: "... and 39 other items are out of stock in S01", "... and 143 other items are running low in S01". RabbitMQ's own screen is at http://localhost:15672 (guest / guest, local only).
 
+### Mobile app (store managers)
+
+React Native + Expo SDK 58 (DL-13). Store managers sign in and see their own store's stock (search, "low stock only",
+adjustments with a reason: damaged, recount, other) and the catalogue. Orders come next.
+
+```bash
+cd mobile
+npm ci
+EXPO_PUBLIC_API_URL=http://<your-laptop-ip>:8080 npx expo start   # scan the QR code with Expo Go on the phone
+```
+
+- On a phone, `EXPO_PUBLIC_API_URL` must be your laptop's address on the same Wi-Fi (not `localhost`).
+- Browser preview: `npx expo start --web --port 8082`, with the core service started with `CORS_ALLOWED_ORIGINS=http://localhost:8082`.
+- Tests: `npm test`; type check: `npm run typecheck`. CI: `.github/workflows/mobile.yml` (runs only when `mobile/` changes).
+
 ### Running the backend tests
 
 Needs Java 21 and Docker running (tests start a throwaway PostgreSQL):
