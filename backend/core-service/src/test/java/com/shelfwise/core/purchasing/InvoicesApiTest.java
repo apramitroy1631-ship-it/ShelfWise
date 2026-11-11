@@ -44,6 +44,8 @@ class InvoicesApiTest {
 
     private static final String PASSWORD = "Test-Only-Pass-1";
     private static final Path SAMPLES = Path.of("../../data/upload_samples");
+    private static final byte[] PDF_START = {'%', 'P', 'D', 'F', '-', '1', '.', '4', '\n'};
+    private static final byte[] PDF_END = {'\n', '%', '%', 'E', 'O', 'F', '\n'};
 
     /** Stands in for SeaweedFS / R2 so the test needs no object store. */
     @TestConfiguration(proxyBeanMethods = false)
@@ -175,6 +177,20 @@ class InvoicesApiTest {
         System.arraycopy(tail, 0, big, big.length - tail.length, tail.length);
 
         upload(manager, "PO-9001", "invoice_too_large.pdf", big, 413);
+        assertThat(number("SELECT count(*) FROM invoices")).isZero();
+    }
+
+    @Test
+    void aFarOversizeFileLikeThe22MbSampleIsRefusedWith413_notAServerError() {
+        byte[] big = new byte[22 * 1024 * 1024];                                 // the size of the dataset's invoice_too_large.pdf
+        Arrays.fill(big, (byte) ' ');
+        byte[] head = PDF_START;
+        byte[] tail = PDF_END;
+        System.arraycopy(head, 0, big, 0, head.length);
+        System.arraycopy(tail, 0, big, big.length - tail.length, tail.length);
+
+        Map<?, ?> error = upload(manager, "PO-9001", "invoice_too_large.pdf", big, 413);
+        assertThat(String.valueOf(error.get("detail"))).contains("20 MB");
         assertThat(number("SELECT count(*) FROM invoices")).isZero();
     }
 
