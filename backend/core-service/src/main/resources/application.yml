@@ -20,6 +20,11 @@ spring:
   webflux:
     problemdetails:
       enabled: true
+    # Uploads are read one part at a time; a part over this size is refused while it streams (the invoice limit is 20 MB).
+    multipart:
+      max-in-memory-size: 1MB
+      max-disk-usage-per-part: 21MB
+      max-parts: 4
 
 shelfwise:
   auth:
@@ -43,6 +48,16 @@ shelfwise:
     relay-enabled: ${OUTBOX_RELAY_ENABLED:true}
     relay-interval: 2s
     batch-size: 100
+
+  storage:
+    # S3-compatible file storage for supplier invoices (DL-04). Defaults are the local SeaweedFS in docker-compose;
+    # deployed environments (Cloudflare R2) set STORAGE_* variables, and the keys must never be committed.
+    endpoint: ${STORAGE_ENDPOINT:http://localhost:8333}
+    region: ${STORAGE_REGION:us-east-1}
+    bucket: ${STORAGE_BUCKET:shelfwise-invoices}
+    access-key: ${STORAGE_ACCESS_KEY:local-dev-access}
+    secret-key: ${STORAGE_SECRET_KEY:local-dev-secret}
+    path-style: ${STORAGE_PATH_STYLE:true}
 
   cors:
     # Other browser origins allowed to call the API, comma-separated. Empty = none (phones don't need it).

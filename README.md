@@ -190,7 +190,7 @@ On day one (after the import) each store manager sees 2 grouped notifications in
 ### Mobile app (store managers)
 
 React Native + Expo SDK 58 (DL-13). Store managers sign in and see their own store's stock (search, "low stock only",
-adjustments with a reason: damaged, recount, other), their orders (list, status changes, new order with an idempotency key) and the catalogue.
+adjustments with a reason: damaged, recount, other), a bell with the store's grouped notifications (refreshed every 30 s and when the app returns to the foreground), their orders (list, status changes, new order with an idempotency key) and the catalogue.
 
 ```bash
 cd mobile
@@ -199,6 +199,7 @@ EXPO_PUBLIC_API_URL=http://<your-laptop-ip>:8080 npx expo start   # scan the QR 
 ```
 
 - On a phone, `EXPO_PUBLIC_API_URL` must be your laptop's address on the same Wi-Fi (not `localhost`).
+- The bell reads the notification service: `EXPO_PUBLIC_NOTIFICATIONS_URL` (defaults to the same address on port 8081).
 - Browser preview: `npx expo start --web --port 8082`, with the core service started with `CORS_ALLOWED_ORIGINS=http://localhost:8082`.
 - Tests: `npm test`; type check: `npm run typecheck`. CI: `.github/workflows/mobile.yml` (runs only when `mobile/` changes).
 
