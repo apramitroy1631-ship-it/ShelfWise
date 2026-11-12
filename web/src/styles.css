@@ -104,6 +104,11 @@ button.secondary:hover:not(:disabled) { background: var(--surface-sub); }
 button.danger { color: var(--danger); background: var(--surface); border-color: var(--danger); }
 button.ghost { color: inherit; background: transparent; border-color: transparent; }
 button.link { background: none; border: 0; color: var(--text); padding: 6px 0; text-align: left; width: 100%; justify-content: flex-start; }
+/* Two or three choices side by side (review queue: Waiting / Decided, Correct / Reject). */
+.segmented { display: inline-flex; border: 1px solid var(--control-border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.segmented button { border: 0; border-radius: 0; background: transparent; color: var(--text-2); }
+.segmented button + button { border-left: 1px solid var(--control-border); }
+.segmented button.active { background: var(--accent-tint); color: var(--accent-tint-text); font-weight: 600; }
 input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, tr:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 label { display: flex; flex-direction: column; gap: 4px; font-size: 11px; font-weight: 500; color: var(--text-2); }
 label.check { flex-direction: row; align-items: center; font-size: 13px; gap: 6px; }
