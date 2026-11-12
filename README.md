@@ -218,6 +218,27 @@ Two nightly jobs run at night IST (M23). Every run is recorded in `job_runs`; if
 
 Times: `JOBS_EXPIRE_DRAFTS_CRON`, `JOBS_LOW_STOCK_CRON` (Spring cron; `-` switches a job off); `JOBS_ENABLED=false` stops the schedule.
 
+### Remote configuration (admin)
+
+Behaviour changes without a redeploy or an app-store release (DL-06, M27). The server reads settings on every request; the web and mobile apps fetch the public ones every 60 seconds and when they come back to the foreground.
+
+| Endpoint | Who | Purpose |
+|---|---|---|
+| `GET /api/config` | anyone (no sign-in) | Public settings only: maintenance banner, feature flags. Internal limits stay private |
+| `GET /api/admin/settings` | admin | Every setting with its allowed values, last change and version |
+| `PUT /api/admin/settings/{key}` | admin | `{ "value", "version" }`. Checked against the setting's rule; a stale version is 409; audited (old → new) |
+
+| Setting | Allowed | Used by |
+|---|---|---|
+| `ui.maintenanceBanner` | text up to 200 characters, or empty to hide | banner on web (all screens and sign-in) and mobile |
+| `purchaseOrders.secondApprovalAboveInr` | 0 to 1,00,00,000 | second finance approver rule |
+| `purchaseOrders.draftExpiryDays` / `stuckAfterDays` | 1 to 365 | nightly draft expiry; stuck POs (D22) |
+| `orders.stuckAfterDays` | 1 to 365 | stuck orders (D32) |
+| `lowStock.defaultReorderLevel` | 0 to 10,000 | default reorder level |
+| `auth.forcePasswordChangeOnFirstLogin`, `features.adminReviewQueue` | on / off | D25, D10 (screens still to come) |
+
+The web app's **Settings** screen (admin) edits these.
+
 ### Running the backend tests
 
 Needs Java 21 and Docker running (tests start a throwaway PostgreSQL):

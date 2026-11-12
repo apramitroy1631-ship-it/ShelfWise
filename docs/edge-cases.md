@@ -202,6 +202,21 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | A job crashes half-way | One transaction per run: nothing half-done is saved; the failure is recorded | `ScheduledJobs.run` (rollback + FAILED record) |
 | A non-admin runs a job | 403 | `ScheduledJobsTest.onlyAdminsRunJobsAndSeeRuns` |
 
+## Remote configuration (M27)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| A behaviour change needs a redeploy or an app-store release | Settings live in the database; the server reads them per request, apps poll every 60 s | `SettingsApiTest.aChangedLimitIsUsedRightAway`, `anAdminTurnsTheMaintenanceBannerOnAndOff` |
+| The banner can't show on the login page (no token yet) | `/api/config` needs no sign-in and returns public settings only | `SettingsApiTest.theAppsReadPublicSettingsWithoutSigningIn`; web `SettingsPage.test.tsx` |
+| Internal limits leak to anyone | Only `ui.*` and `features.*` are public | Same test |
+| An admin types a nonsense value (negative limit, text in a number, 2,000-character banner) | Each setting has a rule; refused with the rule in the message; nothing saved | `SettingsApiTest.valuesMustFitTheSettingsRule`; web shows the message |
+| Someone creates a setting nobody reads | Only known settings exist; unknown keys are 404 | Same test |
+| Two admins overwrite each other | Version check, 409 | `SettingsApiTest.aStaleVersionIsRefused` |
+| Nobody knows who switched the banner on | Every change is audited (who, old → new) | `SettingsApiTest.anAdminTurnsTheMaintenanceBannerOnAndOff` |
+| A non-admin changes settings | 403 | `SettingsApiTest.onlyAdminsSeeAndChangeAllSettings` |
+| The config server answers something unexpected and the app breaks | Apps treat it as "no banner" and keep the last good values | web `App.test.tsx` (other answers on /api/config), `useConfig.ts` |
+| A phone was in the background when the banner changed | Mobile reloads config whenever the app comes back to the foreground | `mobile/src/useConfig.ts` (AppState); mobile `App.test.tsx` banner test |
+
 ## Web app: sign-in
 
 | What could go wrong | How it's handled | Proof |

@@ -89,4 +89,13 @@ describe('mobile app', () => {
 
     expect(await screen.findByText(/The mobile app is for store managers/)).toBeTruthy();
   });
+
+  it('shows the maintenance banner from remote config, even before sign-in (DL-06)', async () => {
+    globalThis.fetch = backend({
+      '/api/config': () => json(200, { values: { 'ui.maintenanceBanner': 'Stock count tonight 9-11 pm' }, updatedAt: null }),
+    }) as unknown as typeof fetch;
+    await render(<App />);
+
+    expect(await screen.findByText('Stock count tonight 9-11 pm')).toBeTruthy();
+  });
 });
