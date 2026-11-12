@@ -17,7 +17,7 @@ class S3ObjectStorageTest {
 
     @BeforeAll
     static void start() {
-        seaweed = new GenericContainer<>("chrislusf/seaweedfs:latest")
+        seaweed = new GenericContainer<>("chrislusf/seaweedfs:4.53")
                 .withCommand("server", "-dir=/data", "-s3")
                 .withExposedPorts(8333)
                 .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(90)));

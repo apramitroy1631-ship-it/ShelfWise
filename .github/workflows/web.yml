@@ -8,14 +8,22 @@ on:
     paths:
       - "web/**"
       - ".github/workflows/web.yml"
+      - ".github/scripts/test-summary.py"
   pull_request:
     paths:
       - "web/**"
       - ".github/workflows/web.yml"
+      - ".github/scripts/test-summary.py"
+
+# A newer push to the same branch cancels the run still going for the older one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: web
@@ -30,7 +38,20 @@ jobs:
         run: npm ci
       - name: Type check
         run: npm run typecheck
+      # The usual console output, plus a JUnit file for the summary and the uploaded report.
       - name: Unit tests
-        run: npm test
+        run: npm test -- --reporter=default --reporter=junit --outputFile.junit=test-results/junit.xml
       - name: Production build
         run: npm run build
+      - name: Test summary
+        if: always()
+        working-directory: .
+        run: python3 .github/scripts/test-summary.py "Web tests" "web/test-results/junit.xml"
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-test-report
+          path: web/test-results/
+          retention-days: 14
+          if-no-files-found: ignore

@@ -12,6 +12,7 @@ on:
       - "backend/.mvn/**"
       - "backend/mvnw"
       - ".github/workflows/backend-notification.yml"
+      - ".github/scripts/test-summary.py"
   pull_request:
     paths:
       - "backend/notification-service/**"
@@ -19,10 +20,17 @@ on:
       - "backend/.mvn/**"
       - "backend/mvnw"
       - ".github/workflows/backend-notification.yml"
+      - ".github/scripts/test-summary.py"
+
+# A newer push to the same branch cancels the run still going for the older one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: backend
@@ -33,5 +41,18 @@ jobs:
           distribution: temurin
           java-version: "21"
           cache: maven
+      # The tests start their own PostgreSQL and RabbitMQ with Testcontainers (Docker is on the runner).
       - name: Build and test notification service
         run: ./mvnw -B -pl notification-service -am verify
+      - name: Test summary
+        if: always()
+        working-directory: .
+        run: python3 .github/scripts/test-summary.py "Notification service tests" "backend/notification-service/target/surefire-reports/TEST-*.xml"
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: notification-service-test-reports
+          path: backend/notification-service/target/surefire-reports/
+          retention-days: 14
+          if-no-files-found: ignore
