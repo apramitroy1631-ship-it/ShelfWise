@@ -35,7 +35,7 @@ services:
       retries: 20
 
   seaweedfs:
-    image: chrislusf/seaweedfs:latest
+    image: chrislusf/seaweedfs:4.53   # pinned: the same version the storage test uses
     # Single-node server with the S3 API on 8333. Local development only (no access control).
     command: server -dir=/data -s3
     ports:

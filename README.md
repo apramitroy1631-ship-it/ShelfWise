@@ -251,6 +251,19 @@ cd backend
 
 Each service can also be built and tested on its own, e.g. `./mvnw -pl core-service -am verify`.
 
+### Tests in CI (GitHub Actions)
+
+Each part has its own workflow and runs only when its own folder changes (DL-08), so a web change never waits on the backend:
+
+| Workflow | Runs when this changes | What it does | Tests today |
+|---|---|---|---|
+| `backend-core` | `backend/core-service/`, shared backend build files, `data/` | build + unit and integration tests (real PostgreSQL, RabbitMQ and SeaweedFS via Testcontainers) | 173 |
+| `backend-notification` | `backend/notification-service/`, shared backend build files | build + tests (real PostgreSQL and RabbitMQ) | 11 |
+| `web` | `web/` | type check, tests, production build | 30 |
+| `mobile` | `mobile/` | type check, tests | 17 |
+
+On every run, pass or fail, the run page shows a short table (passed / failed / skipped, plus the names of failing tests), and the full test reports can be downloaded from the run for 14 days. Any workflow can also be started by hand with **Run workflow**. A newer push to the same branch cancels the older run.
+
 ## How AI tools were used
 
 - Claude (Anthropic) was used to profile the provided data files with throwaway scripts, to surface problems and their evidence (record IDs, file line numbers), and to draft explanations and options.

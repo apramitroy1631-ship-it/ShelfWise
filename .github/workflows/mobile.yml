@@ -8,14 +8,22 @@ on:
     paths:
       - "mobile/**"
       - ".github/workflows/mobile.yml"
+      - ".github/scripts/test-summary.py"
   pull_request:
     paths:
       - "mobile/**"
       - ".github/workflows/mobile.yml"
+      - ".github/scripts/test-summary.py"
+
+# A newer push to the same branch cancels the run still going for the older one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   check-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: mobile
@@ -30,5 +38,21 @@ jobs:
         run: npm ci
       - name: Type check
         run: npm run typecheck
+      # The usual console output, plus Jest's own JSON results for the summary and the uploaded report.
+      # Jest does not create the folder itself (unlike Vitest), so make it first.
       - name: Unit tests
-        run: npm test -- --ci
+        run: |
+          mkdir -p test-results
+          npm test -- --ci --json --outputFile=test-results/jest.json
+      - name: Test summary
+        if: always()
+        working-directory: .
+        run: python3 .github/scripts/test-summary.py "Mobile tests" "mobile/test-results/jest.json"
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-test-report
+          path: mobile/test-results/
+          retention-days: 14
+          if-no-files-found: ignore

@@ -1,6 +1,7 @@
 # CI for the core service only.
 # Runs when the core service (or the backend's shared build settings) changes,
 # never because of web/, mobile/ or the notification service (decision DL-08).
+# data/ is included because the import and dashboard tests read the provided dataset.
 name: backend-core
 
 on:
@@ -11,18 +12,29 @@ on:
       - "backend/pom.xml"
       - "backend/.mvn/**"
       - "backend/mvnw"
+      - "data/**"
       - ".github/workflows/backend-core.yml"
+      - ".github/scripts/test-summary.py"
   pull_request:
     paths:
       - "backend/core-service/**"
       - "backend/pom.xml"
       - "backend/.mvn/**"
       - "backend/mvnw"
+      - "data/**"
       - ".github/workflows/backend-core.yml"
+      - ".github/scripts/test-summary.py"
+
+# A newer push to the same branch cancels the run still going for the older one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    # About 14 minutes on a laptop (it imports the full dataset several times); stop a stuck run well before GitHub's 6 hours.
+    timeout-minutes: 40
     defaults:
       run:
         working-directory: backend
@@ -34,5 +46,20 @@ jobs:
           java-version: "21"
           cache: maven
       # -pl: build only this service; -am: plus the parent pom it needs.
+      # The tests start their own PostgreSQL, RabbitMQ and SeaweedFS with Testcontainers (Docker is on the runner).
       - name: Build and test core service
         run: ./mvnw -B -pl core-service -am verify
+      # Shown on the run page, pass or fail.
+      - name: Test summary
+        if: always()
+        working-directory: .
+        run: python3 .github/scripts/test-summary.py "Core service tests" "backend/core-service/target/surefire-reports/TEST-*.xml"
+      # The full per-test reports, downloadable from the run page for 14 days.
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-service-test-reports
+          path: backend/core-service/target/surefire-reports/
+          retention-days: 14
+          if-no-files-found: ignore
