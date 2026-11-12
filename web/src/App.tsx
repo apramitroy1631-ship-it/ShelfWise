@@ -1,9 +1,9 @@
 import {
-  IconAlertTriangle, IconBox, IconChartBar, IconFileInvoice, IconLogout, IconMoon, IconReceipt, IconSettings, IconSun, IconTag, type Icon,
+  IconAlertTriangle, IconBox, IconChartBar, IconClipboardCheck, IconFileInvoice, IconLogout, IconMoon, IconReceipt, IconSettings, IconSun, IconTag, type Icon,
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { logout, type Role, type Session } from './api/auth';
-import { onSessionChange, query, setSession as storeSession } from './api/client';
+import { api, onSessionChange, query, setSession as storeSession } from './api/client';
 import { applyTheme, currentTheme, type Theme } from './lib/theme';
 import { bannerText, useConfig } from './lib/useConfig';
 import { useCounts } from './lib/useList';
@@ -15,6 +15,7 @@ import { InventoryPage } from './pages/InventoryPage';
 import { LoginPage } from './pages/LoginPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { PurchaseOrdersPage } from './pages/PurchaseOrdersPage';
+import { ReviewsPage } from './pages/ReviewsPage';
 import { SettingsPage } from './pages/SettingsPage';
 
 const ROLE_LABELS: Record<Role, string> = {
@@ -25,7 +26,7 @@ const ROLE_LABELS: Record<Role, string> = {
 
 export const STORES = ['S01', 'S02', 'S03', 'S04', 'S05'];
 
-type Screen = 'dashboard' | 'orders' | 'inventory' | 'catalogue' | 'purchase-orders' | 'settings';
+type Screen = 'dashboard' | 'orders' | 'inventory' | 'catalogue' | 'purchase-orders' | 'reviews' | 'settings';
 
 /**
  * Menu by role (docs/navigation-and-workflows.md, N2). Finance gets a focused menu: purchase orders and
@@ -38,6 +39,7 @@ const MENU: { id: Screen; label: string; icon: Icon; roles: Role[] }[] = [
   { id: 'inventory', label: 'Inventory', icon: IconBox, roles: ['ADMIN', 'STORE_MANAGER', 'FINANCE_APPROVER'] },
   { id: 'catalogue', label: 'Catalogue', icon: IconTag, roles: ['ADMIN', 'STORE_MANAGER'] },
   { id: 'purchase-orders', label: 'Purchase orders', icon: IconFileInvoice, roles: ['ADMIN', 'STORE_MANAGER', 'FINANCE_APPROVER'] },
+  { id: 'reviews', label: 'Review queue', icon: IconClipboardCheck, roles: ['ADMIN'] },
   { id: 'settings', label: 'Settings', icon: IconSettings, roles: ['ADMIN'] },
 ];
 
@@ -118,6 +120,7 @@ export function App() {
                 <m.icon size={17} aria-hidden="true" />
                 {m.label}
                 {m.id === 'purchase-orders' && <WaitingCount role={user.role} store={scope} />}
+                {m.id === 'reviews' && <ReviewCount store={scope} screen={screen} />}
               </button>
             </li>
           ))}
@@ -145,10 +148,25 @@ export function App() {
         {screen === 'inventory' && <InventoryPage key={inventoryView.key} user={user} store={scope} startView={inventoryView.low ? 'low' : 'all'} />}
         {screen === 'catalogue' && <CataloguePage user={user} />}
         {screen === 'purchase-orders' && <PurchaseOrdersPage user={user} store={scope} />}
+        {screen === 'reviews' && <ReviewsPage store={scope} />}
         {screen === 'settings' && <SettingsPage />}
       </main>
     </div>
   );
+}
+
+/** The number next to "Review queue": imported orders still waiting for an admin decision (D10). Refreshed on each screen change. */
+function ReviewCount({ store, screen }: { store: string; screen: Screen }) {
+  const [waiting, setWaiting] = useState<number | null>(null);
+  useEffect(() => {
+    let live = true;
+    api<{ waiting: number }>(`/api/admin/reviews${query({ storeId: store })}`)
+      .then((r) => { if (live) setWaiting(r.waiting); })
+      .catch(() => undefined);
+    return () => { live = false; };
+  }, [store, screen]);
+  if (!waiting) return null;
+  return <span className="nav-count" aria-label={`${waiting} waiting for review`} title={`${waiting} waiting for review`}>{waiting}</span>;
 }
 
 /** The number next to "Purchase orders": POs waiting for this person (finance: to approve; managers: goods to receive). */

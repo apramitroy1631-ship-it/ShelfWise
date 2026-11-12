@@ -219,6 +219,18 @@ Two nightly jobs run at night IST (M23). Every run is recorded in `job_runs`; if
 
 Times: `JOBS_EXPIRE_DRAFTS_CRON`, `JOBS_LOW_STOCK_CRON` (Spring cron; `-` switches a job off); `JOBS_ENABLED=false` stops the schedule.
 
+### Review queue (admin)
+
+Imported orders whose money can't be trusted (D10: a negative quantity; D11: a price no evidence could prove) are kept exactly as received, flagged "Needs review", and left out of revenue, order counts, top products and the CSV export until an admin decides. Today that's 15 orders.
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/admin/reviews?state=WAITING\|DECIDED&storeId=` | Waiting orders (oldest first) or decided ones, each with what's wrong and, once corrected, the original values |
+| `POST /api/admin/reviews/{orderId}/correct` | `{version, lines: [{sku, qty?, unitPrice?}], reason}`: fix every flagged line; the total is recalculated and the order counts in revenue |
+| `POST /api/admin/reviews/{orderId}/reject` | `{version, reason}`: the order stays out for good |
+
+Only flagged lines can change, and a recorded price never does (D15). Stock is never touched. Each order can be decided once; every decision is audited with the before-and-after.
+
 ### Remote configuration (admin)
 
 Behaviour changes without a redeploy or an app-store release (DL-06, M27). The server reads settings on every request; the web and mobile apps fetch the public ones every 60 seconds and when they come back to the foreground.

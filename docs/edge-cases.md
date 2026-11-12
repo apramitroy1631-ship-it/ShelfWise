@@ -233,6 +233,21 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | The config server answers something unexpected and the app breaks | Apps treat it as "no banner" and keep the last good values | web `App.test.tsx` (other answers on /api/config), `useConfig.ts` |
 | A phone was in the background when the banner changed | Mobile reloads config whenever the app comes back to the foreground | `mobile/src/useConfig.ts` (AppState); mobile `App.test.tsx` banner test |
 
+## Review queue (D10)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| Imported orders with negative quantities inflate or shrink revenue | Kept as received, flagged, left out of every figure until reviewed | `ReviewQueueTest.correctingSetsTheQuantityRecalculatesTheTotalAndTheOrderJoinsRevenue`; `DashboardApiTest` |
+| Two admins decide the same order at once | Version check in one update: exactly one wins, the other gets 409 | `ReviewQueueTest.twoAdminsAtOnce_exactlyOneDecisionWins` |
+| An order is decided twice, or from an out-of-date screen | 409; the first decision stands | `ReviewQueueTest.anOrderCanBeDecidedOnlyOnce`, `badCorrectionsAreRefused` (stale version) |
+| A correction sets quantity 0 or below, has no reason, skips a flagged line, or changes a normal line | 400 with the rule; nothing saved, nothing audited | `ReviewQueueTest.badCorrectionsAreRefused` |
+| A correction quietly changes a recorded price | Refused: a D10 line's price is the sale price (D15); only a D11 line (no price) gets one | Same test; `aMissingPriceIsSetByTheAdmin_D11` |
+| Fixing an old order changes today's stock | Never: stock comes from the count, not from replaying orders | `correctingSets...` (stock and movements unchanged) |
+| Nobody can see what the order looked like before | The original values stay on the order view and in the audit log (who, when, before, after, why) | `correctingSets...` |
+| A store manager or finance approver reviews orders | 403; signed out is 401 | `ReviewQueueTest.onlyAdminsSeeOrDecide` |
+| The admin saves half a correction, or one with no reason | The web button stays disabled until every flagged line has a valid value and there is a reason; the new total is previewed first | web `ReviewsPage.test.tsx` |
+| Another admin decided while this one was typing | The server's 409 message is shown; nothing is overwritten | web `ReviewsPage.test.tsx` |
+
 ## Web app: sign-in
 
 | What could go wrong | How it's handled | Proof |
