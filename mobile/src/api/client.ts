@@ -7,6 +7,12 @@ import type { Session } from './types';
 /** Set EXPO_PUBLIC_API_URL to the core service, e.g. http://192.168.1.20:8080 for a phone on the same Wi-Fi. */
 export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080';
 
+/**
+ * The notification service (DL-12), which serves the bell. Set EXPO_PUBLIC_NOTIFICATIONS_URL when deployed;
+ * locally it is the same machine as the core service on port 8081.
+ */
+export const NOTIFICATIONS_URL = process.env.EXPO_PUBLIC_NOTIFICATIONS_URL ?? API_URL.replace(/:8080$/, ':8081');
+
 const REFRESH_KEY = 'shelfwise.refreshToken';
 const NETWORK_ERROR = "Can't reach the server. Check your connection and try again.";
 
@@ -67,25 +73,26 @@ export async function logout() {
   }
 }
 
-export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
-  let response = await send(path, init, true);
+/** Calls the core service, or another ShelfWise service when {@code base} is given (e.g. the bell). */
+export async function api<T>(path: string, init: RequestInit = {}, base: string = API_URL): Promise<T> {
+  let response = await send(path, init, true, base);
   if (response.status === 401 && session) {
     if (!(await refresh())) {
       await setSession(null);
       throw new ApiError('Your session has expired. Please sign in again.', 401);
     }
-    response = await send(path, init, true);
+    response = await send(path, init, true, base);
   }
   if (!response.ok) throw new ApiError(await message(response), response.status);
   return (response.status === 204 ? undefined : await response.json()) as T;
 }
 
-async function send(path: string, init: RequestInit, withToken: boolean): Promise<Response> {
+async function send(path: string, init: RequestInit, withToken: boolean, base: string = API_URL): Promise<Response> {
   const headers = new Headers(init.headers);
   if (init.body) headers.set('Content-Type', 'application/json');
   if (withToken && session?.accessToken) headers.set('Authorization', `Bearer ${session.accessToken}`);
   try {
-    return await fetch(API_URL + path, { ...init, headers });
+    return await fetch(base + path, { ...init, headers });
   } catch {
     throw new ApiError(NETWORK_ERROR, 0);
   }

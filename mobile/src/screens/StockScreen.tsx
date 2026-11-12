@@ -10,9 +10,9 @@ const SIZE = 30;
  * Stock in the manager's own store (brief feature 4, mobile): search, "low only", and adjustments with a reason.
  * The server checks the store and keeps stock at 0 or above even when two people change it at once.
  */
-export function StockScreen({ user }: { user: UserSummary }) {
+export function StockScreen({ user, startLowOnly = false }: { user: UserSummary; startLowOnly?: boolean }) {
   const [text, setText] = useState('');
-  const [lowOnly, setLowOnly] = useState(false);
+  const [lowOnly, setLowOnly] = useState(startLowOnly);
   const [items, setItems] = useState<StockItem[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);

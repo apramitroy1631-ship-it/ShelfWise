@@ -2,7 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { logout, onSessionChange, restoreSession } from './src/api/client';
-import type { Session } from './src/api/types';
+import type { NotificationItem, Session } from './src/api/types';
+import { Bell } from './src/Bell';
 import { CatalogueScreen } from './src/screens/CatalogueScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { OrdersScreen } from './src/screens/OrdersScreen';
@@ -26,6 +27,7 @@ export default function App() {
   const [starting, setStarting] = useState(true);
   const [tab, setTab] = useState<Tab>('stock');
   const banner = bannerText(useConfig());
+  const [stockView, setStockView] = useState({ low: false, key: 0 });   // a stock notification opens 'low stock only' (D7)
 
   useEffect(() => {
     onSessionChange(setSession);
@@ -45,6 +47,14 @@ export default function App() {
     );
   }
 
+  /** A stock notification opens Stock with "low stock only" on; a PO decision just gets marked read (no PO screen on mobile). */
+  function openNotification(item: NotificationItem) {
+    if (item.kind === 'OUT_OF_STOCK' || item.kind === 'RUNNING_LOW') {
+      setStockView((v) => ({ low: true, key: v.key + 1 }));
+      setTab('stock');
+    }
+  }
+
   return (
     <View style={styles.screen}>
       <StatusBar style="light" />
@@ -53,14 +63,17 @@ export default function App() {
           <Text style={styles.headerTitle}>{TABS.find((t) => t.id === tab)!.label}</Text>
           <Text style={styles.headerSub}>Store {user.storeId} · {user.name}</Text>
         </View>
-        <Pressable accessibilityRole="button" onPress={logout} style={{ minHeight: 44, justifyContent: 'center' }}>
-          <Text style={{ color: '#aeb9db', fontSize: 15 }}>Sign out</Text>
-        </Pressable>
+        <View style={styles.row}>
+          <Bell onOpenItem={openNotification} />
+          <Pressable accessibilityRole="button" onPress={logout} style={{ minHeight: 44, justifyContent: 'center' }}>
+            <Text style={{ color: '#aeb9db', fontSize: 15 }}>Sign out</Text>
+          </Pressable>
+        </View>
       </View>
       {banner && <Banner text={banner} />}
       <View style={{ flex: 1 }}>
         {tab === 'orders' && <OrdersScreen user={user} />}
-        {tab === 'stock' && <StockScreen user={user} />}
+        {tab === 'stock' && <StockScreen key={stockView.key} user={user} startLowOnly={stockView.low} />}
         {tab === 'catalogue' && <CatalogueScreen />}
       </View>
       <View accessibilityRole="tablist" style={{ flexDirection: 'row', backgroundColor: colors.surface, borderTopWidth: 1, borderColor: colors.border, paddingBottom: 12 }}>
