@@ -145,6 +145,22 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | A decision is saved but its notification is lost (or the other way round) | The event is written to the outbox in the same transaction | `PurchaseOrdersApiTest.draftSubmitApproveAndReceiveInParts_D21` (checks the events) |
 | App PO numbers clash with imported ones | App POs are numbered from PO-10000 (imported: PO-0001 to PO-0300) | `V3__purchase_order_numbers.sql` |
 
+## Supplier invoices (M20)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| A Windows program is renamed `.pdf` (`invoice_renamed.pdf`) | The type is decided from the file's first bytes, never its name or the type the browser claims; anything that isn't a real PDF, PNG or JPEG gets 415 and nothing is stored | `InvoicesApiTest.anExecutableRenamedToPdfIsRefused_byContentNotName` |
+| A PDF is cut off part-way (`invoice_truncated.pdf`) | A PDF must end with its `%%EOF` marker (PNG: `IEND` chunk; JPEG: end marker), otherwise 422 "damaged or incomplete" | `InvoicesApiTest.aTruncatedPdfIsRefusedAsCorrupt` |
+| A file over 20 MB (the 22 MB sample) | Read with a hard 20 MB cap, so a huge file is never held in memory; refused with 413. The test generates a file just over 20 MB (the sample isn't committed); exactly 20 MB is accepted | `InvoicesApiTest.aFileOver20MbIsRefused_andNothingIsStored`, `aFileExactlyAtTheLimitIsAccepted` |
+| An empty file | 422 | `InvoicesApiTest.anEmptyFileIsRefused` |
+| The file name is a trap (`..\..\evil/inv.exe`) | Only the bare name is kept and its ending follows the real type (`inv.pdf`); files are stored under a generated key, never the uploaded name | `InvoicesApiTest.folderPartsAndWrongEndingsInTheNameAreCleaned` |
+| Replacing an invoice loses the old one | The old file becomes an "earlier version" and stays viewable; the database allows exactly one current invoice per PO | `InvoicesApiTest.replacingKeepsTheOldVersion_andOnlyOneIsCurrent` |
+| Another store's manager, or finance, attaches a file; or someone not signed in lists them | Attaching is for that store's managers and admins (403 otherwise); viewing follows the PO's store scope; no token is 401 | `InvoicesApiTest.onlyThatStoresManagersCanAttach_financeCanOnlyView` |
+| The file is saved but the database write fails (or the reverse) | File first, then the record in one transaction with its audit entry; if the record fails the stored file is removed. Two uploads at the same moment: the unique "one current" rule lets one win and the other gets 409 | design; `InvoicesApiTest` (happy path) |
+| The real storage differs from the test stand-in | The S3 code runs against the same SeaweedFS image docker-compose uses (bucket made on first use; put, get, delete) | `S3ObjectStorageTest` |
+| A viewer's browser guesses a different type and runs the file | Served with the type found from its contents and `X-Content-Type-Options: nosniff` | `InvoicesApiTest.attachesAValidPdfAndAnImage_andFinanceCanView` |
+| A phone user picks a 22 MB file | The apps check the size first to save a slow upload; the server's check is the real one | web `InvoicePanel.test.tsx`, mobile `Invoices.test.tsx` |
+
 ## Dashboard and CSV export (M22)
 
 | What could go wrong | How it's handled | Proof |

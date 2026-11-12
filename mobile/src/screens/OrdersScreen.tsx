@@ -1,8 +1,8 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { api, query } from '../api/client';
 import type { OrderDetail, OrderStatus, OrderSummary, Page, StockItem, UserSummary } from '../api/types';
-import { Button, Chip, colors, money, State, styles } from '../ui';
+import { Button, Chip, colors, money, Sheet, State, styles } from '../ui';
 
 const SIZE = 30;
 
@@ -101,21 +101,6 @@ function StatusChip({ status }: { status: OrderStatus }) {
     <View style={[styles.chip, { backgroundColor: status === 'CANCELLED' ? '#f3f4f6' : status === 'DELIVERED' ? '#dcfce7' : '#e0e7ff' }]}>
       <Text style={{ fontSize: 12, fontWeight: '600', color: colors.text }}>{s.icon} {s.label}</Text>
     </View>
-  );
-}
-
-function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
-  return (
-    <Modal transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(17,24,39,0.4)' }}>
-        <View accessibilityViewIsModal style={{ maxHeight: '90%', backgroundColor: colors.surface, borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
-          <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }} keyboardShouldPersistTaps="handled">
-            <Text style={{ fontSize: 18, fontWeight: '600', color: colors.text }}>{title}</Text>
-            {children}
-          </ScrollView>
-        </View>
-      </View>
-    </Modal>
   );
 }
 

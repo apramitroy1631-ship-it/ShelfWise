@@ -87,6 +87,12 @@ export type PoApproval = { approverId: string; approverName: string; decision: '
 
 export type PoDetail = { summary: PoSummary; createdBy: string; createdByName: string; closedReason: string | null; lines: PoLine[]; approvals: PoApproval[] };
 
+/** A supplier invoice file on a PO (M20). Newest first; exactly one is current, older ones are kept. */
+export type Invoice = {
+  id: string; fileName: string; contentType: 'application/pdf' | 'image/png' | 'image/jpeg'; sizeBytes: number;
+  current: boolean; uploadedBy: string; uploadedByName: string; uploadedAt: string;
+};
+
 export type PoSuggestion = { sku: string; productName: string; supplierId: string; quantity: number; reorderLevel: number; suggestedQty: number; unitCost: number };
 
 // Dashboard (M22). Revenue = delivered orders only; dates are IST days.

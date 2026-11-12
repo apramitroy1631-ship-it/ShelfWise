@@ -1,6 +1,6 @@
 // Shared look for the mobile screens, using the design-system v3 colours (docs/design-system.md).
 import type { ReactNode } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export const colors = {
   nav: '#0e1a3a',
@@ -48,6 +48,22 @@ export function State({ loading, error, empty }: { loading: boolean; error: stri
   if (loading) return <ActivityIndicator style={{ margin: 24 }} color={colors.primary} />;
   if (empty) return <Text style={styles.empty}>{empty}</Text>;
   return null;
+}
+
+/** A bottom sheet for details and forms. */
+export function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+  return (
+    <Modal transparent animationType="slide" onRequestClose={onClose}>
+      <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(17,24,39,0.4)' }}>
+        <View accessibilityViewIsModal style={{ maxHeight: '90%', backgroundColor: colors.surface, borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
+          <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }} keyboardShouldPersistTaps="handled">
+            <Text style={{ fontSize: 18, fontWeight: '600', color: colors.text }}>{title}</Text>
+            {children}
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
 }
 
 export const styles = StyleSheet.create({

@@ -58,9 +58,35 @@ export async function downloadFile(path: string, fallbackName: string): Promise<
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Opens a file (e.g. a supplier invoice) in a new tab. The request needs the signed-in user's token, so the file
+ * is fetched first and shown from a temporary local address. The tab is opened straight away so the browser
+ * doesn't block it as a pop-up.
+ */
+export async function viewFile(path: string): Promise<void> {
+  const tab = window.open('', '_blank');
+  try {
+    let response = await send(path, {});
+    if (response.status === 401 && session && (await refresh())) {
+      response = await send(path, {});
+    }
+    if (!response.ok) {
+      throw new ApiError(await message(response), response.status);
+    }
+    const url = URL.createObjectURL(await response.blob());
+    if (tab) tab.location.href = url;
+    else window.location.href = url;
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  } catch (e) {
+    tab?.close();
+    throw e;
+  }
+}
+
 async function send(path: string, init: RequestInit): Promise<Response> {
   const headers = new Headers(init.headers);
-  if (init.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
+  // A file upload (FormData) must not get a JSON type: the browser adds its own with the multipart boundary.
+  if (init.body && !(init.body instanceof FormData) && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
   if (session) headers.set('Authorization', `Bearer ${session.accessToken}`);
   try {
     return await fetch(path, { ...init, headers });

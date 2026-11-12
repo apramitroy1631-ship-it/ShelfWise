@@ -3,7 +3,7 @@
 #   docker compose up -d --build
 #
 # The passwords below are LOCAL DEVELOPMENT defaults only; real environments set their own.
-# File storage (S3-compatible) is added once its local image is decided (see docs/decision-log.md, DL-04).
+# File storage is SeaweedFS (S3-compatible, DL-04); invoices go in the bucket the core service creates on first use.
 name: shelfwise
 
 services:
@@ -34,6 +34,15 @@ services:
       timeout: 5s
       retries: 20
 
+  seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    # Single-node server with the S3 API on 8333. Local development only (no access control).
+    command: server -dir=/data -s3
+    ports:
+      - "8333:8333"
+    volumes:
+      - seaweeddata:/data
+
   core-service:
     build:
       context: ./backend
@@ -53,6 +62,8 @@ services:
       JWT_SECRET: ${JWT_SECRET:-local-development-only-secret-do-not-use-elsewhere}
       # The outbox relay publishes events here (DL-03). If RabbitMQ is down, events wait in the outbox.
       RABBITMQ_URI: amqp://guest:guest@rabbitmq:5672
+      # Supplier invoices (DL-04). Deployed environments point these at Cloudflare R2.
+      STORAGE_ENDPOINT: http://seaweedfs:8333
     volumes:
       - ./data:/data:ro   # the provided dataset, read-only
     ports:
@@ -60,6 +71,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      seaweedfs:
+        condition: service_started
 
   notification-service:
     build:
@@ -84,3 +97,4 @@ services:
 
 volumes:
   pgdata:
+  seaweeddata:

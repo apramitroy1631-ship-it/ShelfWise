@@ -7,13 +7,15 @@ import { Bell } from './src/Bell';
 import { CatalogueScreen } from './src/screens/CatalogueScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { OrdersScreen } from './src/screens/OrdersScreen';
+import { PurchasesScreen } from './src/screens/PurchasesScreen';
 import { StockScreen } from './src/screens/StockScreen';
 import { colors, State, styles } from './src/ui';
 import { bannerText, useConfig } from './src/useConfig';
 
-type Tab = 'orders' | 'stock' | 'catalogue';
+type Tab = 'orders' | 'purchases' | 'stock' | 'catalogue';
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: 'orders', label: 'Orders', icon: '▤' },
+  { id: 'purchases', label: 'Purchases', icon: '⇩' },
   { id: 'stock', label: 'Stock', icon: '▦' },
   { id: 'catalogue', label: 'Catalogue', icon: '☰' },
 ];
@@ -73,6 +75,7 @@ export default function App() {
       {banner && <Banner text={banner} />}
       <View style={{ flex: 1 }}>
         {tab === 'orders' && <OrdersScreen user={user} />}
+        {tab === 'purchases' && <PurchasesScreen user={user} />}
         {tab === 'stock' && <StockScreen key={stockView.key} user={user} startLowOnly={stockView.low} />}
         {tab === 'catalogue' && <CatalogueScreen />}
       </View>

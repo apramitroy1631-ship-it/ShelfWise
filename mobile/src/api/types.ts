@@ -59,3 +59,19 @@ export type NotificationKind = 'OUT_OF_STOCK' | 'RUNNING_LOW' | 'NEEDS_APPROVAL'
 export type NotificationItem = { id: number; kind: NotificationKind; text: string; count: number | null; ref: string | null; unread: boolean; at: string };
 
 export type NotificationFeed = { unreadCount: number; items: NotificationItem[] };
+
+export type PoStatus = 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED' | 'PARTIALLY_RECEIVED' | 'RECEIVED' | 'EXPIRED' | 'CLOSED';
+
+export type PoSummary = {
+  id: string; storeId: string; supplierId: string; status: PoStatus; totalAmount: number; createdAt: string; stuck: boolean; version: number;
+};
+
+export type PoLine = { sku: string; productName: string | null; qtyOrdered: number; qtyReceived: number; unitCost: number; lineTotal: number };
+
+export type PoDetail = { summary: PoSummary; createdByName: string | null; closedReason: string | null; lines: PoLine[] };
+
+/** A supplier invoice file on a PO (M20). Newest first; exactly one is current, older ones are kept. */
+export type Invoice = {
+  id: string; fileName: string; contentType: 'application/pdf' | 'image/png' | 'image/jpeg'; sizeBytes: number;
+  current: boolean; uploadedBy: string; uploadedByName: string; uploadedAt: string;
+};

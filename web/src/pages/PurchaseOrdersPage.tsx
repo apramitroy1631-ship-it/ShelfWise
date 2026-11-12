@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { UserSummary } from '../api/auth';
 import { api, query } from '../api/client';
 import type { PoDetail, PoStatus, PoSuggestion, PoSummary } from '../api/types';
+import { InvoicePanel } from '../components/InvoicePanel';
 import { Chip, Kpi, ListState, PO_STATUSES, Pager, PoStatusChip, SearchBox, poStatusLabel } from '../components/ui';
 import { dateTime, money } from '../lib/format';
 import { useCounts, useList } from '../lib/useList';
@@ -221,6 +222,8 @@ function PoDetailPage({ id, user, onBack }: { id: string; user: UserSummary; onB
       {mode === 'receive'
         ? <ReceiveForm po={po} busy={busy} onSubmit={(lines) => act('receive', { lines })} onCancel={() => setMode('none')} />
         : <LinesTable po={po} />}
+
+      {s.status !== 'DRAFT' && <InvoicePanel poId={s.id} canAttach={managesStore} />}
 
       {po.approvals.length > 0 && (
         <div className="panel">
