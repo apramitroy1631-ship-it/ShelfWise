@@ -202,6 +202,22 @@ EXPO_PUBLIC_API_URL=http://<your-laptop-ip>:8080 npx expo start   # scan the QR 
 - Browser preview: `npx expo start --web --port 8082`, with the core service started with `CORS_ALLOWED_ORIGINS=http://localhost:8082`.
 - Tests: `npm test`; type check: `npm run typecheck`. CI: `.github/workflows/mobile.yml` (runs only when `mobile/` changes).
 
+### Scheduled jobs (admin)
+
+Two nightly jobs run at night IST (M23). Every run is recorded in `job_runs`; if two copies of the core service wake up together, only one does the work (database lock).
+
+| Job | What it does | Default time |
+|---|---|---|
+| `EXPIRE_DRAFTS` | Draft POs untouched for more than 14 days (remote config `purchaseOrders.draftExpiryDays`) become EXPIRED, audited (D22). Imported drafts count from their creation date, so all 20 expire on the first run | 01:30 |
+| `LOW_STOCK_RECOUNT` | Recounts out-of-stock and running-low items per store and sends the current counts to the notification service | 01:45 |
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /api/admin/jobs/{job}/run` | Run a job now (admin only), e.g. in a demo |
+| `GET /api/admin/jobs/runs` | The latest runs: when, by whom, outcome, what changed |
+
+Times: `JOBS_EXPIRE_DRAFTS_CRON`, `JOBS_LOW_STOCK_CRON` (Spring cron; `-` switches a job off); `JOBS_ENABLED=false` stops the schedule.
+
 ### Running the backend tests
 
 Needs Java 21 and Docker running (tests start a throwaway PostgreSQL):

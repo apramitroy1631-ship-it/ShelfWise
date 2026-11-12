@@ -28,10 +28,10 @@ public class AuditLog {
                         INSERT INTO audit_log (actor_user_id, action, entity_type, entity_id, before_value, after_value, reason)
                         VALUES (:actor, :action, :entityType, :entityId, :before, :after, :reason)
                         """)
-                .bind("actor", actorUserId)
                 .bind("action", action)
                 .bind("entityType", entityType)
                 .bind("entityId", entityId);
+        spec = actorUserId == null ? spec.bindNull("actor", String.class) : spec.bind("actor", actorUserId);   // null = the system (a job)
         spec = before == null ? spec.bindNull("before", Json.class) : spec.bind("before", Json.of(json.writeValueAsString(before)));
         spec = after == null ? spec.bindNull("after", Json.class) : spec.bind("after", Json.of(json.writeValueAsString(after)));
         spec = reason == null ? spec.bindNull("reason", String.class) : spec.bind("reason", reason);
