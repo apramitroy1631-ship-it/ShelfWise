@@ -34,7 +34,7 @@ function backend(notifications: () => Response) {
     if (path === '/api/auth/login') return Promise.resolve(json(200, SESSION));
     if (path === '/api/notifications') return Promise.resolve(notifications());
     if (path.startsWith('/api/notifications/')) return Promise.resolve(json(204));
-    if (path === '/api/orders' || path === '/api/inventory') return Promise.resolve(json(200, EMPTY_PAGE));
+    if (path === '/api/orders' || path === '/api/inventory' || path === '/api/purchase-orders') return Promise.resolve(json(200, EMPTY_PAGE));
     return Promise.resolve(json(404, { detail: 'not mocked' }));
   });
 }
@@ -93,6 +93,25 @@ describe('notification bell', () => {
     await userEvent.click(screen.getByText(/running low in S01/));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/inventory\?.*lowOnly=true.*page=0/), expect.anything()));
+  });
+
+  it('stuck notifications open their list with "stuck" on (D32 orders, D22 purchase orders)', async () => {
+    const fetchMock = backend(() => json(200, { unreadCount: 2, items: [
+      { id: 21, kind: 'STUCK_ORDERS', text: '42 orders are stuck in S01 · oldest waiting 40 days', count: 42, ref: null, unread: true, at: '2026-11-12T01:45:00Z' },
+      { id: 22, kind: 'STUCK_POS', text: '12 purchase orders are waiting too long for goods · oldest waiting 270 days', count: 12, ref: null, unread: true, at: '2026-11-12T01:45:00Z' },
+    ] }));
+    vi.stubGlobal('fetch', fetchMock);
+    await signIn();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Notifications, 2 unread' }));
+    await userEvent.click(screen.getByText(/42 orders are stuck/));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/orders\?.*stuck=true.*page=0/), expect.anything()));
+    expect(screen.getByRole('button', { name: /^Stuck:/ })).toHaveAttribute('aria-pressed', 'true');
+
+    await userEvent.click(screen.getByRole('button', { name: /^Notifications/ }));
+    await userEvent.click(screen.getByText(/waiting too long for goods/));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/purchase-orders\?.*stuck=true.*page=0/), expect.anything()));
+    expect(screen.getByRole('heading', { name: 'Purchase orders' })).toBeInTheDocument();
   });
 
   it('if the notification service is down, the app keeps working and the panel says so (DL-12)', async () => {

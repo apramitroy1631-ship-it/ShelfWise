@@ -27,6 +27,16 @@ public class Outbox {
         this.json = json;
     }
 
+    /** Marker: a store's stuck orders or stuck POs may have changed (D32, D22). The relay sends the current counts. */
+    public Mono<Void> stuckWorkChanged(String storeId) {
+        return add("STORE", storeId, "StuckWorkChanged", Map.of());
+    }
+
+    /** Marker: what head office sees may have changed (orders waiting for review, D10). The relay sends the current counts. */
+    public Mono<Void> headOfficeChanged() {
+        return add("ADMIN", "ADMIN", "HeadOfficeChanged", Map.of());
+    }
+
     public Mono<Void> add(String aggregateType, String aggregateId, String eventType, Map<String, Object> payload) {
         return db.sql("""
                         INSERT INTO outbox_events (id, aggregate_type, aggregate_id, event_type, payload)

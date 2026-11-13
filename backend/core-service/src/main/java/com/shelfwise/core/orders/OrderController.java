@@ -43,7 +43,7 @@ public class OrderController {
         this.export = export;
     }
 
-    /** e.g. /api/orders?storeId=S01&status=PENDING&q=Zoya&from=2026-10-01&to=2026-10-31&page=0&size=20 (dates in IST) */
+    /** e.g. /api/orders?storeId=S01&status=PENDING&q=Zoya&from=2026-10-01&to=2026-10-31&stuck=true&page=0&size=20 (dates in IST) */
     @GetMapping
     public Mono<Page<OrderSummary>> search(@AuthenticationPrincipal UserAccount user,
                                            @RequestParam(required = false) String storeId,
@@ -51,9 +51,10 @@ public class OrderController {
                                            @RequestParam(required = false) String q,
                                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
                                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+                                           @RequestParam(defaultValue = "false") boolean stuck,
                                            @RequestParam(defaultValue = "0") int page,
                                            @RequestParam(defaultValue = "20") int size) {
-        return orders.search(user, storeId, status, q, from, to, page, size);
+        return orders.search(user, storeId, status, q, from, to, stuck, page, size);
     }
 
     /**

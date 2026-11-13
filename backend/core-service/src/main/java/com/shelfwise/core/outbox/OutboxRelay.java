@@ -48,7 +48,7 @@ import tools.jackson.databind.ObjectMapper;
 @ConditionalOnProperty(name = "shelfwise.messaging.relay-enabled", havingValue = "true")
 public class OutboxRelay {
 
-    static final Set<String> SNAPSHOT_EVENTS = Set.of("StockHealthChanged", "ApprovalQueueChanged");
+    static final Set<String> SNAPSHOT_EVENTS = Set.of("StockHealthChanged", "ApprovalQueueChanged", "StuckWorkChanged", "HeadOfficeChanged");
     private static final Logger log = LoggerFactory.getLogger(OutboxRelay.class);
 
     private record Pending(UUID id, String aggregateType, String aggregateId, String eventType, String payload, OffsetDateTime createdAt) {
@@ -92,13 +92,17 @@ public class OutboxRelay {
         }
     }
 
-    /** One marker per store and one for finance: the notification service always starts from the current counts. */
+    /** One marker per store (stock, stuck work), one for finance and one for head office: the notification service always starts from the current counts. */
     public Mono<Void> markStartingState() {
         return db.sql("""
                         INSERT INTO outbox_events (id, aggregate_type, aggregate_id, event_type, payload)
                         SELECT gen_random_uuid(), 'STORE', id, 'StockHealthChanged', '{}'::jsonb FROM stores
                         UNION ALL
                         SELECT gen_random_uuid(), 'FINANCE', 'FINANCE', 'ApprovalQueueChanged', '{}'::jsonb
+                        UNION ALL
+                        SELECT gen_random_uuid(), 'STORE', id, 'StuckWorkChanged', '{}'::jsonb FROM stores
+                        UNION ALL
+                        SELECT gen_random_uuid(), 'ADMIN', 'ADMIN', 'HeadOfficeChanged', '{}'::jsonb
                         """)
                 .then();
     }
@@ -154,6 +158,8 @@ public class OutboxRelay {
         Mono<Map<String, Object>> payload = switch (p.eventType()) {
             case "StockHealthChanged" -> snapshots.stockHealth(p.aggregateId());
             case "ApprovalQueueChanged" -> snapshots.approvalQueue();
+            case "StuckWorkChanged" -> snapshots.stuckWork(p.aggregateId());
+            case "HeadOfficeChanged" -> snapshots.headOffice();
             default -> Mono.fromCallable(() -> readMap(p.payload()));
         };
         return payload.map(body -> {

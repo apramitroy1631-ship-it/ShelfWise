@@ -27,7 +27,8 @@ public class PurchaseOrderRepository {
                         int validApprovals, OffsetDateTime approvedAt) {
     }
 
-    public record Search(String storeId, String status, String supplierId, String text, int page, int size) {
+    /** {@code stuckBefore}: when set, only POs waiting for goods since before it ("stuck", D22); null = no stuck filter. */
+    public record Search(String storeId, String status, String supplierId, String text, OffsetDateTime stuckBefore, int page, int size) {
     }
 
     private static final String COLUMNS = """
@@ -218,6 +219,12 @@ public class PurchaseOrderRepository {
         if (s.supplierId() != null && !s.supplierId().isBlank()) {
             conditions.add("supplier_id = :supplier");
             params.put("supplier", s.supplierId());
+        }
+        if (s.stuckBefore() != null) {   // the stuck flag's rule: waiting since approval (or creation if none is recorded)
+            conditions.add("status IN ('APPROVED', 'PARTIALLY_RECEIVED') AND coalesce("
+                    + "(SELECT max(a.decided_at) FROM po_approvals a WHERE a.po_id = purchase_orders.id AND a.counts AND a.step IS NOT NULL),"
+                    + " created_at) < :stuckBefore");
+            params.put("stuckBefore", s.stuckBefore());
         }
         if (s.text() != null && !s.text().isBlank()) {
             conditions.add("id ILIKE :text");

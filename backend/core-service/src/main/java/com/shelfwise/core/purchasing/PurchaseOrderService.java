@@ -76,18 +76,22 @@ public class PurchaseOrderService {
 
     // --- reading -----------------------------------------------------------
 
+    /** {@code stuck}: only POs waiting for goods past the remote-config limit (D22), the list a stuck notification opens. */
     public Mono<Page<Summary>> search(UserAccount user, String storeId, String status, String supplierId, String text,
-                                      int page, int size) {
+                                      boolean stuck, int page, int size) {
         String store = StoreAccess.readableStore(user, storeId);
         if (page < 0 || size < 1 || size > MAX_PAGE_SIZE) {
             return Mono.error(badRequest("page must be 0 or more and size between 1 and " + MAX_PAGE_SIZE));
         }
-        var search = new PurchaseOrderRepository.Search(store, status, supplierId, text, page, size);
-        return rules().flatMap(rules -> pos.search(search)
-                .map(po -> summary(po, rules))
-                .collectList()
-                .zipWith(pos.count(search))
-                .map(t -> new Page<>(t.getT1(), page, size, t.getT2(), (t.getT2() + size - 1) / size)));
+        return rules().flatMap(rules -> {
+            var search = new PurchaseOrderRepository.Search(store, status, supplierId, text,
+                    stuck ? OffsetDateTime.now().minus(Duration.ofDays(rules.stuckAfterDays())) : null, page, size);
+            return pos.search(search)
+                    .map(po -> summary(po, rules))
+                    .collectList()
+                    .zipWith(pos.count(search))
+                    .map(t -> new Page<>(t.getT1(), page, size, t.getT2(), (t.getT2() + size - 1) / size));
+        });
     }
 
     public Mono<Detail> get(UserAccount user, String id) {
@@ -218,7 +222,8 @@ public class PurchaseOrderService {
                                             "reapproval", reapproval,
                                             "validApprovals", after.validApprovals(),
                                             "approvalsNeeded", needed))))
-                                    .then(approvalQueueChanged()))
+                                    .then(approvalQueueChanged())
+                                    .then(outbox.stuckWorkChanged(po.storeId())))   // an approval starts (or restarts) the stuck clock (D22)
                             .then(load(id));
                 })
                 .flatMap(this::detail)
@@ -279,7 +284,8 @@ public class PurchaseOrderService {
                                 return pos.setStatus(id, newStatus)
                                         .then(outbox.add("PURCHASE_ORDER", id, "PurchaseOrderReceived", event(po, Map.of(
                                                 "status", newStatus, "receivedBy", user.id(),
-                                                "qtyOrdered", totals[0], "qtyReceived", totals[1]))));
+                                                "qtyOrdered", totals[0], "qtyReceived", totals[1]))))
+                                        .then(outbox.stuckWorkChanged(po.storeId()));
                             })
                             .then(load(id));
                 })
@@ -316,6 +322,7 @@ public class PurchaseOrderService {
                             .then(pos.close(id, reason.strip(), user.id()))
                             .then(audit.record(user.id(), "PO_CLOSED", "PURCHASE_ORDER", id,
                                     Map.of("status", po.status()), Map.of("status", "CLOSED"), reason.strip()))
+                            .then(outbox.stuckWorkChanged(po.storeId()))
                             .then(load(id));
                 })
                 .flatMap(this::detail)

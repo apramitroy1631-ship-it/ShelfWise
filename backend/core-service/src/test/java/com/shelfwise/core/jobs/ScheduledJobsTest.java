@@ -126,6 +126,9 @@ class ScheduledJobsTest {
         assertThat(result.outcome()).isEqualTo("DONE");
         assertThat(result.affected()).isEqualTo(2);
         assertThat(number("SELECT count(*) FROM outbox_events WHERE event_type = 'StockHealthChanged'")).isEqualTo(2);
+        // orders and POs become stuck just by getting older, so the nightly run also refreshes stuck work and head office (D7)
+        assertThat(number("SELECT count(*) FROM outbox_events WHERE event_type = 'StuckWorkChanged'")).isEqualTo(2);
+        assertThat(number("SELECT count(*) FROM outbox_events WHERE event_type = 'HeadOfficeChanged'")).isEqualTo(1);
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> stores = (List<Map<String, Object>>) result.details().get("stores");
         assertThat(stores.get(0)).containsEntry("store", "S01").containsEntry("outOfStock", 1L).containsEntry("runningLow", 0L);  // archived bar left out

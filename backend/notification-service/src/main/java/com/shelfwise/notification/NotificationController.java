@@ -88,7 +88,7 @@ public class NotificationController {
         return (id == null ? spec : spec.bind("id", id)).fetch().rowsUpdated();
     }
 
-    /** Store managers: their store. Finance: the finance group. Admin groups come with the nightly job (M23). */
+    /** Store managers: their store. Finance: the finance group. Admins: head office (review queue, stock across all stores). */
     static String audience(Jwt token) {
         String role = token.getClaimAsString("role");
         if ("STORE_MANAGER".equals(role)) {
@@ -110,14 +110,26 @@ public class NotificationController {
         int n = count == null ? 0 : count;
         String others = n <= 1 ? latest + " is" : latest + " and " + (n - 1) + " other item" + (n == 2 ? "" : "s") + " are";
         String waiting = oldestSince == null ? "" : " · oldest waiting " + days(oldestSince);
+        if (audience.equals("ROLE:ADMIN") && (kind.equals("OUT_OF_STOCK") || kind.equals("RUNNING_LOW"))) {
+            // head office: "190 items out of stock across 5 stores" ("latest" carries the number of stores)
+            String stores = "1".equals(latest) ? "1 store" : latest + " stores";
+            return GROUPED.format(n) + (n == 1 ? " item is " : " items are ") + (kind.equals("OUT_OF_STOCK") ? "out of stock" : "running low")
+                    + " across " + stores;
+        }
         return switch (kind) {
             case "OUT_OF_STOCK" -> others + " out of stock in " + store;
             case "RUNNING_LOW" -> others + " running low in " + store;
+            case "STUCK_ORDERS" -> (n == 1 ? latest + " is stuck in " + store : GROUPED.format(n) + " orders are stuck in " + store) + waiting;
+            case "STUCK_POS" -> (n == 1 ? latest + " is waiting too long for goods" : n + " purchase orders are waiting too long for goods") + waiting;
+            case "NEEDS_REVIEW" -> (n == 1 ? latest + " needs review" : n + " imported orders need review") + waiting;
             case "NEEDS_APPROVAL" -> (n == 1 ? latest + " needs your approval" : n + " purchase orders need your approval") + waiting;
             case "NEEDS_SECOND_APPROVAL" -> (n == 1 ? latest + " needs a second approval" : n + " purchase orders need a second approval") + waiting;
             default -> message;
         };
     }
+
+    /** Indian grouping, as everywhere else (1,046). */
+    private static final java.text.NumberFormat GROUPED = java.text.NumberFormat.getIntegerInstance(java.util.Locale.forLanguageTag("en-IN"));
 
     private static String days(OffsetDateTime since) {
         long days = Duration.between(since, OffsetDateTime.now()).toDays();

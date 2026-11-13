@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { FlatList, Modal, Pressable, ScrollView, Switch, Text, TextInput, View } from 'react-native';
 import { api, query } from '../api/client';
 import type { OrderDetail, OrderStatus, OrderSummary, Page, StockItem, UserSummary } from '../api/types';
 import { Button, Chip, colors, money, Sheet, State, styles } from '../ui';
@@ -24,8 +24,10 @@ const NEXT: Partial<Record<OrderStatus, { to: OrderStatus; label: string }[]>> =
 const IST = new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 /** Customer orders in the manager's store (brief feature 5, mobile): list, status changes, new order. */
-export function OrdersScreen({ user }: { user: UserSummary }) {
+/** {@code startStuck}: open with "stuck only" on, as a stuck-orders notification does (D32). */
+export function OrdersScreen({ user, startStuck = false }: { user: UserSummary; startStuck?: boolean }) {
   const [status, setStatus] = useState<OrderStatus | ''>('');
+  const [stuckOnly, setStuckOnly] = useState(startStuck);
   const [items, setItems] = useState<OrderSummary[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
@@ -38,7 +40,7 @@ export function OrdersScreen({ user }: { user: UserSummary }) {
     setLoading(true);
     setError(null);
     try {
-      const data = await api<Page<OrderSummary>>(`/api/orders${query({ storeId: user.storeId, status, page: p, size: SIZE })}`);
+      const data = await api<Page<OrderSummary>>(`/api/orders${query({ storeId: user.storeId, status, stuck: stuckOnly, page: p, size: SIZE })}`);
       setItems((prev) => (p === 0 ? data.items : [...prev, ...data.items]));
       setTotal(data.totalItems);
       setPage(p);
@@ -47,7 +49,7 @@ export function OrdersScreen({ user }: { user: UserSummary }) {
     } finally {
       setLoading(false);
     }
-  }, [user.storeId, status]);
+  }, [user.storeId, status, stuckOnly]);
 
   useEffect(() => { void load(0); }, [load]);
 
@@ -64,7 +66,13 @@ export function OrdersScreen({ user }: { user: UserSummary }) {
             </Pressable>
           ))}
         </ScrollView>
-        <Text style={styles.sub}>{total.toLocaleString('en-IN')} orders in {user.storeId}</Text>
+        <View style={[styles.row, { justifyContent: 'space-between' }]}>
+          <Text style={styles.sub}>{total.toLocaleString('en-IN')} {stuckOnly ? 'stuck ' : ''}orders in {user.storeId}</Text>
+          <View style={styles.row}>
+            <Text style={{ color: colors.text2 }}>Stuck only</Text>
+            <Switch accessibilityLabel="Stuck orders only" value={stuckOnly} onValueChange={setStuckOnly} />
+          </View>
+        </View>
       </View>
       <FlatList
         data={items}

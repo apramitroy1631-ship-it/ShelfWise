@@ -146,15 +146,23 @@ class OutboxRelayTest {
     }
 
     @Test
-    void startingStateSendsOneSnapshotPerStoreAndOneForFinance() throws Exception {
+    void startingStateSendsOneSnapshotPerStoreAndOneForFinanceAndHeadOffice() throws Exception {
         relay.markStartingState().block(Duration.ofSeconds(10));
         relay.publishBatch().block(Duration.ofSeconds(30));
 
-        List<String> types = new ArrayList<>();
+        Map<String, tools.jackson.databind.JsonNode> byType = new java.util.HashMap<>();
         for (GetResponse r; (r = channel.basicGet(queue, true)) != null; ) {
-            types.add(json.readTree(new String(r.getBody(), StandardCharsets.UTF_8)).path("type").asString());
+            var message = json.readTree(new String(r.getBody(), StandardCharsets.UTF_8));
+            byType.put(message.path("type").asString(), message.path("payload"));
         }
-        assertThat(types).containsExactlyInAnyOrder("StockHealthChanged", "ApprovalQueueChanged");
+        assertThat(byType).containsOnlyKeys("StockHealthChanged", "ApprovalQueueChanged", "StuckWorkChanged", "HeadOfficeChanged");
+        // stuck work (D32, D22) per store and head office's summary (D7, D10) carry current counts, like the others
+        assertThat(byType.get("StuckWorkChanged").path("storeId").asString()).isEqualTo("S01");
+        assertThat(byType.get("StuckWorkChanged").path("stuckOrders").path("count").asInt()).isZero();
+        assertThat(byType.get("StuckWorkChanged").path("stuckPurchaseOrders").has("oldestSince")).isTrue();
+        assertThat(byType.get("HeadOfficeChanged").path("needsReview").path("count").asInt()).isZero();
+        assertThat(byType.get("HeadOfficeChanged").path("outOfStock").path("count").asInt()).isZero();   // the archived bar is left out (D3)
+        assertThat(byType.get("HeadOfficeChanged").path("outOfStock").path("latest").asString()).isEqualTo("0");   // stores affected
     }
 
     /** Two copies of the core service relaying at the same moment: every event goes out once (SKIP LOCKED). */

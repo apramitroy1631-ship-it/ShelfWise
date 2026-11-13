@@ -32,7 +32,7 @@ function backend(calls: Call[], bell: () => Promise<Response> = () => json(200, 
     if (url.endsWith('/api/auth/login')) return json(200, SESSION);
     if (url.includes(':8081/api/notifications/')) return json(204);
     if (url.includes(':8081/api/notifications')) return bell();
-    if (url.includes('/api/inventory') || url.includes('/api/orders')) return json(200, EMPTY);
+    if (url.includes('/api/inventory') || url.includes('/api/orders') || url.includes('/api/purchase-orders')) return json(200, EMPTY);
     return json(404, { detail: 'not mocked' });
   });
 }
@@ -68,6 +68,24 @@ describe('bell on mobile (D7)', () => {
     await waitFor(() => expect(calls.some((c) => c.url.endsWith('/api/notifications/7/read') && c.init?.method === 'POST')).toBe(true));
     await waitFor(() => expect(calls.some((c) => /\/api\/inventory\?storeId=S01&lowOnly=true/.test(c.url))).toBe(true));
     expect(screen.getByLabelText('Notifications, 1 unread')).toBeTruthy();
+  });
+
+  it('stuck notifications open Orders or Purchases with "stuck only" on (D32, D22)', async () => {
+    const calls: Call[] = [];
+    await signIn(calls, () => json(200, { unreadCount: 2, items: [
+      { id: 21, kind: 'STUCK_ORDERS', text: '42 orders are stuck in S01 · oldest waiting 40 days', count: 42, ref: null, unread: true, at: '2026-11-12T01:45:00Z' },
+      { id: 22, kind: 'STUCK_POS', text: '12 purchase orders are waiting too long for goods', count: 12, ref: null, unread: true, at: '2026-11-12T01:45:00Z' },
+    ] }));
+
+    await fireEvent.press(await screen.findByLabelText('Notifications, 2 unread'));
+    await fireEvent.press(await screen.findByLabelText(/42 orders are stuck in S01/));
+    await waitFor(() => expect(calls.some((c) => /\/api\/orders\?storeId=S01&stuck=true/.test(c.url))).toBe(true));
+    expect(screen.getByLabelText('Stuck orders only').props.value).toBe(true);
+
+    await fireEvent.press(screen.getByLabelText(/^Notifications/));
+    await fireEvent.press(await screen.findByLabelText(/waiting too long for goods/));
+    await waitFor(() => expect(calls.some((c) => /\/api\/purchase-orders\?storeId=S01&stuck=true/.test(c.url))).toBe(true));
+    expect(screen.getByLabelText('Stuck purchase orders only').props.value).toBe(true);
   });
 
   it('"Mark all as read" clears the badge', async () => {

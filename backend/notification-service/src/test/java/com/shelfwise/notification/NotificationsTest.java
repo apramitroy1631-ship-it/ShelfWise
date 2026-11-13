@@ -126,6 +126,46 @@ class NotificationsTest {
         assertThat(items(feed(ARJUN))).isEmpty();
     }
 
+    // --- stuck work and head office ------------------------------------------------------
+
+    @Test
+    void managersSeeStuckOrdersAndStuckPosWithTheOldestAge_D32_D22() {
+        handle(event("StuckWorkChanged", "S04", Map.of(
+                "storeId", "S04",
+                "stuckOrders", group(42, "ORD-002233", OffsetDateTime.now().minusDays(40).minusHours(1)),
+                "stuckPurchaseOrders", group(1, "PO-0116", OffsetDateTime.now().minusDays(270).minusHours(1)),
+                "asOf", next().toString())));
+        String rani = TestTokens.token("U06", "STORE_MANAGER", "S04");
+
+        assertThat(texts(feed(rani))).containsExactlyInAnyOrder(
+                "42 orders are stuck in S04 · oldest waiting 40 days",
+                "PO-0116 is waiting too long for goods · oldest waiting 270 days");
+        assertThat(items(feed(ARJUN))).isEmpty();                       // another store's managers see nothing
+    }
+
+    @Test
+    void headOfficeSeesOrdersToReviewAndStockAcrossAllStores_D7_D10() {
+        String rohit = TestTokens.token("U01", "ADMIN", null);
+        handle(event("HeadOfficeChanged", "ADMIN", Map.of(
+                "needsReview", group(15, "ORD-000163", OffsetDateTime.now().minusDays(200).minusHours(1)),
+                "outOfStock", group(190, "5", null),
+                "runningLow", group(1046, "5", null),
+                "asOf", next().toString())));
+
+        assertThat(texts(feed(rohit))).containsExactlyInAnyOrder(
+                "15 imported orders need review · oldest waiting 200 days",
+                "190 items are out of stock across 5 stores",
+                "1,046 items are running low across 5 stores");
+        assertThat(items(feed(ARJUN))).isEmpty();
+        assertThat(items(feed(MEERA))).isEmpty();
+
+        // the last review is decided: the group disappears instead of saying "0 orders need review"
+        handle(event("HeadOfficeChanged", "ADMIN", Map.of(
+                "needsReview", group(0, null, null), "outOfStock", group(190, "5", null), "runningLow", group(1046, "5", null),
+                "asOf", next().toString())));
+        assertThat(texts(feed(rohit))).hasSize(2).noneMatch(t -> t.toString().contains("review"));
+    }
+
     // --- PO decisions --------------------------------------------------------------------
 
     @Test
