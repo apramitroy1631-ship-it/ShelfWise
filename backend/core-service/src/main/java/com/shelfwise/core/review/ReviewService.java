@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.shelfwise.core.audit.AuditLog;
 import com.shelfwise.core.auth.UserAccount;
+import com.shelfwise.core.outbox.Outbox;
 import com.shelfwise.core.review.ReviewDtos.CorrectRequest;
 import com.shelfwise.core.review.ReviewDtos.LineFix;
 import com.shelfwise.core.review.ReviewDtos.Problem;
@@ -47,12 +48,15 @@ public class ReviewService {
 
     private final ReviewRepository reviews;
     private final AuditLog audit;
+    private final Outbox outbox;
     private final ObjectMapper json;
     private final TransactionalOperator transaction;
 
-    public ReviewService(ReviewRepository reviews, AuditLog audit, ObjectMapper json, ReactiveTransactionManager transactionManager) {
+    public ReviewService(ReviewRepository reviews, AuditLog audit, Outbox outbox, ObjectMapper json,
+                         ReactiveTransactionManager transactionManager) {
         this.reviews = reviews;
         this.audit = audit;
+        this.outbox = outbox;
         this.json = json;
         this.transaction = TransactionalOperator.create(transactionManager);
     }
@@ -102,7 +106,8 @@ public class ReviewService {
                                 .then(reviews.lines(new String[] {orderId}).collectList())
                                 .flatMap(after -> reviews.find(orderId).flatMap(saved -> audit.record(user.id(),
                                         "ORDER_REVIEW_CORRECTED", "ORDER", orderId, before,
-                                        snapshot(saved.totalAmount(), after), reason)));
+                                        snapshot(saved.totalAmount(), after), reason)))
+                                .then(outbox.headOfficeChanged());              // the admin's "need review" count drops
                     });
                 })
                 .then(Mono.defer(() -> get(user, orderId)))
@@ -117,7 +122,8 @@ public class ReviewService {
                     requireWaiting(order);
                     return claim(order, request.version(), "REJECTED", reason, user)
                             .then(audit.record(user.id(), "ORDER_REVIEW_REJECTED", "ORDER", orderId,
-                                    Map.of("reviewStatus", "NEEDS_REVIEW"), Map.of("reviewStatus", "REJECTED"), reason));
+                                    Map.of("reviewStatus", "NEEDS_REVIEW"), Map.of("reviewStatus", "REJECTED"), reason))
+                            .then(outbox.headOfficeChanged());
                 })
                 .then(Mono.defer(() -> get(user, orderId)))
                 .as(transaction::transactional);

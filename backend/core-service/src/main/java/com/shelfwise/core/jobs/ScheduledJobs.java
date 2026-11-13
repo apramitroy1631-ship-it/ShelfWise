@@ -145,6 +145,12 @@ public class ScheduledJobs {
                 .flatMap(stores -> db.sql("""
                                 INSERT INTO outbox_events (id, aggregate_type, aggregate_id, event_type, payload)
                                 SELECT gen_random_uuid(), 'STORE', id, 'StockHealthChanged', '{"reason": "nightly recount"}'::jsonb FROM stores
+                                UNION ALL
+                                -- orders and POs become stuck just by getting older, so the nightly run refreshes these too (D32, D22)
+                                SELECT gen_random_uuid(), 'STORE', id, 'StuckWorkChanged', '{"reason": "nightly recount"}'::jsonb FROM stores
+                                UNION ALL
+                                -- head office's stock health is a once-a-day summary (D7)
+                                SELECT gen_random_uuid(), 'ADMIN', 'ADMIN', 'HeadOfficeChanged', '{"reason": "nightly recount"}'::jsonb
                                 """)
                         .then()
                         .thenReturn(new Result(stores.size(), Map.of("stores", stores))));

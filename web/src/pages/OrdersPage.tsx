@@ -25,9 +25,11 @@ const BULK: { from: OrderStatus; to: OrderStatus; label: string }[] = [
 ];
 
 /** Orders (M11): KPIs that filter, list with search and date range, bulk status moves, detail panel, New order form. */
-export function OrdersPage({ user, store }: { user: UserSummary; store: string }) {
+/** {@code startStuck}: open with "stuck only" on, as a stuck-orders notification does (D32). */
+export function OrdersPage({ user, store, startStuck = false }: { user: UserSummary; store: string; startStuck?: boolean }) {
   const canAct = user.role !== 'FINANCE_APPROVER';
   const [status, setStatus] = useState<OrderStatus | ''>('');
+  const [stuck, setStuck] = useState(startStuck);
   const [text, setText] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -43,8 +45,11 @@ export function OrdersPage({ user, store }: { user: UserSummary; store: string }
   useEffect(() => { setPage(0); setChecked(new Map()); }, [store]);
 
   const filters = { storeId: store, q: text, from, to };
-  const { data, error, loading } = useList<OrderSummary>(`/api/orders${query({ ...filters, status, page, size: SIZE })}`, reload);
-  const counts = useCounts(Object.fromEntries(['', ...ORDER_STATUSES].map((s) => [s || 'ALL', `/api/orders${query({ ...filters, status: s, size: 1 })}`])), reload);
+  const { data, error, loading } = useList<OrderSummary>(`/api/orders${query({ ...filters, status, stuck, page, size: SIZE })}`, reload);
+  const counts = useCounts({
+    ...Object.fromEntries(['', ...ORDER_STATUSES].map((s) => [s || 'ALL', `/api/orders${query({ ...filters, status: s, size: 1 })}`])),
+    STUCK: `/api/orders${query({ ...filters, stuck: true, size: 1 })}`,
+  }, reload);
 
   function changeFilter(apply: () => void) {
     apply();
@@ -94,7 +99,7 @@ export function OrdersPage({ user, store }: { user: UserSummary; store: string }
   }
 
   const checkedList = [...checked.values()];
-  const filtersOn = !!(status || text || from || to);
+  const filtersOn = !!(status || text || from || to || stuck);
 
   return (
     <section className="page">
@@ -123,10 +128,12 @@ export function OrdersPage({ user, store }: { user: UserSummary; store: string }
       )}
 
       <div className="kpis" role="group" aria-label="Orders by status">
-        <Kpi label="All orders" value={counts.ALL ?? null} active={status === ''} onClick={() => changeFilter(() => setStatus(''))} />
+        <Kpi label="All orders" value={counts.ALL ?? null} active={status === '' && !stuck} onClick={() => changeFilter(() => { setStatus(''); setStuck(false); })} />
         <Kpi label="Pending" icon={IconClock} value={counts.PENDING ?? null} active={status === 'PENDING'} onClick={() => changeFilter(() => setStatus('PENDING'))} />
         <Kpi label="Packed" icon={IconPackage} value={counts.PACKED ?? null} active={status === 'PACKED'} onClick={() => changeFilter(() => setStatus('PACKED'))} />
         <Kpi label="Shipped" icon={IconTruck} value={counts.SHIPPED ?? null} active={status === 'SHIPPED'} onClick={() => changeFilter(() => setStatus('SHIPPED'))} />
+        <Kpi label="Stuck" icon={IconAlertTriangle} value={counts.STUCK ?? null} alert={!!counts.STUCK} active={stuck}
+             hint="Still open past the stuck limit" onClick={() => changeFilter(() => setStuck(!stuck))} />
       </div>
 
       <div className="split">

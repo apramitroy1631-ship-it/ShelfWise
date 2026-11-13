@@ -56,6 +56,7 @@ export function App() {
   const [store, setStore] = useState('');      // head office: '' = all 5 stores
   const [theme, setTheme] = useState<Theme>(currentTheme);
   const [inventoryView, setInventoryView] = useState({ low: false, key: 0 });   // a stock notification opens 'low' (D7)
+  const [stuckView, setStuckView] = useState({ orders: false, pos: false, key: 0 });   // a stuck notification opens 'stuck' (D32, D22)
 
   const config = useConfig();
   const banner = bannerText(config);
@@ -80,12 +81,24 @@ export function App() {
     storeSession(null);
   }
 
-  /** Opening a notification goes where you act on it: stock groups to Inventory (low), PO ones to Purchase orders. */
+  /**
+   * Opening a notification goes where you act on it: stock groups to Inventory (low), stuck orders and stuck POs
+   * to their lists with "stuck" on, orders needing review to the Review queue, other PO ones to Purchase orders.
+   */
   function openNotification(item: NotificationItem) {
     if (item.kind === 'OUT_OF_STOCK' || item.kind === 'RUNNING_LOW') {
       setInventoryView((v) => ({ low: true, key: v.key + 1 }));
       setScreen('inventory');
+    } else if (item.kind === 'STUCK_ORDERS') {
+      setStuckView((v) => ({ orders: true, pos: false, key: v.key + 1 }));
+      setScreen('orders');
+    } else if (item.kind === 'STUCK_POS') {
+      setStuckView((v) => ({ orders: false, pos: true, key: v.key + 1 }));
+      setScreen('purchase-orders');
+    } else if (item.kind === 'NEEDS_REVIEW') {
+      setScreen('reviews');
     } else {
+      setStuckView((v) => ({ orders: false, pos: false, key: v.key + 1 }));
       setScreen('purchase-orders');
     }
   }
@@ -144,10 +157,10 @@ export function App() {
           <NotificationBell onOpenItem={openNotification} />
         </div>
         {screen === 'dashboard' && <DashboardPage user={user} store={scope} />}
-        {screen === 'orders' && <OrdersPage user={user} store={scope} />}
+        {screen === 'orders' && <OrdersPage key={`o${stuckView.key}`} user={user} store={scope} startStuck={stuckView.orders} />}
         {screen === 'inventory' && <InventoryPage key={inventoryView.key} user={user} store={scope} startView={inventoryView.low ? 'low' : 'all'} />}
         {screen === 'catalogue' && <CataloguePage user={user} />}
-        {screen === 'purchase-orders' && <PurchaseOrdersPage user={user} store={scope} />}
+        {screen === 'purchase-orders' && <PurchaseOrdersPage key={`p${stuckView.key}`} user={user} store={scope} startStuck={stuckView.pos} />}
         {screen === 'reviews' && <ReviewsPage store={scope} />}
         {screen === 'settings' && <SettingsPage />}
       </main>

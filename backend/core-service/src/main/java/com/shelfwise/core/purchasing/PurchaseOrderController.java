@@ -37,16 +37,17 @@ public class PurchaseOrderController {
         this.service = service;
     }
 
-    /** e.g. /api/purchase-orders?storeId=S01&status=SUBMITTED&supplierId=SUP03&q=PO-01&page=0&size=20 */
+    /** e.g. /api/purchase-orders?storeId=S01&status=SUBMITTED&supplierId=SUP03&q=PO-01&stuck=true&page=0&size=20 */
     @GetMapping
     public Mono<Page<Summary>> search(@AuthenticationPrincipal UserAccount user,
                                       @RequestParam(required = false) String storeId,
                                       @RequestParam(required = false) String status,
                                       @RequestParam(required = false) String supplierId,
                                       @RequestParam(required = false) String q,
+                                      @RequestParam(defaultValue = "false") boolean stuck,
                                       @RequestParam(defaultValue = "0") int page,
                                       @RequestParam(defaultValue = "20") int size) {
-        return service.search(user, storeId, status, supplierId, q, page, size);
+        return service.search(user, storeId, status, supplierId, q, stuck, page, size);
     }
 
     /** Low-stock items to reorder; managers get their own store, others pass storeId. */

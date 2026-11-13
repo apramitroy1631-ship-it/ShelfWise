@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { api, query } from '../api/client';
 import type { Invoice, Page, PoDetail, PoStatus, PoSummary, UserSummary } from '../api/types';
 import { openInvoice, pickInvoice, sizeLabel, uploadInvoice } from '../invoices';
@@ -21,7 +21,9 @@ const STATUS: Record<PoStatus, { icon: string; label: string }> = {
 const IST = new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 /** Purchase orders of the manager's store (brief feature 6, mobile): list, and each PO's supplier invoice (M20). */
-export function PurchasesScreen({ user }: { user: UserSummary }) {
+/** {@code startStuck}: open with "stuck only" on, as a stuck-PO notification does (D22). */
+export function PurchasesScreen({ user, startStuck = false }: { user: UserSummary; startStuck?: boolean }) {
+  const [stuckOnly, setStuckOnly] = useState(startStuck);
   const [items, setItems] = useState<PoSummary[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
@@ -33,7 +35,7 @@ export function PurchasesScreen({ user }: { user: UserSummary }) {
     setLoading(true);
     setError(null);
     try {
-      const data = await api<Page<PoSummary>>(`/api/purchase-orders${query({ storeId: user.storeId, page: p, size: SIZE })}`);
+      const data = await api<Page<PoSummary>>(`/api/purchase-orders${query({ storeId: user.storeId, stuck: stuckOnly, page: p, size: SIZE })}`);
       setItems((prev) => (p === 0 ? data.items : [...prev, ...data.items]));
       setTotal(data.totalItems);
       setPage(p);
@@ -42,13 +44,19 @@ export function PurchasesScreen({ user }: { user: UserSummary }) {
     } finally {
       setLoading(false);
     }
-  }, [user.storeId]);
+  }, [user.storeId, stuckOnly]);
 
   useEffect(() => { void load(0); }, [load]);
 
   return (
     <View style={{ flex: 1 }}>
-      <Text style={[styles.sub, { padding: 12 }]}>{total.toLocaleString('en-IN')} purchase orders in {user.storeId}</Text>
+      <View style={[styles.row, { justifyContent: 'space-between', padding: 12 }]}>
+        <Text style={styles.sub}>{total.toLocaleString('en-IN')} {stuckOnly ? 'stuck ' : ''}purchase orders in {user.storeId}</Text>
+        <View style={styles.row}>
+          <Text style={{ color: colors.text2 }}>Stuck only</Text>
+          <Switch accessibilityLabel="Stuck purchase orders only" value={stuckOnly} onValueChange={setStuckOnly} />
+        </View>
+      </View>
       <FlatList
         data={items}
         keyExtractor={(po) => po.id}

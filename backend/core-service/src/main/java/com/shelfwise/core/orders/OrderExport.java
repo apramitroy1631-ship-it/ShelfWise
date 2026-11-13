@@ -39,7 +39,7 @@ public class OrderExport {
         }
         var search = new OrderRepository.Search(store, status, text,
                 from == null ? null : from.atStartOfDay().atOffset(IST),
-                to == null ? null : to.plusDays(1).atStartOfDay().atOffset(IST), 0, 0);
+                to == null ? null : to.plusDays(1).atStartOfDay().atOffset(IST), null, 0, 0);
         return Flux.just(HEADER).concatWith(orders.exportRows(search).map(OrderExport::line));
     }
 

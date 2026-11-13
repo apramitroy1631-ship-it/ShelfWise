@@ -139,7 +139,7 @@ Store managers see and change only their own store; admins and finance see all s
 
 | Endpoint | Purpose |
 |---|---|
-| `GET /api/orders?storeId=&status=&q=&from=&to=&page=&size=` | Orders, newest first; `q` matches order ID or customer name; `from`/`to` are IST dates. Phones masked; `stuck` = open longer than 7 days (remote config, D32) |
+| `GET /api/orders?storeId=&status=&q=&from=&to=&stuck=&page=&size=` | Orders, newest first; `q` matches order ID or customer name; `from`/`to` are IST dates. Phones masked; `stuck` = open longer than 7 days (remote config, D32); `stuck=true` lists only those (what the stuck notification opens) |
 | `GET /api/orders/{id}` | One order with its lines. Full phone only for the store's own managers (D16) |
 | `POST /api/orders` | Store managers, own store. `{ "customerName", "customerPhone": "+91 9876543210", "lines": [{ "sku", "qty" }] }` plus header `Idempotency-Key`. Stock is taken at creation; if any line is short, nothing is saved (409) |
 | `POST /api/orders/{id}/status` | `{ "to", "version" }`. Pending → Packed → Shipped → Delivered; Cancelled only from Pending or Packed, and it returns the stock (D29) |
@@ -150,7 +150,7 @@ What can go wrong and how it's handled: [edge-case register](docs/edge-cases.md)
 
 | Endpoint | Who | Purpose |
 |---|---|---|
-| `GET /api/purchase-orders?storeId=&status=&supplierId=&q=&page=&size=` | all (managers: own store) | POs, newest first, with `validApprovals`, `approvalsNeeded`, `requiresReapproval` and `stuck` |
+| `GET /api/purchase-orders?storeId=&status=&supplierId=&q=&stuck=&page=&size=` | all (managers: own store) | POs, newest first, with `validApprovals`, `approvalsNeeded`, `requiresReapproval` and `stuck`; `stuck=true` lists only stuck ones (D22) |
 | `GET /api/purchase-orders/{id}` | all (managers: own store) | One PO with its lines and approvals (in time order, D31) |
 | `GET /api/purchase-orders/suggestions?storeId=` | all | Low-stock items of one store with a suggested quantity (back up to twice the reorder level) |
 | `POST /api/purchase-orders` | store manager | Draft for own store: `{ "supplierId", "lines": [{ "sku", "qty" }] }`. One supplier, active products only; unit cost = catalogue cost today |
@@ -181,7 +181,7 @@ The core service publishes events through RabbitMQ ([event contract](docs/events
 
 | Endpoint | Purpose |
 |---|---|
-| `GET /api/notifications` | Your notifications, newest change first, with `unreadCount`. Store managers: their store's "out of stock", "running low" and PO decisions. Finance: "need your approval" and "need a second approval", with the oldest waiting age |
+| `GET /api/notifications` | Your notifications, newest change first, with `unreadCount`. Store managers: their store's "out of stock", "running low", "stuck orders", "stuck POs" and PO decisions. Finance: "need your approval" and "need a second approval". Admin: "imported orders need review" and stock across all stores ("190 items are out of stock across 5 stores"). Waiting groups show the oldest waiting age |
 | `POST /api/notifications/{id}/read` | Mark one as read (it becomes unread again only if its count goes up) |
 | `POST /api/notifications/read-all` | Mark all as read |
 
@@ -210,7 +210,7 @@ Two nightly jobs run at night IST (M23). Every run is recorded in `job_runs`; if
 | Job | What it does | Default time |
 |---|---|---|
 | `EXPIRE_DRAFTS` | Draft POs untouched for more than 14 days (remote config `purchaseOrders.draftExpiryDays`) become EXPIRED, audited (D22). Imported drafts count from their creation date, so all 20 expire on the first run | 01:30 |
-| `LOW_STOCK_RECOUNT` | Recounts out-of-stock and running-low items per store and sends the current counts to the notification service | 01:45 |
+| `LOW_STOCK_RECOUNT` | Recounts out-of-stock and running-low items per store and sends the current counts to the notification service; also refreshes stuck orders and POs per store (they become stuck just by getting older) and head office's daily summary | 01:45 |
 
 | Endpoint | Purpose |
 |---|---|

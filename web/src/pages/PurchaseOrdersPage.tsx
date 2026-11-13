@@ -18,7 +18,8 @@ type View = { kind: 'list' } | { kind: 'detail'; id: string } | { kind: 'new' };
  * Purchase orders (M19): list with KPI filters, a detail page with the approval tracker (design system §6),
  * finance approve / reject, receiving in parts, closing a stuck PO, and drafting a PO from low-stock items.
  */
-export function PurchaseOrdersPage({ user, store }: { user: UserSummary; store: string }) {
+/** {@code startStuck}: open the list with "stuck only" on, as a stuck-PO notification does (D22). */
+export function PurchaseOrdersPage({ user, store, startStuck = false }: { user: UserSummary; store: string; startStuck?: boolean }) {
   const [view, setView] = useState<View>({ kind: 'list' });
   const [reload, setReload] = useState(0);
 
@@ -30,20 +31,26 @@ export function PurchaseOrdersPage({ user, store }: { user: UserSummary; store: 
   if (view.kind === 'new') {
     return <NewDraft user={user} onCancel={() => setView({ kind: 'list' })} onCreated={(id) => setView({ kind: 'detail', id })} />;
   }
-  return <PoList user={user} store={store} reload={reload} onOpen={(id) => setView({ kind: 'detail', id })} onNew={() => setView({ kind: 'new' })} />;
+  return <PoList user={user} store={store} reload={reload} startStuck={startStuck} onOpen={(id) => setView({ kind: 'detail', id })} onNew={() => setView({ kind: 'new' })} />;
 }
 
-function PoList({ user, store, reload, onOpen, onNew }: { user: UserSummary; store: string; reload: number; onOpen: (id: string) => void; onNew: () => void }) {
+function PoList({ user, store, reload, startStuck, onOpen, onNew }: {
+  user: UserSummary; store: string; reload: number; startStuck: boolean; onOpen: (id: string) => void; onNew: () => void;
+}) {
   const finance = user.role === 'FINANCE_APPROVER';
-  const [status, setStatus] = useState<PoStatus | ''>(finance ? 'SUBMITTED' : '');
+  const [status, setStatus] = useState<PoStatus | ''>(finance && !startStuck ? 'SUBMITTED' : '');
+  const [stuck, setStuck] = useState(startStuck);
   const [text, setText] = useState('');
   const [page, setPage] = useState(0);
 
   useEffect(() => { setPage(0); }, [store]);
 
-  const { data, error, loading } = useList<PoSummary>(`/api/purchase-orders${query({ storeId: store, status, q: text, page, size: SIZE })}`, reload);
-  const counts = useCounts(Object.fromEntries((['SUBMITTED', 'APPROVED', 'PARTIALLY_RECEIVED', 'DRAFT'] as const)
-    .map((s) => [s, `/api/purchase-orders${query({ storeId: store, status: s, q: text, size: 1 })}`])), reload);
+  const { data, error, loading } = useList<PoSummary>(`/api/purchase-orders${query({ storeId: store, status, q: text, stuck, page, size: SIZE })}`, reload);
+  const counts = useCounts({
+    ...Object.fromEntries((['SUBMITTED', 'APPROVED', 'PARTIALLY_RECEIVED', 'DRAFT'] as const)
+      .map((s) => [s, `/api/purchase-orders${query({ storeId: store, status: s, q: text, size: 1 })}`])),
+    STUCK: `/api/purchase-orders${query({ storeId: store, q: text, stuck: true, size: 1 })}`,
+  }, reload);
 
   function filter(apply: () => void) {
     apply();
@@ -69,6 +76,8 @@ function PoList({ user, store, reload, onOpen, onNew }: { user: UserSummary; sto
         <Kpi label="Approved, waiting for goods" icon={IconClock} value={counts.APPROVED ?? null} active={status === 'APPROVED'} onClick={quick('APPROVED')} />
         <Kpi label="Partly received" icon={IconPackageImport} value={counts.PARTIALLY_RECEIVED ?? null} active={status === 'PARTIALLY_RECEIVED'} onClick={quick('PARTIALLY_RECEIVED')} />
         <Kpi label="Drafts" icon={IconFilePencil} value={counts.DRAFT ?? null} active={status === 'DRAFT'} onClick={quick('DRAFT')} />
+        <Kpi label="Stuck" icon={IconAlertTriangle} value={counts.STUCK ?? null} alert={!!counts.STUCK} active={stuck}
+             hint="Waiting for goods past the stuck limit" onClick={() => filter(() => setStuck(!stuck))} />
       </div>
 
       <div className="listing">
@@ -80,7 +89,7 @@ function PoList({ user, store, reload, onOpen, onNew }: { user: UserSummary; sto
           </select>
         </div>
         <ListState loading={loading && !data} error={error} empty={!!data && data.items.length === 0} emptyText="No purchase orders match these filters."
-                   onClear={status || text ? () => filter(() => { setStatus(''); setText(''); }) : undefined} />
+                   onClear={status || text || stuck ? () => filter(() => { setStatus(''); setText(''); setStuck(false); }) : undefined} />
         {data && data.items.length > 0 && (
           <table>
             <thead>

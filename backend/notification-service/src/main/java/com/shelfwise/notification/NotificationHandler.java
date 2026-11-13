@@ -26,6 +26,7 @@ import tools.jackson.databind.JsonNode;
 public class NotificationHandler {
 
     static final String FINANCE = "ROLE:FINANCE_APPROVER";
+    static final String ADMIN = "ROLE:ADMIN";
 
     private final DatabaseClient db;
     private final TransactionalOperator transaction;
@@ -59,6 +60,18 @@ public class NotificationHandler {
                 OffsetDateTime asOf = OffsetDateTime.parse(p.path("asOf").asString());
                 yield group(FINANCE, "NEEDS_APPROVAL", p.path("needsApproval"), asOf)
                         .then(group(FINANCE, "NEEDS_SECOND_APPROVAL", p.path("needsSecondApproval"), asOf));
+            }
+            case "StuckWorkChanged" -> {                  // D32 orders, D22 POs
+                String audience = "STORE:" + p.path("storeId").asString();
+                OffsetDateTime asOf = OffsetDateTime.parse(p.path("asOf").asString());
+                yield group(audience, "STUCK_ORDERS", p.path("stuckOrders"), asOf)
+                        .then(group(audience, "STUCK_POS", p.path("stuckPurchaseOrders"), asOf));
+            }
+            case "HeadOfficeChanged" -> {                 // D10 review queue; stock health across all stores (D7)
+                OffsetDateTime asOf = OffsetDateTime.parse(p.path("asOf").asString());
+                yield group(ADMIN, "NEEDS_REVIEW", p.path("needsReview"), asOf)
+                        .then(group(ADMIN, "OUT_OF_STOCK", p.path("outOfStock"), asOf))
+                        .then(group(ADMIN, "RUNNING_LOW", p.path("runningLow"), asOf));
             }
             case "PurchaseOrderDecided" -> decision(p, OffsetDateTime.parse(event.path("occurredAt").asString()));
             default -> Mono.empty();

@@ -115,7 +115,8 @@ export type DashboardSummary = {
 };
 
 // Served by the notification service (DL-12), grouped the D7 way.
-export type NotificationKind = 'OUT_OF_STOCK' | 'RUNNING_LOW' | 'NEEDS_APPROVAL' | 'NEEDS_SECOND_APPROVAL' | 'PO_DECISION';
+export type NotificationKind = 'OUT_OF_STOCK' | 'RUNNING_LOW' | 'NEEDS_APPROVAL' | 'NEEDS_SECOND_APPROVAL' | 'PO_DECISION'
+  | 'STUCK_ORDERS' | 'STUCK_POS' | 'NEEDS_REVIEW';
 
 export type NotificationItem = {
   id: number;

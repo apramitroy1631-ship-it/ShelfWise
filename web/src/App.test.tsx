@@ -54,7 +54,7 @@ describe('sign-in', () => {
     expect(await screen.findByText('Arjun Rao')).toBeInTheDocument();
     expect(screen.getByText('Store manager')).toBeInTheDocument();
     expect(await screen.findByText('ORD-014954')).toBeInTheDocument();
-    expect(screen.getByText('Stuck')).toBeInTheDocument();                 // D32
+    expect(within(screen.getByText('ORD-014954').closest('tr')!).getByText('Stuck')).toBeInTheDocument();   // D32, on the row
     expect(screen.getByText('+91 94XXXXX303')).toBeInTheDocument();       // D16: masked in lists
     expect(fetchMock).toHaveBeenCalledWith('/api/auth/login', expect.objectContaining({ method: 'POST' }));
   });

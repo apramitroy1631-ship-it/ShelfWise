@@ -30,6 +30,7 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('stock');
   const banner = bannerText(useConfig());
   const [stockView, setStockView] = useState({ low: false, key: 0 });   // a stock notification opens 'low stock only' (D7)
+  const [stuckView, setStuckView] = useState({ orders: false, pos: false, key: 0 });   // a stuck one opens 'stuck only' (D32, D22)
 
   useEffect(() => {
     onSessionChange(setSession);
@@ -49,11 +50,17 @@ export default function App() {
     );
   }
 
-  /** A stock notification opens Stock with "low stock only" on; a PO decision just gets marked read (no PO screen on mobile). */
+  /** Stock groups open Stock with "low stock only" on; stuck groups open Orders or Purchases with "stuck only" on; others just get marked read. */
   function openNotification(item: NotificationItem) {
     if (item.kind === 'OUT_OF_STOCK' || item.kind === 'RUNNING_LOW') {
       setStockView((v) => ({ low: true, key: v.key + 1 }));
       setTab('stock');
+    } else if (item.kind === 'STUCK_ORDERS') {
+      setStuckView((v) => ({ orders: true, pos: false, key: v.key + 1 }));
+      setTab('orders');
+    } else if (item.kind === 'STUCK_POS') {
+      setStuckView((v) => ({ orders: false, pos: true, key: v.key + 1 }));
+      setTab('purchases');
     }
   }
 
@@ -74,8 +81,8 @@ export default function App() {
       </View>
       {banner && <Banner text={banner} />}
       <View style={{ flex: 1 }}>
-        {tab === 'orders' && <OrdersScreen user={user} />}
-        {tab === 'purchases' && <PurchasesScreen user={user} />}
+        {tab === 'orders' && <OrdersScreen key={`o${stuckView.key}`} user={user} startStuck={stuckView.orders} />}
+        {tab === 'purchases' && <PurchasesScreen key={`p${stuckView.key}`} user={user} startStuck={stuckView.pos} />}
         {tab === 'stock' && <StockScreen key={stockView.key} user={user} startLowOnly={stockView.low} />}
         {tab === 'catalogue' && <CatalogueScreen />}
       </View>

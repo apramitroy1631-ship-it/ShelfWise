@@ -202,6 +202,13 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | A forged or foreign token reads notifications | Same signing key and issuer as the core service are required | `NotificationsTest.theBellNeedsAValidTokenFromTheCoreService` |
 | A manager marks another store's notification | Only your own audience can be marked (404 otherwise) | `NotificationsTest.nobodyCanMarkAnotherStoresNotification` |
 | A newly received product (never stocked in the store) arrives below its reorder level | The trigger only watches updates; the nightly recount (M23) sends the corrected counts | `ScheduledJobsTest.theRecountSendsOneMarkerPerStoreAndKeepsTheCounts` |
+| An order or PO becomes stuck with nobody touching it (it just gets older) | The nightly recount refreshes every store's stuck counts | `ScheduledJobsTest.theRecountSendsOneMarkerPerStoreAndKeepsTheCounts` |
+| "42 orders are stuck" but tapping it shows all 1,000 orders | The notification opens the list with "stuck" on (web card, mobile switch), using the same rule as the stuck flag | `StuckWorkTest.stuckOrdersAreOpenOrdersPastTheLimit_D32`, `stuckPurchaseOrdersWaitForGoodsPastTheLimitSinceApproval_D22`; web `NotificationBell.test.tsx`; mobile `Bell.test.tsx` |
+| Grouping hides how long stuck work or reviews have waited | The text shows the oldest waiting age and names the longest-waiting one | `NotificationsTest.managersSeeStuckOrdersAndStuckPosWithTheOldestAge_D32_D22`; `StuckWorkTest.theStuckSnapshotNamesTheLongestWaitingOne` |
+| The stuck limit changes in Settings but the list keeps the old rule | Both the list and the counts read the remote-config limit on each request | `StuckWorkTest.theLimitComesFromRemoteConfig` |
+| A fixed or closed item stays in the count | Moving an order on, or receiving / closing a PO, sends the new count at once | `StuckWorkTest.movingAnOrderOnTellsTheBellItsStoreChanged`, `closingAStuckPoTellsTheBellItsStoreChanged` |
+| Head office sees "0 orders need review" after the last decision | A group at 0 disappears from the bell | `NotificationsTest.headOfficeSeesOrdersToReviewAndStockAcrossAllStores_D7_D10` |
+| Store managers or finance see head office's groups (or the other way round) | Each group has one audience: a store, finance, or admin | Same test |
 
 ## Scheduled jobs (M23)
 

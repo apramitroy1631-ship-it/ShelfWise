@@ -28,6 +28,7 @@ import com.shelfwise.core.orders.OrderDtos.LineRequest;
 import com.shelfwise.core.orders.OrderDtos.OrderDetail;
 import com.shelfwise.core.orders.OrderDtos.OrderSummary;
 import com.shelfwise.core.orders.OrderRepository.OrderRow;
+import com.shelfwise.core.outbox.Outbox;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -54,34 +55,40 @@ public class OrderService {
     private final ProductRepository products;
     private final InventoryRepository inventory;
     private final AppSettings settings;
+    private final Outbox outbox;
     private final TransactionalOperator transaction;
 
     public OrderService(OrderRepository orders, ProductRepository products, InventoryRepository inventory,
-                        AppSettings settings, ReactiveTransactionManager transactionManager) {
+                        AppSettings settings, Outbox outbox, ReactiveTransactionManager transactionManager) {
         this.orders = orders;
         this.products = products;
         this.inventory = inventory;
         this.settings = settings;
+        this.outbox = outbox;
         this.transaction = TransactionalOperator.create(transactionManager);
     }
 
     // --- reading -----------------------------------------------------------
 
+    /** {@code stuck}: only orders still open past the remote-config limit (D32), the list a stuck notification opens. */
     public Mono<Page<OrderSummary>> search(UserAccount user, String storeId, String status, String text,
-                                           LocalDate from, LocalDate to, int page, int size) {
+                                           LocalDate from, LocalDate to, boolean stuck, int page, int size) {
         String store = StoreAccess.readableStore(user, storeId);
         if (page < 0 || size < 1 || size > MAX_PAGE_SIZE) {
             return Mono.error(badRequest("page must be 0 or more and size between 1 and " + MAX_PAGE_SIZE));
         }
-        var search = new OrderRepository.Search(store, status, text,
-                from == null ? null : from.atStartOfDay().atOffset(IST),           // dates are IST days (D9)
-                to == null ? null : to.plusDays(1).atStartOfDay().atOffset(IST), page, size);
-        return stuckAfter().flatMap(stuckDays -> orders.search(search)
-                .map(o -> new OrderSummary(o.id(), o.storeId(), o.status(), o.customerName(), maskPhone(o.customerPhone()),
-                        o.totalAmount(), o.createdAt(), o.reviewStatus(), isStuck(o, stuckDays), o.version()))
-                .collectList()
-                .zipWith(orders.count(search))
-                .map(t -> new Page<>(t.getT1(), page, size, t.getT2(), (t.getT2() + size - 1) / size)));
+        return stuckAfter().flatMap(stuckDays -> {
+            var search = new OrderRepository.Search(store, status, text,
+                    from == null ? null : from.atStartOfDay().atOffset(IST),           // dates are IST days (D9)
+                    to == null ? null : to.plusDays(1).atStartOfDay().atOffset(IST),
+                    stuck ? OffsetDateTime.now().minus(Duration.ofDays(stuckDays)) : null, page, size);
+            return orders.search(search)
+                    .map(o -> new OrderSummary(o.id(), o.storeId(), o.status(), o.customerName(), maskPhone(o.customerPhone()),
+                            o.totalAmount(), o.createdAt(), o.reviewStatus(), isStuck(o, stuckDays), o.version()))
+                    .collectList()
+                    .zipWith(orders.count(search))
+                    .map(t -> new Page<>(t.getT1(), page, size, t.getT2(), (t.getT2() + size - 1) / size));
+        });
     }
 
     public Mono<OrderDetail> get(UserAccount user, String id) {
@@ -186,6 +193,7 @@ public class OrderService {
                     return orders.changeStatus(id, order.status(), to, version)
                             .flatMap(saved -> saved ? stockBack : Mono.error(conflict(
                                     "Order " + id + " was changed by someone else; reload and try again")))
+                            .then(outbox.stuckWorkChanged(order.storeId()))        // it may have left the stuck list (D32)
                             .then(orders.find(id));
                 })
                 .flatMap(order -> detail(user, order))

@@ -54,7 +54,8 @@ export type OrderLine = { sku: string; productSku: string | null; productName: s
 export type OrderDetail = OrderSummary & { placedBy: string; source: string; lines: OrderLine[] };
 
 // Served by the notification service (DL-12), grouped the D7 way.
-export type NotificationKind = 'OUT_OF_STOCK' | 'RUNNING_LOW' | 'NEEDS_APPROVAL' | 'NEEDS_SECOND_APPROVAL' | 'PO_DECISION';
+export type NotificationKind = 'OUT_OF_STOCK' | 'RUNNING_LOW' | 'NEEDS_APPROVAL' | 'NEEDS_SECOND_APPROVAL' | 'PO_DECISION'
+  | 'STUCK_ORDERS' | 'STUCK_POS' | 'NEEDS_REVIEW';
 
 export type NotificationItem = { id: number; kind: NotificationKind; text: string; count: number | null; ref: string | null; unread: boolean; at: string };
 

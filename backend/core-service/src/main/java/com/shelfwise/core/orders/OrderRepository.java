@@ -26,7 +26,9 @@ public class OrderRepository {
                            String idempotencyKey, long version) {
     }
 
-    public record Search(String storeId, String status, String text, OffsetDateTime from, OffsetDateTime to, int page, int size) {
+    /** {@code stuckBefore}: when set, only open orders created before it ("stuck", D32); null = no stuck filter. */
+    public record Search(String storeId, String status, String text, OffsetDateTime from, OffsetDateTime to,
+                         OffsetDateTime stuckBefore, int page, int size) {
     }
 
     private static final String COLUMNS = """
@@ -165,6 +167,10 @@ public class OrderRepository {
         if (s.to() != null) {
             conditions.add("created_at < :to");
             params.put("to", s.to());
+        }
+        if (s.stuckBefore() != null) {
+            conditions.add("status IN ('PENDING', 'PACKED', 'SHIPPED') AND created_at < :stuckBefore");
+            params.put("stuckBefore", s.stuckBefore());
         }
         return new Where(conditions.isEmpty() ? "" : " WHERE " + String.join(" AND ", conditions), params);
     }
