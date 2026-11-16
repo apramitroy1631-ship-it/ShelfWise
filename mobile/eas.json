@@ -10,7 +10,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://SET-THE-WEB-ADDRESS.up.railway.app"
+        "EXPO_PUBLIC_API_URL": "https://shelfwise-web.onrender.com"
       }
     }
   }

@@ -1,5 +1,5 @@
 # Core service image. Build context: the REPOSITORY ROOT, so the provided dataset (data/) can go into the image for the
-# import on start-up (Railway builds the same way; see docs/deploy.md). docker-compose.yml uses this context too.
+# import on start-up (Render builds the same way; see render.yaml and docs/deploy.md). docker-compose.yml uses this context too.
 # Stage 1 builds the jar with the Maven wrapper; stage 2 runs it on a slim Java runtime.
 
 FROM eclipse-temurin:21-jdk AS build

@@ -110,6 +110,11 @@ Fixed by the brief: **Java + Spring Boot WebFlux (used reactively)** for the bac
   - Render's free tier was rejected because services sleep after 15 minutes idle, with a 30–60 s cold start.
 - **At 10×:** a managed container platform (e.g. a cloud provider's Kubernetes or container service) with autoscaling, a managed database and a managed broker.
 
+**Amended 2026-11-16 (deploy day):** the Railway trial on the account had expired, and the brief needs deployed URLs, not a paid plan. Hosting moved to free plans with the **same container images and variables**: **Render** (core service, notification service, web; `render.yaml`), **Neon** (PostgreSQL), **CloudAMQP** (RabbitMQ). R2 and Expo EAS are unchanged.
+- **Cost of free:** Render's free services have 512 MB and a small CPU share, sleep after 15 idle minutes and take a few minutes to wake (a JVM start); they can't talk over a private network, so the web service forwards `/api` to the services' public https addresses. Checked: the core service runs the full import within 512 MB (about 360 MB peak).
+- **Not lost:** nothing in the code is host-specific; the only code change was `DB_SSL_MODE` (hosted databases need TLS). Moving to Railway or any container host later means setting the same variables there.
+- **For real use:** a paid plan (always on, private networking), which removes both the sleep and the public hop.
+
 ## DL-08 Repository: one private GitHub repo, three independent folders
 *Locked 2026-11-10. Requirement from my manager: mobile, web and backend must build independently, with no interdependency.*
 - **Options:** one repository with independent folders (monorepo), three separate repositories (polyrepo).
@@ -211,7 +216,7 @@ Fixed by the brief: **Java + Spring Boot WebFlux (used reactively)** for the bac
   - Reactor context propagation copies it into the log context (MDC) on every reactive step.
   - One access line per request (method, path, status, time). **Query strings are never logged**: searches carry customer names (D16). Phones are never logged (D16).
   - Logs: readable lines locally; one JSON object per line when deployed (`LOGGING_STRUCTURED_FORMAT_CONSOLE=ecs`, Spring's built-in format), with the request id as a field.
-  - Health: `/actuator/health/liveness` and `/readiness` for the platform (Railway checks readiness); an `outbox` check goes DOWN when the oldest unsent event is older than 5 minutes (relay or broker broken). It is deliberately not in readiness: the core keeps selling while RabbitMQ is down (DL-03).
+  - Health: `/actuator/health/liveness` and `/readiness` for the platform (the host checks readiness); an `outbox` check goes DOWN when the oldest unsent event is older than 5 minutes (relay or broker broken). It is deliberately not in readiness: the core keeps selling while RabbitMQ is down (DL-03).
 - **Trade-offs:** no timing breakdown per step (spans) and no trace UI; the id has to be searched for in the logs. Enough for two services and one hop.
 - **At 10x:** OpenTelemetry with a collector and a trace UI, keeping the same id as a span attribute; metrics (Prometheus) for request rate, error rate, latency and outbox backlog, with alerts.
 
