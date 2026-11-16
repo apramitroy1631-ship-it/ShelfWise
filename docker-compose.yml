@@ -45,8 +45,8 @@ services:
 
   core-service:
     build:
-      context: ./backend
-      dockerfile: core-service/Dockerfile
+      context: .                                   # repository root: the image includes data/ for the import
+      dockerfile: backend/core-service/Dockerfile
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
