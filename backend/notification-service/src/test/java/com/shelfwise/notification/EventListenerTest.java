@@ -12,6 +12,9 @@ import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -30,6 +33,7 @@ import tools.jackson.databind.ObjectMapper;
 /** End to end through a real RabbitMQ: events are applied once, and a broken message goes to the dead-letter queue. */
 @SpringBootTest(properties = "shelfwise.messaging.consumer-enabled=true")
 @Import(TestDatabaseConfig.class)
+@ExtendWith(OutputCaptureExtension.class)
 class EventListenerTest {
 
     private static final RabbitMQContainer RABBIT = new RabbitMQContainer("rabbitmq:4.1-management");
@@ -82,6 +86,24 @@ class EventListenerTest {
         Thread.sleep(1_000);                                            // give a wrongly applied repeat time to show up
         assertThat(number("SELECT count(*) FROM notifications.notifications WHERE ref = 'PO-10003'")).isEqualTo(1);
         assertThat(messagesIn("notification-service.events")).isZero();   // both acknowledged
+    }
+
+    /** Cross-service tracing (M28): the core's request id arrives as the correlation id and is on the log line. */
+    @Test
+    void anEventIsLoggedUnderTheRequestIdOfTheCallThatCausedIt(CapturedOutput output) throws Exception {
+        waitFor(() -> queueExists("notification-service.events"));
+        String id = UUID.randomUUID().toString();
+        byte[] body = json.writeValueAsBytes(Map.of("id", id, "type", "PurchaseOrderDecided", "aggregateId", "PO-10004",
+                "occurredAt", OffsetDateTime.now().toString(), "requestId", "req-trace-0001",
+                "payload", Map.of("poId", "PO-10004", "storeId", "S01", "decision", "REJECTED", "status", "REJECTED",
+                        "validApprovals", 0, "approvalsNeeded", 1, "reapproval", false, "reason", "Too expensive")));
+
+        channel.basicPublish("shelfwise.events", "PurchaseOrderDecided", new AMQP.BasicProperties.Builder()
+                .messageId(id).correlationId("req-trace-0001").contentType("application/json").build(), body);
+
+        waitFor(() -> output.getOut().contains("Handled PurchaseOrderDecided " + id));
+        String line = output.getOut().lines().filter(l -> l.contains("Handled PurchaseOrderDecided " + id)).findFirst().orElseThrow();
+        assertThat(line).contains("notification-service,req-trace-0001");
     }
 
     @Test

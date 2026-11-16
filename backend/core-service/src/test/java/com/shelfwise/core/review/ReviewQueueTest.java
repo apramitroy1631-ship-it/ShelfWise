@@ -97,6 +97,27 @@ class ReviewQueueTest {
         assertThat(items(get(admin, "/api/admin/reviews?state=DECIDED"))).isEmpty();
     }
 
+    /** D33: a quantity above the limit waits like a negative one; the admin must type the quantity, even to confirm it. */
+    @Test
+    void anUnusuallyLargeQuantityIsFlaggedAndNeedsTheAdminToTypeTheRightQuantity_D33() {
+        order("ORD-030001", "S01", "5650.00", "NEEDS_REVIEW", "2026-06-01T09:00:00+05:30");
+        line("ORD-030001", "SW-PER-00079", 50 + 1, "113", "RECORDED");   // 51: just over the limit of 50
+
+        Map<?, ?> flagged = items(get(admin, "/api/admin/reviews")).stream()
+                .filter(i -> "ORD-030001".equals(i.get("orderId"))).findFirst().orElseThrow();
+        assertThat(lines(flagged).get(0).get("problem")).isEqualTo("LARGE_QTY");
+        assertThat(((List<?>) flagged.get("problems")).get(0)).isEqualTo("'SW-PER-00079' has an unusually large quantity of 51 (D33)");
+
+        post(admin, "/api/admin/reviews/ORD-030001/correct", Map.of("version", 0,
+                "lines", List.of(Map.of("sku", "SW-PER-00079")), "reason", "no quantity typed"))
+                .expectStatus().isBadRequest();                                   // not confirmed until the quantity is typed
+        Map<?, ?> fixed = post(admin, "/api/admin/reviews/ORD-030001/correct", Map.of("version", 0,
+                "lines", List.of(Map.of("sku", "SW-PER-00079", "qty", 5)), "reason", "Receipt says 5, a stray 1 was typed"))
+                .expectStatus().isOk().expectBody(Map.class).returnResult().getResponseBody();
+        assertThat(fixed.get("reviewStatus")).isEqualTo("CORRECTED");
+        assertThat(number(fixed.get("totalAmount"))).isEqualTo(565);              // 5 x 113
+    }
+
     // --- correct ----------------------------------------------------------------------
 
     @Test

@@ -1,0 +1,38 @@
+# Serves the built web app and forwards API calls, so the browser talks to one address (no CORS for the app itself).
+# ${PORT}, ${CORE_URL} and ${NOTIFICATIONS_URL} are filled in from the environment when the container starts.
+server {
+    listen ${PORT};
+    listen [::]:${PORT};
+    root /usr/share/nginx/html;
+
+    # Supplier invoices are up to 20 MB (M20).
+    client_max_body_size 21m;
+
+    # The bell is served by the notification service (DL-12). More specific, so it comes first.
+    location /api/notifications {
+        proxy_pass ${NOTIFICATIONS_URL};
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_set_header X-Request-Id $http_x_request_id;
+    }
+
+    # Everything else under /api is the core service. Long timeout: the CSV export streams every order.
+    location /api/ {
+        proxy_pass ${CORE_URL};
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_set_header X-Request-Id $http_x_request_id;
+        proxy_read_timeout 120s;
+        proxy_buffering off;
+    }
+
+    # Built files have content hashes in their names, so they can be cached for a long time.
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # The app decides screens itself: any other path gets index.html.
+    location / {
+        try_files $uri /index.html;
+        add_header Cache-Control "no-cache";
+    }
+}

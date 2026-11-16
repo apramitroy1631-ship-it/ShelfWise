@@ -1,0 +1,11 @@
+# Used when an image is built from the repository root (the core service, so it can include data/).
+# Keep the build context small: only backend/ sources and data/ are needed.
+.git
+.github
+.claude
+docs
+web
+mobile
+**/target
+**/node_modules
+**/*.log

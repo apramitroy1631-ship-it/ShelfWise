@@ -252,6 +252,23 @@ Behaviour changes without a redeploy or an app-store release (DL-06, M27). The s
 
 The web app's **Settings** screen (admin) edits these.
 
+### Deployment
+
+Railway (both services, PostgreSQL, RabbitMQ, web), Cloudflare R2 (invoices) and Expo EAS (Android): step by step, with every variable, in **[docs/deploy.md](docs/deploy.md)**. The web service is the one public address; it forwards `/api` to the services over Railway's private network.
+
+### Logging, monitoring and request tracing
+
+Every request gets an id, returned in the `X-Request-Id` header and written on every log line of **both** services (DL-14). To follow one call, search both logs for its id:
+
+```
+core-service         INFO [core-service,5d0c…] http : POST /api/purchase-orders/PO-10012/decision 200 41 ms
+core-service         INFO [core-service,5d0c…] OutboxRelay : Published PurchaseOrderDecided 7f3e… for PURCHASE_ORDER PO-10012
+notification-service INFO [notification-service,5d0c…] EventListener : Handled PurchaseOrderDecided 7f3e…
+```
+
+- **Logs:** readable locally; set `LOGGING_STRUCTURED_FORMAT_CONSOLE=ecs` for JSON lines when deployed. Query strings and phone numbers are never logged (D16).
+- **Health:** `/actuator/health/liveness`, `/actuator/health/readiness` (what Railway checks), and `/actuator/health`, which includes an `outbox` check that goes DOWN if events stop reaching RabbitMQ for 5 minutes. Backlog details are shown to signed-in callers.
+
 ### Running the backend tests
 
 Needs Java 21 and Docker running (tests start a throwaway PostgreSQL):

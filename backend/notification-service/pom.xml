@@ -26,6 +26,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <!-- Carries the request id across reactive thread hops into the log context (M28). Version from Spring Boot. -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>context-propagation</artifactId>
+        </dependency>
         <!-- Checks the sign-in token issued by the core service (same signing key, no shared code). -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

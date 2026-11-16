@@ -1,0 +1,14 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "backend/core-service/Dockerfile",
+    "watchPatterns": ["/backend/core-service/**", "/backend/pom.xml", "/backend/.mvn/**", "/backend/mvnw", "/data/**"]
+  },
+  "deploy": {
+    "healthcheckPath": "/actuator/health/readiness",
+    "healthcheckTimeout": 600,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 5
+  }
+}

@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.reactive.TransactionalOperator;
 
+import com.shelfwise.core.observability.RequestIdFilter;
 import com.rabbitmq.client.AMQP;
 
 import jakarta.annotation.PreDestroy;
@@ -51,7 +53,8 @@ public class OutboxRelay {
     static final Set<String> SNAPSHOT_EVENTS = Set.of("StockHealthChanged", "ApprovalQueueChanged", "StuckWorkChanged", "HeadOfficeChanged");
     private static final Logger log = LoggerFactory.getLogger(OutboxRelay.class);
 
-    private record Pending(UUID id, String aggregateType, String aggregateId, String eventType, String payload, OffsetDateTime createdAt) {
+    private record Pending(UUID id, String aggregateType, String aggregateId, String eventType, String payload, OffsetDateTime createdAt,
+                           String requestId) {
     }
 
     private final DatabaseClient db;
@@ -110,7 +113,7 @@ public class OutboxRelay {
     /** Publishes one batch. Returns how many outbox rows were marked published (0 when there was nothing to do). */
     public Mono<Integer> publishBatch() {
         return db.sql("""
-                        SELECT id, aggregate_type, aggregate_id, event_type, payload::text AS payload, created_at
+                        SELECT id, aggregate_type, aggregate_id, event_type, payload::text AS payload, created_at, request_id
                         FROM outbox_events WHERE published_at IS NULL
                         ORDER BY created_at, id LIMIT :limit
                         FOR UPDATE SKIP LOCKED
@@ -118,7 +121,7 @@ public class OutboxRelay {
                 .bind("limit", properties.batchSize())
                 .map((row, meta) -> new Pending(row.get("id", UUID.class), row.get("aggregate_type", String.class),
                         row.get("aggregate_id", String.class), row.get("event_type", String.class), row.get("payload", String.class),
-                        row.get("created_at", OffsetDateTime.class)))
+                        row.get("created_at", OffsetDateTime.class), row.get("request_id", String.class)))
                 .all()
                 .collectList()
                 .flatMap(batch -> batch.isEmpty() ? Mono.just(0)
@@ -151,7 +154,8 @@ public class OutboxRelay {
                         .count())
                 .timeout(Duration.ofSeconds(15))
                 .flatMap(notConfirmed -> notConfirmed == 0 ? Mono.<Void>empty()
-                        : Mono.error(new IllegalStateException(notConfirmed + " events were not confirmed by RabbitMQ")));
+                        : Mono.error(new IllegalStateException(notConfirmed + " events were not confirmed by RabbitMQ")))
+                .doOnSuccess(ok -> toSend.forEach(OutboxRelay::logPublished));
     }
 
     private Mono<OutboundMessage> toMessage(Pending p) {
@@ -170,12 +174,14 @@ public class OutboxRelay {
             envelope.put("aggregateId", p.aggregateId());
             envelope.put("occurredAt", p.createdAt().toString());
             envelope.put("payload", body);
+            envelope.put("requestId", p.requestId());           // cross-service tracing (M28); null for jobs
             AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
                     .messageId(p.id().toString())
                     .type(p.eventType())
                     .contentType("application/json")
                     .deliveryMode(2)                                   // persistent: survives a broker restart
                     .timestamp(Date.from(p.createdAt().toInstant()))
+                    .correlationId(p.requestId())
                     .build();
             return new OutboundMessage(properties.exchange(), p.eventType(), props, json.writeValueAsBytes(envelope));
         });
@@ -199,6 +205,18 @@ public class OutboxRelay {
         return db.sql("UPDATE outbox_events SET published_at = now() WHERE id = ANY(:ids)")
                 .bind("ids", batch.stream().map(Pending::id).toArray(UUID[]::new))
                 .then();
+    }
+
+    /** One line per event, under the id of the request that caused it, so it can be followed into the notification service. */
+    private static void logPublished(Pending p) {
+        if (p.requestId() != null) {
+            MDC.put(RequestIdFilter.KEY, p.requestId());
+        }
+        try {
+            log.info("Published {} {} for {} {}", p.eventType(), p.id(), p.aggregateType(), p.aggregateId());
+        } finally {
+            MDC.remove(RequestIdFilter.KEY);
+        }
     }
 
     /** Logs the first failure of a streak as a warning (e.g. broker down), then stays quiet until it recovers. */

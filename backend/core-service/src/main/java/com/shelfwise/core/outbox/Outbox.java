@@ -7,6 +7,8 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 
 import io.r2dbc.postgresql.codec.Json;
+import com.shelfwise.core.observability.RequestIdFilter;
+
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.ObjectMapper;
 
@@ -37,16 +39,21 @@ public class Outbox {
         return add("ADMIN", "ADMIN", "HeadOfficeChanged", Map.of());
     }
 
+    /** The request that caused the event (M28) is saved with it, so both services log the same request id. */
     public Mono<Void> add(String aggregateType, String aggregateId, String eventType, Map<String, Object> payload) {
-        return db.sql("""
-                        INSERT INTO outbox_events (id, aggregate_type, aggregate_id, event_type, payload)
-                        VALUES (:id, :type, :aggregateId, :eventType, :payload)
-                        """)
-                .bind("id", UUID.randomUUID())
-                .bind("type", aggregateType)
-                .bind("aggregateId", aggregateId)
-                .bind("eventType", eventType)
-                .bind("payload", Json.of(json.writeValueAsString(payload)))
-                .then();
+        return Mono.deferContextual(context -> {
+            DatabaseClient.GenericExecuteSpec spec = db.sql("""
+                            INSERT INTO outbox_events (id, aggregate_type, aggregate_id, event_type, payload, request_id)
+                            VALUES (:id, :type, :aggregateId, :eventType, :payload, :requestId)
+                            """)
+                    .bind("id", UUID.randomUUID())
+                    .bind("type", aggregateType)
+                    .bind("aggregateId", aggregateId)
+                    .bind("eventType", eventType)
+                    .bind("payload", Json.of(json.writeValueAsString(payload)));
+            String requestId = context.getOrDefault(RequestIdFilter.KEY, null);
+            spec = requestId == null ? spec.bindNull("requestId", String.class) : spec.bind("requestId", requestId);
+            return spec.then();
+        });
     }
 }
