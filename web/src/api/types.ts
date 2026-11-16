@@ -122,6 +122,8 @@ export type NotificationItem = {
   id: number;
   kind: NotificationKind;
   text: string;
+  /** The grey sub text: item names, "Across 5 stores", "Oldest waiting 371 days". */
+  detail: string | null;
   count: number | null;
   ref: string | null;
   unread: boolean;

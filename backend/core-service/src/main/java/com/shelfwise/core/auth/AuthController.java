@@ -1,6 +1,9 @@
 package com.shelfwise.core.auth;
 
+import java.net.InetSocketAddress;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +32,14 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    public Mono<TokenResponse> login(@Validated @RequestBody LoginRequest request) {
-        return auth.login(request.email(), request.password());
+    public Mono<TokenResponse> login(@Validated @RequestBody LoginRequest request, ServerHttpRequest http) {
+        return auth.login(request.email(), request.password(), clientIp(http));
+    }
+
+    /** The caller's address; behind the hosting proxy it comes from X-Forwarded-For (server.forward-headers-strategy). */
+    static String clientIp(ServerHttpRequest http) {
+        InetSocketAddress remote = http.getRemoteAddress();
+        return remote == null || remote.getAddress() == null ? "unknown" : remote.getAddress().getHostAddress();
     }
 
     @PostMapping("/auth/refresh")

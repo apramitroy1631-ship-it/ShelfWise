@@ -2,8 +2,8 @@ import {
   IconAlertTriangle, IconBox, IconChartBar, IconClipboardCheck, IconFileInvoice, IconLogout, IconMoon, IconReceipt, IconSettings, IconSun, IconTag, type Icon,
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
-import { logout, type Role, type Session } from './api/auth';
-import { api, onSessionChange, query, setSession as storeSession } from './api/client';
+import { type Role, type Session } from './api/auth';
+import { api, onSessionChange, query, setSession as storeSession, signOut } from './api/client';
 import { applyTheme, currentTheme, type Theme } from './lib/theme';
 import { bannerText, useConfig } from './lib/useConfig';
 import { useCounts } from './lib/useList';
@@ -52,6 +52,7 @@ const LANDING: Record<Role, Screen> = { ADMIN: 'dashboard', STORE_MANAGER: 'orde
  */
 export function App() {
   const [session, setSession] = useState<Session | null>(null);
+  const [signedOutNotice, setSignedOutNotice] = useState<string | null>(null);   // "You've been signed out", etc.
   const [screen, setScreen] = useState<Screen>('orders');
   const [store, setStore] = useState('');      // head office: '' = all 5 stores
   const [theme, setTheme] = useState<Theme>(currentTheme);
@@ -61,13 +62,16 @@ export function App() {
   const config = useConfig();
   const banner = bannerText(config);
 
-  useEffect(() => onSessionChange(setSession), []);
+  useEffect(() => onSessionChange((s, reason) => {
+    setSession(s);
+    setSignedOutNotice(s ? null : reason ?? null);
+  }), []);
 
   if (!session) {
     return (
       <>
         {banner && <MaintenanceBanner text={banner} />}
-        <LoginPage onSignedIn={(s) => { storeSession(s); setScreen(LANDING[s.user.role]); setStore(''); }} />
+        <LoginPage notice={signedOutNotice} onSignedIn={(s) => { storeSession(s); setScreen(LANDING[s.user.role]); setStore(''); }} />
       </>
     );
   }
@@ -77,8 +81,7 @@ export function App() {
   const scope = headOffice ? store : user.storeId ?? '';
 
   async function handleSignOut() {
-    if (session) await logout(session.refreshToken);
-    storeSession(null);
+    await signOut();
   }
 
   /**

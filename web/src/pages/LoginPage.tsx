@@ -3,9 +3,11 @@ import { ApiError, login, type Session } from '../api/auth';
 
 type Props = {
   onSignedIn: (session: Session) => void;
+  /** Why the user is here, e.g. "You've been signed out." (review issue 2). */
+  notice?: string | null;
 };
 
-export function LoginPage({ onSignedIn }: Props) {
+export function LoginPage({ onSignedIn, notice }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +32,7 @@ export function LoginPage({ onSignedIn }: Props) {
       <form className="login-card" onSubmit={handleSubmit} noValidate={false}>
         <h1>ShelfWise</h1>
         <p className="muted">Sign in to manage stock, orders and purchasing.</p>
+        {notice && !error && <p className="notice" role="status">{notice}</p>}
 
         <label htmlFor="email">Email</label>
         <input

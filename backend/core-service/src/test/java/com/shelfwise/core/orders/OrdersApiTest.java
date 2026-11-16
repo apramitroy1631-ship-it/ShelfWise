@@ -111,6 +111,16 @@ class OrdersApiTest {
         create(manager, List.of(line("SW-SNK-00091", 0)), null, 400);   // quantity of at least 1 (D10)
     }
 
+    /** Review issue 4: 1.5 used to be saved quietly as 1. */
+    @Test
+    void aDecimalQuantityIsRefusedNotRounded() {
+        client.post().uri("/api/orders").headers(h -> h.setBearerAuth(manager))
+                .bodyValue(Map.of("customerName", "Zoya Joshi", "lines", List.of(Map.of("sku", "SW-SNK-00091", "qty", 1.5))))
+                .exchange().expectStatus().isBadRequest()
+                .expectBody().jsonPath("$.detail").isEqualTo("qty must be a whole number");
+        assertThat(number("SELECT count(*) FROM customer_orders")).isZero();
+    }
+
     @Test
     void customerDetailsAreValidated_D16() {
         client.post().uri("/api/orders").headers(h -> h.setBearerAuth(manager))

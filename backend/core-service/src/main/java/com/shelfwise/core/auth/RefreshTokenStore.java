@@ -15,7 +15,8 @@ import reactor.core.publisher.Mono;
 @Repository
 public class RefreshTokenStore {
 
-    public record StoredToken(UUID id, String userId, OffsetDateTime expiresAt, OffsetDateTime revokedAt) {
+    /** {@code rotatedAt} is set when the token was swapped for a new pair; a sign-out revokes without it. */
+    public record StoredToken(UUID id, String userId, OffsetDateTime expiresAt, OffsetDateTime revokedAt, OffsetDateTime rotatedAt) {
 
         boolean isRevoked() {
             return revokedAt != null;
@@ -42,18 +43,30 @@ public class RefreshTokenStore {
     }
 
     public Mono<StoredToken> findByHash(String tokenHash) {
-        return db.sql("SELECT id, user_id, expires_at, revoked_at FROM refresh_tokens WHERE token_hash = :hash")
+        return db.sql("SELECT id, user_id, expires_at, revoked_at, rotated_at FROM refresh_tokens WHERE token_hash = :hash")
                 .bind("hash", tokenHash)
                 .map((row, meta) -> new StoredToken(
                         row.get("id", UUID.class),
                         row.get("user_id", String.class),
                         row.get("expires_at", OffsetDateTime.class),
-                        row.get("revoked_at", OffsetDateTime.class)))
+                        row.get("revoked_at", OffsetDateTime.class),
+                        row.get("rotated_at", OffsetDateTime.class)))
                 .one();
     }
 
     /**
-     * Revokes the token only if it is still active, in one atomic statement.
+     * Swaps the token out (refresh): revokes it and records when, only if it is still active, in one atomic statement.
+     * Returns false if another request swapped it first.
+     */
+    public Mono<Boolean> rotateIfActive(UUID id) {
+        return db.sql("UPDATE refresh_tokens SET revoked_at = now(), rotated_at = now() WHERE id = :id AND revoked_at IS NULL")
+                .bind("id", id)
+                .fetch().rowsUpdated()
+                .map(updated -> updated == 1);
+    }
+
+    /**
+     * Revokes the token (sign-out) only if it is still active, in one atomic statement.
      * Returns false if someone else revoked it first (two refreshes racing with the same token).
      */
     public Mono<Boolean> revokeIfActive(UUID id) {

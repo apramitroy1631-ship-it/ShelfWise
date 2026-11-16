@@ -1,31 +1,59 @@
 // One place for calling the core service: adds the access token, refreshes it once when it expires,
 // and turns error responses into readable messages.
-import { ApiError, type Session } from './auth';
+import { ApiError, logout, type Session } from './auth';
 
 let session: Session | null = null;
-let listener: ((s: Session | null) => void) | null = null;
+let listener: ((s: Session | null, reason?: string) => void) | null = null;
 
-export function setSession(next: Session | null) {
+export const SIGNED_OUT = "You've been signed out.";
+export const SIGNED_OUT_ELSEWHERE = "You've been signed out because you signed out in another tab.";
+export const SESSION_EXPIRED = 'Your session has expired. Please sign in again.';
+
+/** {@code reason} is shown on the sign-in screen when the session ends. */
+export function setSession(next: Session | null, reason?: string) {
   session = next;
-  listener?.(next);
+  listener?.(next, reason);
+}
+
+/**
+ * Review issue 2: signing out in one tab signs out every tab of this browser. The tabs talk over a BroadcastChannel;
+ * each one also revokes its own refresh token on the server, so a stale tab can't keep placing orders.
+ */
+const channel: BroadcastChannel | null = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('shelfwise-auth');
+
+channel?.addEventListener('message', (event: MessageEvent<{ type?: string }>) => {
+  if (event.data?.type === 'signed-out' && session) {
+    const token = session.refreshToken;
+    setSession(null, SIGNED_OUT_ELSEWHERE);
+    void logout(token);
+  }
+});
+
+/** The "Sign out" button: ends this tab's session and tells the other tabs to end theirs. */
+export async function signOut(): Promise<void> {
+  const token = session?.refreshToken;
+  channel?.postMessage({ type: 'signed-out' });
+  setSession(null, SIGNED_OUT);
+  if (token) await logout(token);
 }
 
 export function getSession() {
   return session;
 }
 
-/** App.tsx subscribes so the UI signs out when a refresh fails. */
-export function onSessionChange(fn: (s: Session | null) => void) {
+/** App.tsx subscribes so the UI signs out when a refresh fails or another tab signs out. */
+export function onSessionChange(fn: (s: Session | null, reason?: string) => void) {
   listener = fn;
 }
 
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const usedToken = session?.accessToken;
   let response = await send(path, init);
   if (response.status === 401 && session) {
-    const refreshed = await refresh();
+    const refreshed = await refreshOnce(usedToken);
     if (!refreshed) {
-      setSession(null);
-      throw new ApiError('Your session has expired. Please sign in again.', 401);
+      setSession(null, SESSION_EXPIRED);
+      throw new ApiError(SESSION_EXPIRED, 401);
     }
     response = await send(path, init);
   }
@@ -40,8 +68,9 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
  * Uses the server's file name when it sends one.
  */
 export async function downloadFile(path: string, fallbackName: string): Promise<void> {
+  const usedToken = session?.accessToken;
   let response = await send(path, {});
-  if (response.status === 401 && session && (await refresh())) {
+  if (response.status === 401 && session && (await refreshOnce(usedToken))) {
     response = await send(path, {});
   }
   if (!response.ok) {
@@ -66,8 +95,9 @@ export async function downloadFile(path: string, fallbackName: string): Promise<
 export async function viewFile(path: string): Promise<void> {
   const tab = window.open('', '_blank');
   try {
+    const usedToken = session?.accessToken;
     let response = await send(path, {});
-    if (response.status === 401 && session && (await refresh())) {
+    if (response.status === 401 && session && (await refreshOnce(usedToken))) {
       response = await send(path, {});
     }
     if (!response.ok) {
@@ -93,6 +123,21 @@ async function send(path: string, init: RequestInit): Promise<Response> {
   } catch {
     throw new ApiError("Can't reach the server. Check your connection and try again.", 0);
   }
+}
+
+let refreshing: Promise<boolean> | null = null;
+
+/**
+ * Review issue 1: when the access token expires, every request in flight gets a 401 at about the same time. They
+ * share ONE refresh: the first starts it and the rest wait for its answer. A request whose token was already
+ * replaced by a finished refresh just retries with the new one.
+ */
+export function refreshOnce(usedToken: string | undefined): Promise<boolean> {
+  if (session && usedToken !== undefined && session.accessToken !== usedToken) return Promise.resolve(true);
+  if (!refreshing) {
+    refreshing = refresh().finally(() => { refreshing = null; });
+  }
+  return refreshing;
 }
 
 async function refresh(): Promise<boolean> {

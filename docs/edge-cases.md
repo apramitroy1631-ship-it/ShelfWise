@@ -23,8 +23,9 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | An inactive user (e.g. U12) signs in | Rejected with the generic message (D20) | `AuthFlowTest.inactiveUserCannotSignIn_D20` |
 | A user is deactivated while signed in | Every request re-reads the user, so the next request and the next refresh are rejected (D20) | `AuthFlowTest.deactivatedUserIsCutOffOnTheirNextRequest_D20` |
 | A token is forged or edited | Signature, expiry and issuer are checked on every request | `AuthFlowTest.requestsWithoutAValidTokenAreRejected` |
-| A refresh token is stolen and used after the owner refreshed | Refresh tokens are single-use; reusing a revoked one ends **all** sessions of that user | `AuthFlowTest.reusingAnOldRefreshTokenEndsAllSessions` |
-| Two refreshes race with the same token | Revocation is one atomic update; the loser is treated as reuse | Covered by the same atomic update; dedicated race test to add |
+| A refresh token is stolen and used after the owner refreshed | Refresh tokens are single-use; reusing a swapped one more than 30 s later ends **all** sessions of that user | `AuthFlowTest.reusingAnOldRefreshTokenEndsAllSessions` |
+| Several requests refresh at once with the same token (access token just expired) | Web and mobile share ONE refresh; on the server a token swapped less than 30 s ago still works (grace window), so nobody is signed out | `AuthFlowTest.manyRefreshesAtTheSameMomentAllSucceedAndSignNobodyOut`, `client.test.ts`, `Refresh.test.ts` |
+| A signed-out token is used again (e.g. by a second tab) | Refused, without ending the user's other sessions | `AuthFlowTest.aSignedOutTokenIsRefusedWithoutSigningOutOtherDevices` |
 | Sign-out is clicked twice, or with an unknown token | Always 204, nothing breaks | `AuthFlowTest.logoutRevokesTheRefreshTokenAndIsSafeToRepeat` |
 | The password hash leaks through the API or logs | API returns only id, name, role, store; `toString()` of users and requests hides secrets | `AuthFlowTest.responsesNeverContainThePasswordHash` |
 | Empty or malformed sign-in request | Validation returns 400 | `AuthFlowTest.invalidRequestBodiesAreRejected` |

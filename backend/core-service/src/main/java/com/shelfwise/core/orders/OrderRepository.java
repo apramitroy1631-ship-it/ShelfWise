@@ -11,6 +11,7 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 
 import com.shelfwise.core.orders.OrderDtos.LineView;
+import com.shelfwise.core.search.TextSearch;
 
 import io.r2dbc.spi.Row;
 import reactor.core.publisher.Flux;
@@ -53,8 +54,10 @@ public class OrderRepository {
 
     public Flux<OrderRow> search(Search s) {
         Where w = where(s);
-        return bindAll(db.sql("SELECT " + COLUMNS + " FROM customer_orders" + w.sql
-                        + " ORDER BY created_at DESC, id DESC LIMIT :limit OFFSET :offset"), w.params)
+        // while searching, the best match comes first (then newest); otherwise newest first
+        String order = (w.relevance != null ? w.relevance + " DESC, " : "") + "created_at DESC, id DESC";
+        return bindAll(bindAll(db.sql("SELECT " + COLUMNS + " FROM customer_orders" + w.sql
+                        + " ORDER BY " + order + " LIMIT :limit OFFSET :offset"), w.params), w.rankParams)
                 .bind("limit", s.size()).bind("offset", (long) s.page() * s.size())
                 .map((row, meta) -> toOrder(row)).all();
     }
@@ -142,7 +145,7 @@ public class OrderRepository {
 
     // --- helpers -----------------------------------------------------------
 
-    private record Where(String sql, Map<String, Object> params) {
+    private record Where(String sql, Map<String, Object> params, String relevance, Map<String, Object> rankParams) {
     }
 
     private static Where where(Search s) {
@@ -156,9 +159,10 @@ public class OrderRepository {
             conditions.add("status = :status");
             params.put("status", s.status());
         }
-        if (s.text() != null && !s.text().isBlank()) {
-            conditions.add("(id ILIKE :text ESCAPE '\\' OR customer_name ILIKE :text ESCAPE '\\')");
-            params.put("text", "%" + s.text().strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%");
+        TextSearch.Match match = TextSearch.of(s.text(), "id", "customer_name", List.of());
+        if (match != null) {
+            conditions.add(match.condition());
+            params.putAll(match.params());
         }
         if (s.from() != null) {
             conditions.add("created_at >= :from");
@@ -172,7 +176,8 @@ public class OrderRepository {
             conditions.add("status IN ('PENDING', 'PACKED', 'SHIPPED') AND created_at < :stuckBefore");
             params.put("stuckBefore", s.stuckBefore());
         }
-        return new Where(conditions.isEmpty() ? "" : " WHERE " + String.join(" AND ", conditions), params);
+        return new Where(conditions.isEmpty() ? "" : " WHERE " + String.join(" AND ", conditions), params,
+                match == null ? null : match.relevance(), match == null ? Map.of() : match.rankParams());
     }
 
     private static DatabaseClient.GenericExecuteSpec bindAll(DatabaseClient.GenericExecuteSpec spec, Map<String, Object> params) {

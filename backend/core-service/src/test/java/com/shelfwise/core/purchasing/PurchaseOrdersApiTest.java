@@ -332,6 +332,19 @@ class PurchaseOrdersApiTest {
         post(manager, PO + "/" + id(po) + "/submit", Map.of("version", version(po)), 409);
     }
 
+    /** Review issue 5: a draft older than 14 days is refused at submit time, before the nightly job has marked it. */
+    @Test
+    void aDraftPastTheExpiryLimitIsRefusedEvenBeforeTheNightlyJob() {
+        Map<?, ?> po = create(manager, "SUP23", List.of(line("SW-SNK-00091", 5)), 201);
+        run("UPDATE purchase_orders SET updated_at = now() - interval '15 days' WHERE id = '" + id(po) + "'");   // still DRAFT
+
+        post(manager, PO + "/" + id(po) + "/submit", Map.of("version", version(po)), 409);
+
+        Map<?, ?> fresh = create(manager, "SUP23", List.of(line("SW-SNK-00091", 5)), 201);
+        run("UPDATE purchase_orders SET updated_at = now() - interval '13 days' WHERE id = '" + id(fresh) + "'");
+        post(manager, PO + "/" + id(fresh) + "/submit", Map.of("version", version(fresh)), 200);
+    }
+
     @Test
     void lowStockSuggestionsSkipArchivedProducts() {
         client.get().uri(PO + "/suggestions").headers(h -> h.setBearerAuth(manager)).exchange().expectStatus().isOk()

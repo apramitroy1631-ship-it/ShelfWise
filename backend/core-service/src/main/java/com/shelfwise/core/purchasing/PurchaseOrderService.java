@@ -164,7 +164,13 @@ public class PurchaseOrderService {
                     if (!"DRAFT".equals(po.status())) {
                         return Mono.error(conflict("Only a draft can be submitted; " + id + " is " + label(po.status())));
                     }
-                    return claim(id, version)
+                    // review issue 5: don't wait for the nightly job; a draft past the limit is refused now
+                    return settings.integer("purchaseOrders.draftExpiryDays", 14)
+                            .flatMap(days -> pos.isPastExpiry(id, days).flatMap(expired -> expired
+                                    ? Mono.<Void>error(conflict(id + " has expired: drafts can't be submitted after " + days
+                                            + " days without changes. Please create a new purchase order."))
+                                    : Mono.<Void>empty()))
+                            .then(claim(id, version))
                             .then(pos.markSubmitted(id))
                             .then(outbox.add("PURCHASE_ORDER", id, "PurchaseOrderSubmitted", event(po, Map.of(
                                     "submittedBy", user.id()))))

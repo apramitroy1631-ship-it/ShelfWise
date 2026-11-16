@@ -102,6 +102,23 @@ describe('sign-in', () => {
 
     expect(await screen.findByRole('button', { name: 'Sign in' })).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith('/api/auth/logout', expect.objectContaining({ body: JSON.stringify({ refreshToken: 'refresh' }) }));
+    expect(screen.getByRole('status')).toHaveTextContent("You've been signed out.");                 // review issue 2
+  });
+
+  it('signing out in another tab signs this tab out too, and revokes its token (review issue 2)', async () => {
+    const fetchMock = backend();
+    vi.stubGlobal('fetch', fetchMock);
+    render(<App />);
+    await signIn('arjun@test.example', 'secret');
+    await screen.findByText('Arjun Rao');
+
+    const otherTab = new BroadcastChannel('shelfwise-auth');
+    otherTab.postMessage({ type: 'signed-out' });
+    otherTab.close();
+
+    expect(await screen.findByRole('button', { name: 'Sign in' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('signed out in another tab');
+    expect(fetchMock).toHaveBeenCalledWith('/api/auth/logout', expect.objectContaining({ body: JSON.stringify({ refreshToken: 'refresh' }) }));
   });
 
   it('starts finance on purchase orders awaiting approval, with a focused menu (N1, N2)', async () => {

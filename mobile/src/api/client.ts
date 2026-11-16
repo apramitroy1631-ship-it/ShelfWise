@@ -55,7 +55,7 @@ export async function restoreSession(): Promise<Session | null> {
   const saved = await SecureStore.getItemAsync(REFRESH_KEY);
   if (!saved) return null;
   session = { accessToken: '', refreshToken: saved, expiresInSeconds: 0, user: { id: '', name: '', role: 'STORE_MANAGER', storeId: null } };
-  return (await refresh()) ? session : (await setSession(null), null);
+  return (await refreshOnce(undefined)) ? session : (await setSession(null), null);
 }
 
 export async function login(email: string, password: string): Promise<Session> {
@@ -76,9 +76,10 @@ export async function logout() {
 
 /** Calls the core service, or another ShelfWise service when {@code base} is given (e.g. the bell). */
 export async function api<T>(path: string, init: RequestInit = {}, base: string = API_URL): Promise<T> {
+  const usedToken = session?.accessToken;
   let response = await send(path, init, true, base);
   if (response.status === 401 && session) {
-    if (!(await refresh())) {
+    if (!(await refreshOnce(usedToken))) {
       await setSession(null);
       throw new ApiError('Your session has expired. Please sign in again.', 401);
     }
@@ -94,13 +95,14 @@ export async function api<T>(path: string, init: RequestInit = {}, base: string 
  */
 export async function downloadToCache(path: string, fileName: string): Promise<string> {
   const target = new File(Paths.cache, fileName);
+  const usedToken = session?.accessToken;
   const attempt = () => File.downloadFileAsync(API_URL + path, target, {
     headers: { Authorization: `Bearer ${session?.accessToken ?? ''}` }, idempotent: true,
   });
   try {
     return (await attempt()).uri;
   } catch (first) {
-    if (/401/.test(String(first)) && session && (await refresh())) return (await attempt()).uri;
+    if (/401/.test(String(first)) && session && (await refreshOnce(usedToken))) return (await attempt()).uri;
     throw new ApiError(/403/.test(String(first)) ? 'You can only open files in your own store.' : "Couldn't open the file. Check your connection and try again.", 0);
   }
 }
@@ -115,6 +117,21 @@ async function send(path: string, init: RequestInit, withToken: boolean, base: s
   } catch {
     throw new ApiError(NETWORK_ERROR, 0);
   }
+}
+
+let refreshing: Promise<boolean> | null = null;
+
+/**
+ * When the access token expires, every request in flight gets a 401 at about the same time. They
+ * share ONE refresh: the first starts it and the rest wait for its answer. A request whose token was already
+ * replaced by a finished refresh just retries with the new one.
+ */
+export function refreshOnce(usedToken: string | undefined): Promise<boolean> {
+  if (session && usedToken !== undefined && session.accessToken !== usedToken) return Promise.resolve(true);
+  if (!refreshing) {
+    refreshing = refresh().finally(() => { refreshing = null; });
+  }
+  return refreshing;
 }
 
 async function refresh(): Promise<boolean> {

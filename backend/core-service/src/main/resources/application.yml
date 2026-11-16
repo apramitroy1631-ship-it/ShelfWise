@@ -20,6 +20,11 @@ spring:
     user: ${DB_USER:shelfwise}
     password: ${DB_PASSWORD:shelfwise}
 
+  # A quantity of 1.5 is refused instead of being quietly saved as 1 (review issue 4).
+  jackson:
+    deserialization:
+      accept-float-as-int: false
+
   # Errors are returned as standard JSON problem details (RFC 9457).
   webflux:
     problemdetails:
@@ -37,6 +42,9 @@ shelfwise:
     jwt-secret: ${JWT_SECRET:local-development-only-secret-do-not-use-elsewhere}
     access-token-ttl: 15m
     refresh-token-ttl: 7d
+    # Several requests may refresh with the same token at once (e.g. a page loading 5 lists just after the access
+    # token expired). Within this window a just-swapped token still works instead of being treated as stolen.
+    refresh-reuse-grace: 30s
   import:
     # When true, the provided data files are imported on start-up. Re-runs only add new records (D28).
     enabled: ${IMPORT_ON_STARTUP:false}
@@ -75,6 +83,9 @@ shelfwise:
 
 server:
   port: ${SERVER_PORT:8080}
+  # Deployed behind a proxy (Railway): take the caller's address from X-Forwarded-For, so the per-IP sign-in limit
+  # (review issue 7) counts real users rather than the proxy.
+  forward-headers-strategy: native
 
 # Logs (M28). Locally: readable lines with the request id. Deployed: set LOGGING_STRUCTURED_FORMAT_CONSOLE=ecs
 # for one JSON object per line (the request id becomes a field), which log search tools can filter on.

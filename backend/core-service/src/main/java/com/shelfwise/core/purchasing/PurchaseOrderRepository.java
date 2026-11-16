@@ -153,6 +153,21 @@ public class PurchaseOrderRepository {
         return db.sql("UPDATE purchase_orders SET status = :status WHERE id = :id").bind("id", id).bind("status", status).then();
     }
 
+    /**
+     * True if this draft has been untouched for longer than {@code days}: the same rule as the nightly expiry job (D22),
+     * checked at submit time so a stale draft can't slip through before the job runs (review issue 5).
+     */
+    public Mono<Boolean> isPastExpiry(String id, int days) {
+        return db.sql("""
+                        SELECT (CASE WHEN source = 'IMPORT' THEN created_at ELSE updated_at END) < now() - make_interval(days => :days)
+                        FROM purchase_orders WHERE id = :id
+                        """)
+                .bind("id", id).bind("days", days)
+                .map((row, meta) -> Boolean.TRUE.equals(row.get(0, Boolean.class)))
+                .one()
+                .defaultIfEmpty(false);
+    }
+
     public Mono<Void> markSubmitted(String id) {
         return db.sql("UPDATE purchase_orders SET status = 'SUBMITTED', submitted_at = now() WHERE id = :id").bind("id", id).then();
     }

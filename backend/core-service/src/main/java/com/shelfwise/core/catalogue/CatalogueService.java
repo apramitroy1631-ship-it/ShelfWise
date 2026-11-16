@@ -44,8 +44,9 @@ public class CatalogueService {
         if (!STATUSES.contains(statusFilter)) {
             return Mono.error(badRequest("status must be ACTIVE, ARCHIVED or ALL"));
         }
-        String sortKey = sort == null ? "name" : sort;
-        if (!ProductRepository.SORT_COLUMNS.containsKey(sortKey)) {
+        boolean searching = text != null && !text.isBlank();
+        String sortKey = sort == null ? (searching ? ProductRepository.RELEVANCE : "name") : sort;   // best match first while searching
+        if (!sortKey.equals(ProductRepository.RELEVANCE) && !ProductRepository.SORT_COLUMNS.containsKey(sortKey)) {
             return Mono.error(badRequest("sort must be one of " + ProductRepository.SORT_COLUMNS.keySet()));
         }
         if (page < 0 || size < 1 || size > MAX_PAGE_SIZE) {
