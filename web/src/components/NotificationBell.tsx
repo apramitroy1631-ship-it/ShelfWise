@@ -102,7 +102,7 @@ export function NotificationBell({ onOpenItem }: { onOpenItem: (item: Notificati
                   <button type="button" className={item.unread ? 'bell-item unread' : 'bell-item'} onClick={() => openItem(item)}>
                     {item.unread && <span className="dot" aria-label="Unread" />}
                     <span className="bell-text">{item.text}</span>
-                    <span className="muted small">{dateTime(item.at)}</span>
+                    <span className="muted small">{item.detail ? `${item.detail} · ${dateTime(item.at)}` : dateTime(item.at)}</span>
                   </button>
                 </li>
               ))}

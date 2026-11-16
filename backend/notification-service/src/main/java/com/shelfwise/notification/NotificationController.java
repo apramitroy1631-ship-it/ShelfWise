@@ -26,7 +26,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/notifications")
 public class NotificationController {
 
-    public record Item(long id, String kind, String text, Integer count, String ref, boolean unread, OffsetDateTime at) {
+    public record Item(long id, String kind, String text, String detail, Integer count, String ref, boolean unread, OffsetDateTime at) {
     }
 
     public record Feed(long unreadCount, List<Item> items) {
@@ -53,10 +53,12 @@ public class NotificationController {
                 .bind("user", token.getSubject()).bind("audience", audience)
                 .map((row, meta) -> {
                     Integer count = row.get("item_count", Integer.class);
-                    return new Item(row.get("id", Long.class), row.get("kind", String.class),
-                            text(row.get("kind", String.class), count, row.get("latest", String.class),
-                                    row.get("oldest_since", OffsetDateTime.class), row.get("message", String.class),
-                                    row.get("audience", String.class)),
+                    String kind = row.get("kind", String.class);
+                    String latest = row.get("latest", String.class);
+                    String rowAudience = row.get("audience", String.class);
+                    return new Item(row.get("id", Long.class), kind,
+                            text(kind, count, latest, row.get("message", String.class), rowAudience),
+                            detail(kind, count, latest, row.get("oldest_since", OffsetDateTime.class), rowAudience),
                             count, row.get("ref", String.class), Boolean.TRUE.equals(row.get("unread", Boolean.class)),
                             row.get("last_increase_at", OffsetDateTime.class));
                 })
@@ -104,28 +106,39 @@ public class NotificationController {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Unknown role");
     }
 
-    /** The words people see, e.g. "Smart Buy Potato Chips 150g and 39 other items are out of stock in S04". */
-    static String text(String kind, Integer count, String latest, OffsetDateTime oldestSince, String message, String audience) {
-        String store = audience.startsWith("STORE:") ? audience.substring(6) : "";
+    /**
+     * The short headline people see, e.g. "40 items out of stock" or "266 orders stuck". The names and the ages go in
+     * {@link #detail}, shown as a smaller line under it, so a headline always fits the bell.
+     */
+    static String text(String kind, Integer count, String latest, String message, String audience) {
         int n = count == null ? 0 : count;
-        String others = n <= 1 ? latest + " is" : latest + " and " + (n - 1) + " other item" + (n == 2 ? "" : "s") + " are";
-        String waiting = oldestSince == null ? "" : " · oldest waiting " + days(oldestSince);
-        if (audience.equals("ROLE:ADMIN") && (kind.equals("OUT_OF_STOCK") || kind.equals("RUNNING_LOW"))) {
-            // head office: "190 items out of stock across 5 stores" ("latest" carries the number of stores)
-            String stores = "1".equals(latest) ? "1 store" : latest + " stores";
-            return GROUPED.format(n) + (n == 1 ? " item is " : " items are ") + (kind.equals("OUT_OF_STOCK") ? "out of stock" : "running low")
-                    + " across " + stores;
-        }
+        String items = GROUPED.format(n) + (n == 1 ? " item " : " items ");
         return switch (kind) {
-            case "OUT_OF_STOCK" -> others + " out of stock in " + store;
-            case "RUNNING_LOW" -> others + " running low in " + store;
-            case "STUCK_ORDERS" -> (n == 1 ? latest + " is stuck in " + store : GROUPED.format(n) + " orders are stuck in " + store) + waiting;
-            case "STUCK_POS" -> (n == 1 ? latest + " is waiting too long for goods" : n + " purchase orders are waiting too long for goods") + waiting;
-            case "NEEDS_REVIEW" -> (n == 1 ? latest + " needs review" : n + " imported orders need review") + waiting;
-            case "NEEDS_APPROVAL" -> (n == 1 ? latest + " needs your approval" : n + " purchase orders need your approval") + waiting;
-            case "NEEDS_SECOND_APPROVAL" -> (n == 1 ? latest + " needs a second approval" : n + " purchase orders need a second approval") + waiting;
+            case "OUT_OF_STOCK" -> items + "out of stock";
+            case "RUNNING_LOW" -> items + "running low";
+            case "STUCK_ORDERS" -> n == 1 ? latest + " is stuck" : GROUPED.format(n) + " orders stuck";
+            case "STUCK_POS" -> n == 1 ? latest + " stuck waiting for goods" : n + " purchase orders stuck waiting for goods";
+            case "NEEDS_REVIEW" -> n == 1 ? latest + " needs review" : n + " imported orders need review";
+            case "NEEDS_APPROVAL" -> n == 1 ? latest + " needs your approval" : n + " purchase orders need your approval";
+            case "NEEDS_SECOND_APPROVAL" -> n == 1 ? latest + " needs a second approval" : n + " purchase orders need a second approval";
             default -> message;
         };
+    }
+
+    /** The grey line under the headline (before the time): item names, "Across 5 stores", or "Oldest waiting 371 days". Null if none. */
+    static String detail(String kind, Integer count, String latest, OffsetDateTime oldestSince, String audience) {
+        int n = count == null ? 0 : count;
+        boolean stock = kind.equals("OUT_OF_STOCK") || kind.equals("RUNNING_LOW");
+        if (stock && audience.equals("ROLE:ADMIN")) {
+            return "Across " + ("1".equals(latest) ? "1 store" : latest + " stores");   // "latest" carries the number of stores
+        }
+        if (stock) {
+            return latest == null ? null : n <= 1 ? latest : latest + " and " + GROUPED.format(n - 1) + " more";
+        }
+        if (oldestSince == null) {
+            return null;
+        }
+        return (n <= 1 ? "Waiting " : "Oldest waiting ") + days(oldestSince);
     }
 
     /** Indian grouping, as everywhere else (1,046). */

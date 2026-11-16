@@ -14,8 +14,8 @@ const SESSION = {
 const FEED = {
   unreadCount: 2,
   items: [
-    { id: 7, kind: 'RUNNING_LOW', text: 'Royal Harvest Sticky Notes 100 sheets and 144 other items are running low in S01', count: 145, ref: null, unread: true, at: '2026-11-11T04:50:05Z' },
-    { id: 9, kind: 'PO_DECISION', text: 'PO-10001 was approved', count: null, ref: 'PO-10001', unread: true, at: '2026-11-11T04:56:00Z' },
+    { id: 7, kind: 'RUNNING_LOW', text: '145 items running low', detail: 'Royal Harvest Sticky Notes 100 sheets and 144 more', count: 145, ref: null, unread: true, at: '2026-11-11T04:50:05Z' },
+    { id: 9, kind: 'PO_DECISION', text: 'PO-10001 was approved', detail: null, count: null, ref: 'PO-10001', unread: true, at: '2026-11-11T04:56:00Z' },
   ],
 };
 const EMPTY = { items: [], page: 0, size: 30, totalItems: 0, totalPages: 0 };
@@ -52,7 +52,7 @@ describe('bell on mobile (D7)', () => {
 
     await fireEvent.press(await screen.findByLabelText('Notifications, 2 unread'));
 
-    expect(await screen.findByText(/144 other items are running low in S01/)).toBeTruthy();
+    expect(await screen.findByText('145 items running low')).toBeTruthy();
     expect(screen.getByText('PO-10001 was approved')).toBeTruthy();
     expect(calls.some((c) => c.url === 'http://localhost:8081/api/notifications'
       && new Headers(c.init?.headers).get('Authorization') === 'Bearer access')).toBe(true);
@@ -63,7 +63,7 @@ describe('bell on mobile (D7)', () => {
     await signIn(calls);
 
     await fireEvent.press(await screen.findByLabelText('Notifications, 2 unread'));
-    await fireEvent.press(await screen.findByLabelText(/running low in S01, unread/));
+    await fireEvent.press(await screen.findByLabelText(/145 items running low.*, unread/));
 
     await waitFor(() => expect(calls.some((c) => c.url.endsWith('/api/notifications/7/read') && c.init?.method === 'POST')).toBe(true));
     await waitFor(() => expect(calls.some((c) => /\/api\/inventory\?storeId=S01&lowOnly=true/.test(c.url))).toBe(true));
@@ -73,17 +73,17 @@ describe('bell on mobile (D7)', () => {
   it('stuck notifications open Orders or Purchases with "stuck only" on (D32, D22)', async () => {
     const calls: Call[] = [];
     await signIn(calls, () => json(200, { unreadCount: 2, items: [
-      { id: 21, kind: 'STUCK_ORDERS', text: '42 orders are stuck in S01 · oldest waiting 40 days', count: 42, ref: null, unread: true, at: '2026-11-12T01:45:00Z' },
-      { id: 22, kind: 'STUCK_POS', text: '12 purchase orders are waiting too long for goods', count: 12, ref: null, unread: true, at: '2026-11-12T01:45:00Z' },
+      { id: 21, kind: 'STUCK_ORDERS', text: '42 orders stuck', detail: 'Oldest waiting 40 days', count: 42, ref: null, unread: true, at: '2026-11-12T01:45:00Z' },
+      { id: 22, kind: 'STUCK_POS', text: '12 purchase orders stuck waiting for goods', detail: null, count: 12, ref: null, unread: true, at: '2026-11-12T01:45:00Z' },
     ] }));
 
     await fireEvent.press(await screen.findByLabelText('Notifications, 2 unread'));
-    await fireEvent.press(await screen.findByLabelText(/42 orders are stuck in S01/));
+    await fireEvent.press(await screen.findByLabelText(/42 orders stuck/));
     await waitFor(() => expect(calls.some((c) => /\/api\/orders\?storeId=S01&stuck=true/.test(c.url))).toBe(true));
     expect(screen.getByLabelText('Stuck orders only').props.value).toBe(true);
 
     await fireEvent.press(screen.getByLabelText(/^Notifications/));
-    await fireEvent.press(await screen.findByLabelText(/waiting too long for goods/));
+    await fireEvent.press(await screen.findByLabelText(/purchase orders stuck waiting for goods/));
     await waitFor(() => expect(calls.some((c) => /\/api\/purchase-orders\?storeId=S01&stuck=true/.test(c.url))).toBe(true));
     expect(screen.getByLabelText('Stuck purchase orders only').props.value).toBe(true);
   });

@@ -57,7 +57,7 @@ export type OrderDetail = OrderSummary & { placedBy: string; source: string; lin
 export type NotificationKind = 'OUT_OF_STOCK' | 'RUNNING_LOW' | 'NEEDS_APPROVAL' | 'NEEDS_SECOND_APPROVAL' | 'PO_DECISION'
   | 'STUCK_ORDERS' | 'STUCK_POS' | 'NEEDS_REVIEW';
 
-export type NotificationItem = { id: number; kind: NotificationKind; text: string; count: number | null; ref: string | null; unread: boolean; at: string };
+export type NotificationItem = { id: number; kind: NotificationKind; text: string; detail: string | null; count: number | null; ref: string | null; unread: boolean; at: string };
 
 export type NotificationFeed = { unreadCount: number; items: NotificationItem[] };
 

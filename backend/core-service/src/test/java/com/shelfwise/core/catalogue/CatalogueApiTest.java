@@ -84,6 +84,33 @@ class CatalogueApiTest {
         get(managerToken, "/api/products?q=snk-00091").jsonPath("$.items[0].sku").isEqualTo("SW-SNK-00091");
     }
 
+    /** Shopping-site style search: every word must match, in any order, even half-typed, even with a small typo. */
+    @Test
+    void searchFindsWordsInAnyOrderHalfTypedOrWithATypo() {
+        get(managerToken, "/api/products?q=chips potato").jsonPath("$.items[0].sku").isEqualTo("SW-SNK-00091");   // any order
+        get(managerToken, "/api/products?q=pota chi").jsonPath("$.items[0].sku").isEqualTo("SW-SNK-00091");        // half-typed words
+        get(managerToken, "/api/products?q=potatoe chips").jsonPath("$.items[0].sku").isEqualTo("SW-SNK-00091");   // typo
+        get(managerToken, "/api/products?q=cofee").jsonPath("$.items[0].sku").isEqualTo("SW-BEV-00005");           // typo
+        get(managerToken, "/api/products?q=snacks").jsonPath("$.totalItems").isEqualTo(1);                         // category
+        get(managerToken, "/api/products?q=potato coffee").jsonPath("$.totalItems").isEqualTo(0);                  // every word must match
+        get(managerToken, "/api/products?q=zzzz").jsonPath("$.totalItems").isEqualTo(0);                           // no false guesses
+    }
+
+    @Test
+    void searchPutsTheBestMatchFirst() {
+        run("""
+            INSERT INTO products (sku, name, category, price_inr, cost_price_inr, gst_rate, supplier_id, status, reorder_level, catalogued_on, source) VALUES
+              ('SW-SNK-00201','Zesty Tortillachips 100g','Snacks',30,20,12,'SUP23','ACTIVE',5,'2025-01-01','IMPORT'),
+              ('SW-SNK-00202','Chips Master Deluxe 100g','Snacks',30,20,12,'SUP23','ACTIVE',5,'2025-01-01','IMPORT')
+            """);
+        get(managerToken, "/api/products?q=chips")                       // starts with it > a word in the middle > buried inside a word
+                .jsonPath("$.items[0].sku").isEqualTo("SW-SNK-00202")
+                .jsonPath("$.items[1].sku").isEqualTo("SW-SNK-00091")
+                .jsonPath("$.items[2].sku").isEqualTo("SW-SNK-00201");
+        get(managerToken, "/api/products?q=chips&sort=sku")              // an explicit sort still wins
+                .jsonPath("$.items[0].sku").isEqualTo("SW-SNK-00091");
+    }
+
     @Test
     void searchTreatsPercentAsAPlainCharacter() {
         client.get().uri(b -> b.path("/api/products").queryParam("q", "50%").build())   // "50%" matches only "50% off"

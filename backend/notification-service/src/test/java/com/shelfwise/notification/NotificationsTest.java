@@ -61,9 +61,9 @@ class NotificationsTest {
 
         Map<?, ?> feed = feed(ARJUN);
         assertThat(feed.get("unreadCount")).isEqualTo(2);
-        assertThat(texts(feed)).containsExactlyInAnyOrder(
-                "Smart Buy Potato Chips 150g and 2 other items are out of stock in S01",
-                "Home Basics Iodised Salt 1kg and 4 other items are running low in S01");
+        assertThat(texts(feed)).containsExactlyInAnyOrder("3 items out of stock", "5 items running low");
+        assertThat(details(feed)).containsExactlyInAnyOrder(
+                "Smart Buy Potato Chips 150g and 2 more", "Home Basics Iodised Salt 1kg and 4 more");
         assertThat(items(feed(SNEHA))).isEmpty();                       // another store sees nothing
         assertThat(items(feed(MEERA))).isEmpty();                       // finance doesn't get stock groups
     }
@@ -76,11 +76,13 @@ class NotificationsTest {
 
         handle(stock("S01", 2, "Chips", 0, null));                      // restocked one: goes down, stays read
         assertThat(feed(ARJUN).get("unreadCount")).isEqualTo(0);
-        assertThat(texts(feed(ARJUN))).containsExactly("Chips and 1 other item are out of stock in S01");
+        assertThat(texts(feed(ARJUN))).containsExactly("2 items out of stock");
+        assertThat(details(feed(ARJUN))).containsExactly("Chips and 1 more");
 
         handle(stock("S01", 4, "Salt", 0, null));                       // goes up: unread again, new latest item
         assertThat(feed(ARJUN).get("unreadCount")).isEqualTo(1);
-        assertThat(texts(feed(ARJUN))).containsExactly("Salt and 3 other items are out of stock in S01");
+        assertThat(texts(feed(ARJUN))).containsExactly("4 items out of stock");
+        assertThat(details(feed(ARJUN))).containsExactly("Salt and 3 more");
 
         handle(stock("S01", 0, null, 0, null));                         // all restocked: the notification clears
         assertThat(items(feed(ARJUN))).isEmpty();
@@ -108,7 +110,8 @@ class NotificationsTest {
         assertThat(handler.handle(newer).block(Duration.ofSeconds(10))).isFalse();
         handle(older);
 
-        assertThat(texts(feed(ARJUN))).containsExactly("Chips and 4 other items are out of stock in S01");
+        assertThat(texts(feed(ARJUN))).containsExactly("5 items out of stock");
+        assertThat(details(feed(ARJUN))).containsExactly("Chips and 4 more");
     }
 
     // --- finance ---------------------------------------------------------------------
@@ -121,8 +124,9 @@ class NotificationsTest {
                 "asOf", next().toString())));
 
         assertThat(texts(feed(MEERA))).containsExactlyInAnyOrder(
-                "6 purchase orders need your approval · oldest waiting 3 days",
-                "PO-0195 needs a second approval · oldest waiting less than a day");
+                "6 purchase orders need your approval", "PO-0195 needs a second approval");
+        assertThat(details(feed(MEERA))).containsExactlyInAnyOrder(
+                "Oldest waiting 3 days", "Waiting less than a day");
         assertThat(items(feed(ARJUN))).isEmpty();
     }
 
@@ -138,8 +142,8 @@ class NotificationsTest {
         String rani = TestTokens.token("U06", "STORE_MANAGER", "S04");
 
         assertThat(texts(feed(rani))).containsExactlyInAnyOrder(
-                "42 orders are stuck in S04 · oldest waiting 40 days",
-                "PO-0116 is waiting too long for goods · oldest waiting 270 days");
+                "42 orders stuck", "PO-0116 stuck waiting for goods");
+        assertThat(details(feed(rani))).containsExactlyInAnyOrder("Oldest waiting 40 days", "Waiting 270 days");
         assertThat(items(feed(ARJUN))).isEmpty();                       // another store's managers see nothing
     }
 
@@ -153,9 +157,9 @@ class NotificationsTest {
                 "asOf", next().toString())));
 
         assertThat(texts(feed(rohit))).containsExactlyInAnyOrder(
-                "15 imported orders need review · oldest waiting 200 days",
-                "190 items are out of stock across 5 stores",
-                "1,046 items are running low across 5 stores");
+                "15 imported orders need review", "190 items out of stock", "1,046 items running low");
+        assertThat(details(feed(rohit))).containsExactlyInAnyOrder(
+                "Oldest waiting 200 days", "Across 5 stores", "Across 5 stores");
         assertThat(items(feed(ARJUN))).isEmpty();
         assertThat(items(feed(MEERA))).isEmpty();
 
@@ -262,5 +266,9 @@ class NotificationsTest {
 
     private static List<Object> texts(Map<?, ?> feed) {
         return items(feed).stream().map(i -> i.get("text")).toList();
+    }
+
+    private static List<Object> details(Map<?, ?> feed) {
+        return items(feed).stream().map(i -> i.get("detail")).toList();
     }
 }
