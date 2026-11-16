@@ -284,9 +284,11 @@ td.mono { white-space: nowrap; }
 .bell { position: relative; }
 .bell-button { position: relative; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 8px; }
 .bell-badge { position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; }
-.bell-panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; width: 380px; max-width: calc(100vw - 32px); max-height: 70vh; overflow: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(17, 24, 39, 0.12); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-.bell-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-.bell-item { width: 100%; display: grid; grid-template-columns: 10px 1fr; gap: 2px 8px; text-align: left; background: transparent; color: var(--text); border: 0; border-top: 1px solid var(--divider); border-radius: 0; padding: 8px 4px; font-weight: 400; }
+.bell-panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; width: 380px; max-width: calc(100vw - 32px); max-height: 70vh; overflow: hidden; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(17, 24, 39, 0.12); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+/* The list scrolls with the mouse wheel / touch only: the scrollbar is hidden, the header stays put, and the page behind doesn't move. */
+.bell-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; -ms-overflow-style: none; }
+.bell-list::-webkit-scrollbar { display: none; }
+.bell-item { width: 100%; display: grid; grid-template-columns: 10px minmax(0, 1fr); gap: 2px 8px; text-align: left; white-space: normal; overflow-wrap: anywhere; background: transparent; color: var(--text); border: 0; border-top: 1px solid var(--divider); border-radius: 0; padding: 8px 4px; font-weight: 400; }
 .bell-item .bell-text, .bell-item .small { grid-column: 2; }
 .bell-item.unread { background: var(--selected-row); }
 .bell-item.unread .bell-text { font-weight: 600; }

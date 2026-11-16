@@ -10,6 +10,8 @@ import java.util.Map;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 
+import com.shelfwise.core.search.TextSearch;
+
 import io.r2dbc.spi.Row;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -26,6 +28,9 @@ public class ProductRepository {
             "price", "price_inr",
             "reorderLevel", "reorder_level");
 
+    /** The default sort while a search text is typed: best match first (see {@link TextSearch}). Not offered as a column. */
+    static final String RELEVANCE = "relevance";
+
     private static final String COLUMNS = """
             sku, name, category, price_inr, cost_price_inr, gst_rate, supplier_id, status, reorder_level, catalogued_on, version
             """;
@@ -41,10 +46,12 @@ public class ProductRepository {
 
     public Flux<Product> search(Search s) {
         Where where = where(s);
-        String order = SORT_COLUMNS.get(s.sortKey()) + (s.descending() ? " DESC" : " ASC") + " NULLS LAST, sku ASC";
+        String order = RELEVANCE.equals(s.sortKey()) && where.relevance != null
+                ? where.relevance + " DESC, name ASC, sku ASC"
+                : SORT_COLUMNS.get(RELEVANCE.equals(s.sortKey()) ? "name" : s.sortKey()) + (s.descending() ? " DESC" : " ASC") + " NULLS LAST, sku ASC";
         DatabaseClient.GenericExecuteSpec spec = db.sql("SELECT " + COLUMNS + " FROM products" + where.sql
                 + " ORDER BY " + order + " LIMIT :limit OFFSET :offset");
-        spec = bindAll(spec, where.params).bind("limit", s.size()).bind("offset", (long) s.page() * s.size());
+        spec = bindAll(bindAll(spec, where.params), order.startsWith(String.valueOf(where.relevance)) ? where.rankParams : Map.of()).bind("limit", s.size()).bind("offset", (long) s.page() * s.size());
         return spec.map((row, meta) -> toProduct(row)).all();
     }
 
@@ -116,7 +123,7 @@ public class ProductRepository {
 
     // --- helpers -----------------------------------------------------------
 
-    private record Where(String sql, Map<String, Object> params) {
+    private record Where(String sql, Map<String, Object> params, String relevance, Map<String, Object> rankParams) {
     }
 
     private static Where where(Search s) {
@@ -130,16 +137,13 @@ public class ProductRepository {
             conditions.add("category = :category");
             params.put("category", s.category());
         }
-        if (s.text() != null && !s.text().isBlank()) {
-            conditions.add("(name ILIKE :text ESCAPE '\\' OR sku ILIKE :text ESCAPE '\\')");
-            params.put("text", "%" + escapeLike(s.text().strip()) + "%");
+        TextSearch.Match match = TextSearch.of(s.text(), "sku", "name", List.of("category"));
+        if (match != null) {
+            conditions.add(match.condition());
+            params.putAll(match.params());
         }
-        return new Where(conditions.isEmpty() ? "" : " WHERE " + String.join(" AND ", conditions), params);
-    }
-
-    /** So that a search for "50%" means the characters 50% and not "50 followed by anything". */
-    private static String escapeLike(String text) {
-        return text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+        return new Where(conditions.isEmpty() ? "" : " WHERE " + String.join(" AND ", conditions), params,
+                match == null ? null : match.relevance(), match == null ? Map.of() : match.rankParams());
     }
 
     private static DatabaseClient.GenericExecuteSpec bindAll(DatabaseClient.GenericExecuteSpec spec, Map<String, Object> params) {

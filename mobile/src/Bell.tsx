@@ -83,6 +83,7 @@ export function Bell({ onOpenItem }: { onOpenItem: (item: NotificationItem) => v
               {unavailable && <Text accessibilityRole="alert" style={[styles.sub, { paddingHorizontal: 16 }]}>Notifications are unavailable right now; everything else still works.</Text>}
               {!feed ? <State loading={!unavailable} error={null} empty={null} /> : (
                 <FlatList
+                  showsVerticalScrollIndicator={false}
                   data={feed.items}
                   keyExtractor={(i) => String(i.id)}
                   ListEmptyComponent={<State loading={false} error={null} empty="You're all caught up." />}
@@ -93,7 +94,7 @@ export function Bell({ onOpenItem }: { onOpenItem: (item: NotificationItem) => v
                         {item.unread && <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary }} />}
                         <Text style={[styles.title, { flex: 1, fontWeight: item.unread ? '600' : '400' }]}>{item.text}</Text>
                       </View>
-                      <Text style={styles.sub}>{IST.format(new Date(item.at))}</Text>
+                      <Text style={styles.sub}>{item.detail ? `${item.detail} · ${IST.format(new Date(item.at))}` : IST.format(new Date(item.at))}</Text>
                     </Pressable>
                   )}
                 />

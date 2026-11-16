@@ -1,5 +1,6 @@
 # Serves the built web app and forwards API calls, so the browser talks to one address (no CORS for the app itself).
 # ${PORT}, ${CORE_URL} and ${NOTIFICATIONS_URL} are filled in from the environment when the container starts.
+# The two URLs may be http (docker compose) or https (the services' public addresses on Render).
 server {
     listen ${PORT};
     listen [::]:${PORT};
@@ -8,9 +9,13 @@ server {
     # Supplier invoices are up to 20 MB (M20).
     client_max_body_size 21m;
 
+    # For https targets: say which site we want (hosts like Render serve many sites from one address).
+    proxy_ssl_server_name on;
+
     # The bell is served by the notification service (DL-12). More specific, so it comes first.
     location /api/notifications {
         proxy_pass ${NOTIFICATIONS_URL};
+        proxy_read_timeout 120s;      # a sleeping free service takes a while to wake
         proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
         proxy_set_header X-Request-Id $http_x_request_id;
     }

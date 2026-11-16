@@ -13,7 +13,7 @@ FROM nginx:1.29-alpine
 # The official image fills ${...} in templates from the environment at start-up (only variables that are set).
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
-# Defaults match docker-compose service names; Railway sets these to its private addresses (docs/deploy.md).
+# Defaults match docker-compose service names; the deployed web service sets them to the services' addresses (docs/deploy.md).
 ENV PORT=8080 \
     CORE_URL=http://core-service:8080 \
     NOTIFICATIONS_URL=http://notification-service:8081

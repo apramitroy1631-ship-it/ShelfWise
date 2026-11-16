@@ -18,7 +18,7 @@ Staff use it to run their shops: store managers handle stock, customer orders an
 | Remote config | Own settings table + `/config` endpoint |
 | Web app | React + TypeScript + Vite, tested with Vitest (all roles) |
 | Mobile app | React Native with Expo, store managers *(to confirm)* |
-| Hosting | Railway (containers), Cloudflare R2, Expo EAS for the Android build |
+| Hosting | Render (containers), Neon (PostgreSQL), CloudAMQP (RabbitMQ), Cloudflare R2, Expo EAS for the Android build; all free plans (DL-07) |
 
 Why each was chosen, the alternatives, and what would change at 10× load: **[Decision log](docs/decision-log.md)**.
 
@@ -254,7 +254,7 @@ The web app's **Settings** screen (admin) edits these.
 
 ### Deployment
 
-Railway (both services, PostgreSQL, RabbitMQ, web), Cloudflare R2 (invoices) and Expo EAS (Android): step by step, with every variable, in **[docs/deploy.md](docs/deploy.md)**. The web service is the one public address; it forwards `/api` to the services over Railway's private network.
+Render (both services and the web app, from `render.yaml`), Neon (PostgreSQL), CloudAMQP (RabbitMQ), Cloudflare R2 (invoices) and Expo EAS (Android), all on free plans: step by step, with every variable, in **[docs/deploy.md](docs/deploy.md)**. The web service is the one address people use; it forwards `/api` to the two services. Free services sleep after 15 idle minutes, so the first call after a pause takes a few minutes.
 
 ### Logging, monitoring and request tracing
 
@@ -267,7 +267,7 @@ notification-service INFO [notification-service,5d0c…] EventListener : Handled
 ```
 
 - **Logs:** readable locally; set `LOGGING_STRUCTURED_FORMAT_CONSOLE=ecs` for JSON lines when deployed. Query strings and phone numbers are never logged (D16).
-- **Health:** `/actuator/health/liveness`, `/actuator/health/readiness` (what Railway checks), and `/actuator/health`, which includes an `outbox` check that goes DOWN if events stop reaching RabbitMQ for 5 minutes. Backlog details are shown to signed-in callers.
+- **Health:** `/actuator/health/liveness`, `/actuator/health/readiness` (what the host checks), and `/actuator/health`, which includes an `outbox` check that goes DOWN if events stop reaching RabbitMQ for 5 minutes. Backlog details are shown to signed-in callers.
 
 ### Running the backend tests
 

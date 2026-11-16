@@ -35,8 +35,9 @@ public class InventoryService {
     public Mono<Page<StockItem>> search(UserAccount user, String storeId, String text, boolean lowOnly, boolean recountOnly,
                                         String sort, String direction, int page, int size) {
         String store = StoreAccess.readableStore(user, storeId);
-        String sortKey = sort == null ? "name" : sort;
-        if (!InventoryRepository.SORT_COLUMNS.containsKey(sortKey)) {
+        boolean searching = text != null && !text.isBlank();
+        String sortKey = sort == null ? (searching ? InventoryRepository.RELEVANCE : "name") : sort;   // best match first while searching
+        if (!sortKey.equals(InventoryRepository.RELEVANCE) && !InventoryRepository.SORT_COLUMNS.containsKey(sortKey)) {
             return Mono.error(badRequest("sort must be one of " + InventoryRepository.SORT_COLUMNS.keySet()));
         }
         if (page < 0 || size < 1 || size > MAX_PAGE_SIZE) {

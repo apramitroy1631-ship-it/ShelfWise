@@ -15,10 +15,10 @@ const EMPTY_PAGE = { items: [], page: 0, size: 20, totalItems: 0, totalPages: 0 
 const FEED = {
   unreadCount: 2,
   items: [
-    { id: 7, kind: 'RUNNING_LOW', text: 'Royal Harvest Sticky Notes 100 sheets and 144 other items are running low in S01',
+    { id: 7, kind: 'RUNNING_LOW', text: '145 items running low', detail: 'Royal Harvest Sticky Notes 100 sheets and 144 more',
       count: 145, ref: null, unread: true, at: '2026-11-11T04:50:05Z' },
-    { id: 9, kind: 'PO_DECISION', text: 'PO-10001 was approved', count: null, ref: 'PO-10001', unread: true, at: '2026-11-11T04:56:00Z' },
-    { id: 3, kind: 'OUT_OF_STOCK', text: 'Fresh Basket Energy Drink 250ml and 39 other items are out of stock in S01',
+    { id: 9, kind: 'PO_DECISION', text: 'PO-10001 was approved', detail: null, count: null, ref: 'PO-10001', unread: true, at: '2026-11-11T04:56:00Z' },
+    { id: 3, kind: 'OUT_OF_STOCK', text: '40 items out of stock', detail: 'Fresh Basket Energy Drink 250ml and 39 more',
       count: 40, ref: null, unread: false, at: '2026-11-11T04:46:56Z' },
   ],
 };
@@ -55,7 +55,8 @@ describe('notification bell', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Notifications, 2 unread' }));
 
     const panel = screen.getByRole('dialog', { name: 'Notifications' });
-    expect(within(panel).getByText(/144 other items are running low in S01/)).toBeInTheDocument();
+    expect(within(panel).getByText('145 items running low')).toBeInTheDocument();
+    expect(within(panel).getByText(/Royal Harvest Sticky Notes 100 sheets and 144 more · /)).toBeInTheDocument();
     expect(within(panel).getByText('PO-10001 was approved')).toBeInTheDocument();
     expect(within(panel).getAllByLabelText('Unread')).toHaveLength(2);
   });
@@ -90,26 +91,26 @@ describe('notification bell', () => {
     await signIn();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Notifications, 2 unread' }));
-    await userEvent.click(screen.getByText(/running low in S01/));
+    await userEvent.click(screen.getByText('145 items running low'));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/inventory\?.*lowOnly=true.*page=0/), expect.anything()));
   });
 
   it('stuck notifications open their list with "stuck" on (D32 orders, D22 purchase orders)', async () => {
     const fetchMock = backend(() => json(200, { unreadCount: 2, items: [
-      { id: 21, kind: 'STUCK_ORDERS', text: '42 orders are stuck in S01 · oldest waiting 40 days', count: 42, ref: null, unread: true, at: '2026-11-12T01:45:00Z' },
-      { id: 22, kind: 'STUCK_POS', text: '12 purchase orders are waiting too long for goods · oldest waiting 270 days', count: 12, ref: null, unread: true, at: '2026-11-12T01:45:00Z' },
+      { id: 21, kind: 'STUCK_ORDERS', text: '42 orders stuck', detail: 'Oldest waiting 40 days', count: 42, ref: null, unread: true, at: '2026-11-12T01:45:00Z' },
+      { id: 22, kind: 'STUCK_POS', text: '12 purchase orders stuck waiting for goods', detail: 'Oldest waiting 270 days', count: 12, ref: null, unread: true, at: '2026-11-12T01:45:00Z' },
     ] }));
     vi.stubGlobal('fetch', fetchMock);
     await signIn();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Notifications, 2 unread' }));
-    await userEvent.click(screen.getByText(/42 orders are stuck/));
+    await userEvent.click(screen.getByText('42 orders stuck'));
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/orders\?.*stuck=true.*page=0/), expect.anything()));
     expect(screen.getByRole('button', { name: /^Stuck:/ })).toHaveAttribute('aria-pressed', 'true');
 
     await userEvent.click(screen.getByRole('button', { name: /^Notifications/ }));
-    await userEvent.click(screen.getByText(/waiting too long for goods/));
+    await userEvent.click(screen.getByText('12 purchase orders stuck waiting for goods'));
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/purchase-orders\?.*stuck=true.*page=0/), expect.anything()));
     expect(screen.getByRole('heading', { name: 'Purchase orders' })).toBeInTheDocument();
   });

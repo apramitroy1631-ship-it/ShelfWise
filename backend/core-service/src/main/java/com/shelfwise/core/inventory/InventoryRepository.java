@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.shelfwise.core.inventory.InventoryDtos.Movement;
 import com.shelfwise.core.inventory.InventoryDtos.StockItem;
+import com.shelfwise.core.search.TextSearch;
 
 import io.r2dbc.spi.Row;
 import reactor.core.publisher.Flux;
@@ -27,6 +28,9 @@ public class InventoryRepository {
             "quantity", "i.quantity",
             "reorderLevel", "i.reorder_level",
             "store", "i.store_id");
+
+    /** The default sort while a search text is typed: best match first (see {@link TextSearch}). Not offered as a column. */
+    static final String RELEVANCE = "relevance";
 
     private static final String COLUMNS = """
             i.store_id, i.sku, p.name, p.category, p.status, p.price_inr, i.quantity, i.reorder_level,
@@ -45,9 +49,11 @@ public class InventoryRepository {
 
     public Flux<StockItem> search(Search s) {
         Where w = where(s);
-        String order = SORT_COLUMNS.get(s.sortKey()) + (s.descending() ? " DESC" : " ASC") + ", i.store_id, i.sku";
-        return bindAll(db.sql("SELECT " + COLUMNS + " FROM inventory i JOIN products p ON p.sku = i.sku" + w.sql
-                        + " ORDER BY " + order + " LIMIT :limit OFFSET :offset"), w.params)
+        String order = RELEVANCE.equals(s.sortKey()) && w.relevance != null
+                ? w.relevance + " DESC, p.name ASC, i.store_id, i.sku"
+                : SORT_COLUMNS.get(RELEVANCE.equals(s.sortKey()) ? "name" : s.sortKey()) + (s.descending() ? " DESC" : " ASC") + ", i.store_id, i.sku";
+        return bindAll(bindAll(db.sql("SELECT " + COLUMNS + " FROM inventory i JOIN products p ON p.sku = i.sku" + w.sql
+                        + " ORDER BY " + order + " LIMIT :limit OFFSET :offset"), w.params), order.startsWith(String.valueOf(w.relevance)) ? w.rankParams : Map.of())
                 .bind("limit", s.size()).bind("offset", (long) s.page() * s.size())
                 .map((row, meta) -> toItem(row)).all();
     }
@@ -138,7 +144,7 @@ public class InventoryRepository {
 
     // --- helpers -----------------------------------------------------------
 
-    private record Where(String sql, Map<String, Object> params) {
+    private record Where(String sql, Map<String, Object> params, String relevance, Map<String, Object> rankParams) {
     }
 
     private static Where where(Search s) {
@@ -148,9 +154,10 @@ public class InventoryRepository {
             conditions.add("i.store_id = :store");
             params.put("store", s.storeId());
         }
-        if (s.text() != null && !s.text().isBlank()) {
-            conditions.add("(p.name ILIKE :text ESCAPE '\\' OR i.sku ILIKE :text ESCAPE '\\')");
-            params.put("text", "%" + s.text().strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%");
+        TextSearch.Match match = TextSearch.of(s.text(), "i.sku", "p.name", List.of("p.category"));
+        if (match != null) {
+            conditions.add(match.condition());
+            params.putAll(match.params());
         }
         if (s.lowOnly()) {
             conditions.add("i.quantity <= i.reorder_level");
@@ -158,7 +165,8 @@ public class InventoryRepository {
         if (s.recountOnly()) {
             conditions.add("i.recount_needed");
         }
-        return new Where(conditions.isEmpty() ? "" : " WHERE " + String.join(" AND ", conditions), params);
+        return new Where(conditions.isEmpty() ? "" : " WHERE " + String.join(" AND ", conditions), params,
+                match == null ? null : match.relevance(), match == null ? Map.of() : match.rankParams());
     }
 
     private static DatabaseClient.GenericExecuteSpec bindAll(DatabaseClient.GenericExecuteSpec spec, Map<String, Object> params) {
