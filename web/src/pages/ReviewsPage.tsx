@@ -5,7 +5,7 @@ import { Chip, ListState, OrderStatusChip } from '../components/ui';
 import type { OrderStatus } from '../api/types';
 import { dateTime, money } from '../lib/format';
 
-export type ReviewProblem = 'NEGATIVE_QTY' | 'NO_PRICE';
+export type ReviewProblem = 'NEGATIVE_QTY' | 'NO_PRICE' | 'LARGE_QTY';
 
 export type ReviewLine = {
   sku: string; productSku: string | null; productName: string | null; qty: number; unitPrice: number; lineTotal: number;
@@ -131,7 +131,7 @@ function ReviewDetail({ orderId, onBack }: { orderId: string; onBack: () => void
   }, 0);
   const complete = flagged.every((l) => {
     const f = fixOf(l);
-    const qtyOk = l.problem === 'NEGATIVE_QTY' ? Number.isInteger(Number(f.qty)) && Number(f.qty) >= 1 : (f.qty === '' && l.qty >= 1) || Number(f.qty) >= 1;
+    const qtyOk = l.problem === 'NEGATIVE_QTY' || l.problem === 'LARGE_QTY' ? Number.isInteger(Number(f.qty)) && Number(f.qty) >= 1 : (f.qty === '' && l.qty >= 1) || Number(f.qty) >= 1;
     const priceOk = l.problem === 'NO_PRICE' ? Number(f.unitPrice) > 0 : true;
     return qtyOk && priceOk;
   });
@@ -186,7 +186,7 @@ function ReviewDetail({ orderId, onBack }: { orderId: string; onBack: () => void
             {item.lines.map((l) => (
               <tr key={l.sku} className={l.problem ? 'low' : ''}>
                 <td>{l.productName ?? 'Unknown product'}<div className="muted small mono">{l.sku}</div>
-                  {l.problem && <Chip kind="danger" icon={IconAlertTriangle}>{l.problem === 'NEGATIVE_QTY' ? 'Negative quantity' : 'No price'}</Chip>}</td>
+                  {l.problem && <Chip kind="danger" icon={IconAlertTriangle}>{l.problem === 'NEGATIVE_QTY' ? 'Negative quantity' : l.problem === 'LARGE_QTY' ? 'Unusually large quantity' : 'No price'}</Chip>}</td>
                 <td className={`num${l.qty <= 0 ? ' neg' : ''}`}>{l.qty}{l.originalQty !== null && <div className="muted small">was {l.originalQty}</div>}</td>
                 <td className="num">{money(l.unitPrice)}{l.originalUnitPrice !== null && <div className="muted small">was {money(l.originalUnitPrice)}</div>}</td>
                 <td className="num">{money(l.lineTotal)}</td>

@@ -460,6 +460,18 @@ Order totals all match the sum of their lines. No issue there.
     - D7: updated with a third store-manager group. Day one is now 14 notifications.
   - Tests: an order exactly at the limit; changing the limit in remote config changes which orders are stuck; a non-manager can't act on another store's stuck orders.
 
+### D33. A huge imported quantity is probably a typo
+*Added 2026-11-16, from a design question about upper limits on the dashboard.*
+- Checked in the 15,000 provided orders (32,816 lines): every quantity is 1, 2, 3, 4, 6 or 12 (case-pack sizes). The biggest is 12. Only 15 lines are negative (D10).
+- Gap before this rule: nothing stopped a typo like 5000 instead of 50. It counted in revenue and top products, and one huge bar flattened the daily chart.
+- **Decision (2026-11-16): same handling as D10.** An imported line with a quantity **above 50** is kept as received, flagged, and left out of revenue, counts, top products and the export until an admin decides.
+  - 50 is about four times the biggest real order, so no genuine order in the provided data is touched (the import tests still show exactly 15 flagged orders and the same revenue).
+  - Checked **after** D14 merges repeated lines, so two lines of 30 can't slip through as 60.
+  - The admin must type the right quantity; typing the same number confirms it. The recorded price can't change (D15). Stock is never touched.
+  - Applies to imported files only. The app's own order form already caps a line at the stock available.
+  - The limit is a constant (`LargeQuantity.LIMIT`), not an admin setting yet.
+- Tests: `ReviewQueueTest.anUnusuallyLargeQuantityIsFlaggedAndNeedsTheAdminToTypeTheRightQuantity_D33`; `DataImportTest` unchanged.
+
 ### D29. Does imported stock already subtract the open orders?
 *Added 2026-11-06, raised while deciding D5.*
 *Corrected 2026-11-06: the first version counted the D8 duplicate copies.* There are **1,010 open orders**: 317 PENDING, 332 PACKED and 361 SHIPPED (649 of them can still be cancelled). `inventory.csv` doesn't say whether its quantities already exclude the units in those orders.
