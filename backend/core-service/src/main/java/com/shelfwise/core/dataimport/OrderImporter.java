@@ -21,6 +21,7 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
 
 import com.shelfwise.core.dataimport.ImportLog.Outcome;
+import com.shelfwise.core.review.LargeQuantity;
 
 import io.r2dbc.postgresql.codec.Json;
 import reactor.core.publisher.Flux;
@@ -300,6 +301,13 @@ class OrderImporter {
             }
         }
         order.lines = List.copyOf(merged.values());
+        for (Line line : order.lines) {   // D33: checked after merging, so two lines of 30 can't slip past as 60
+            if (LargeQuantity.isLarge(line.qty())) {
+                needsReview = true;
+                order.notes.add(new Note("D33", Outcome.FLAGGED, "Line '" + line.rawSku() + "' has quantity " + line.qty()
+                        + ", above " + LargeQuantity.LIMIT + "; order kept as received and excluded from revenue until an admin confirms or corrects it"));
+            }
+        }
         order.total = priceFilled
                 ? order.lines.stream().map(Line::total).reduce(BigDecimal.ZERO, BigDecimal::add)
                 : order.fileTotal;

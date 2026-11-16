@@ -240,11 +240,23 @@ Proof is an automated test (run in CI) unless marked otherwise. Data-import case
 | The config server answers something unexpected and the app breaks | Apps treat it as "no banner" and keep the last good values | web `App.test.tsx` (other answers on /api/config), `useConfig.ts` |
 | A phone was in the background when the banner changed | Mobile reloads config whenever the app comes back to the foreground | `mobile/src/useConfig.ts` (AppState); mobile `App.test.tsx` banner test |
 
+## Logging and monitoring (M28)
+
+| What could go wrong | How it's handled | Proof |
+|---|---|---|
+| A user reports "it failed" and nobody can find the call in the logs | Every response carries `X-Request-Id`; every log line carries the same id | `RequestIdTest.everyRequestGetsAnIdInTheResponseAndOnItsLogLine` |
+| A problem crosses services (PO decided, but no notification) and can't be followed | The id is saved with the outbox event, sent as the RabbitMQ correlation id and logged by the notification service | `RequestIdTest.anEventRemembersTheRequestThatCausedIt`, `OutboxRelayTest.theRequestIdTravelsWithTheEvent`, `EventListenerTest.anEventIsLoggedUnderTheRequestIdOfTheCallThatCausedIt` |
+| A caller sends a huge or malicious id to pollute the logs | Only 8-64 plain characters are kept; anything else is replaced | `RequestIdTest.aCallersIdIsKeptOnlyIfItIsShortAndPlain` |
+| Customer names typed into a search end up in the logs | Query strings are never logged | `RequestIdTest.searchesAreLoggedWithoutTheirQueryString_D16` |
+| RabbitMQ or the relay breaks and notifications silently stop | The `outbox` health check goes DOWN after 5 minutes, with the backlog size and age | `RequestIdTest.theOutboxHealthCheckGoesDownWhenEventsStopLeaving` |
+| The platform takes the core out of service because RabbitMQ is down | The outbox check is not part of readiness: selling continues (DL-03) | Same test (readiness stays 200) |
+
 ## Review queue (D10)
 
 | What could go wrong | How it's handled | Proof |
 |---|---|---|
 | Imported orders with negative quantities inflate or shrink revenue | Kept as received, flagged, left out of every figure until reviewed | `ReviewQueueTest.correctingSetsTheQuantityRecalculatesTheTotalAndTheOrderJoinsRevenue`; `DashboardApiTest` |
+| An imported line has a typo-sized quantity (above 50, e.g. 5000 for 50) and spikes revenue | Same handling as negative: kept as received, flagged, left out of every figure until an admin types the right quantity (D33) | `ReviewQueueTest.anUnusuallyLargeQuantityIsFlaggedAndNeedsTheAdminToTypeTheRightQuantity_D33`; `DataImportTest` (no real order trips it) |
 | Two admins decide the same order at once | Version check in one update: exactly one wins, the other gets 409 | `ReviewQueueTest.twoAdminsAtOnce_exactlyOneDecisionWins` |
 | An order is decided twice, or from an out-of-date screen | 409; the first decision stands | `ReviewQueueTest.anOrderCanBeDecidedOnlyOnce`, `badCorrectionsAreRefused` (stale version) |
 | A correction sets quantity 0 or below, has no reason, skips a flagged line, or changes a normal line | 400 with the rule; nothing saved, nothing audited | `ReviewQueueTest.badCorrectionsAreRefused` |

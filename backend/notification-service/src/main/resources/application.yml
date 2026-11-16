@@ -4,6 +4,10 @@ spring:
   application:
     name: notification-service
 
+  # Copies the request id from the reactive context into the log context on every step (M28).
+  reactor:
+    context-propagation: auto
+
   # Own tables in the 'notifications' schema of the same PostgreSQL server (DL-12). The SQL always names the
   # schema, so the core service's tables are never touched and the two can move to separate databases later.
   r2dbc:
@@ -37,6 +41,12 @@ shelfwise:
 
 server:
   port: ${SERVER_PORT:8081}
+
+# Logs (M28). Locally: readable lines with the request id. Deployed: set LOGGING_STRUCTURED_FORMAT_CONSOLE=ecs
+# for one JSON object per line (the request id becomes a field), which log search tools can filter on.
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{requestId:-}]"
 
 management:
   endpoints:

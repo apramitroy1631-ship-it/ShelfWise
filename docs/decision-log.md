@@ -202,6 +202,18 @@ Fixed by the brief: **Java + Spring Boot WebFlux (used reactively)** for the bac
 - **Trade-offs:** Flutter would give smoother UI out of the box but a second language and type set to keep in sync. The browser preview needs the core service to allow its origin (`CORS_ALLOWED_ORIGINS`, empty by default); real phones don't need CORS.
 - **At 10x:** offline queue for stock counts, push notifications (Expo Notifications) from the notification service, barcode scanning for SKUs.
 
+## DL-14 Logging, monitoring and request tracing (M28)
+*Built 2026-11-16*
+- **Options:** (a) OpenTelemetry tracing with a collector (Jaeger/Tempo); (b) Micrometer Tracing (trace and span ids, W3C headers); (c) **own request id**: one id per request, carried through the outbox and RabbitMQ, on every log line.
+- **Chosen:** (c). The only path between the services is an event through the outbox, and no tracing library follows a call across `reactor-rabbitmq` or a row that waits in a table before the relay sends it. So the id is saved with the outbox event and sent as the RabbitMQ correlation id, and the notification service logs its work under it. Searching both services' logs for one id shows the HTTP call, the publish and the handling.
+- **How:**
+  - `X-Request-Id`: kept from the caller if short and plain (8-64 letters, digits, `.`, `_`, `-`), otherwise made new; always returned. A user can quote it when reporting a problem.
+  - Reactor context propagation copies it into the log context (MDC) on every reactive step.
+  - One access line per request (method, path, status, time). **Query strings are never logged**: searches carry customer names (D16). Phones are never logged (D16).
+  - Logs: readable lines locally; one JSON object per line when deployed (`LOGGING_STRUCTURED_FORMAT_CONSOLE=ecs`, Spring's built-in format), with the request id as a field.
+  - Health: `/actuator/health/liveness` and `/readiness` for the platform (Railway checks readiness); an `outbox` check goes DOWN when the oldest unsent event is older than 5 minutes (relay or broker broken). It is deliberately not in readiness: the core keeps selling while RabbitMQ is down (DL-03).
+- **Trade-offs:** no timing breakdown per step (spans) and no trace UI; the id has to be searched for in the logs. Enough for two services and one hop.
+- **At 10x:** OpenTelemetry with a collector and a trace UI, keeping the same id as a span attribute; metrics (Prometheus) for request rate, error rate, latency and outbox backlog, with alerts.
+
 ## Still to lock
-- CI/CD (GitHub Actions needs a GitHub repository, so nothing is pushed until approved).
-- Logging, monitoring and tracing across services.
+- (none: CI/CD is GitHub Actions with one workflow per part, M24; logging and monitoring are DL-14.)

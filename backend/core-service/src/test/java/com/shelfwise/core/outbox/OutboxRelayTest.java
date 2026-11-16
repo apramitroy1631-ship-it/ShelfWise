@@ -165,6 +165,19 @@ class OutboxRelayTest {
         assertThat(byType.get("HeadOfficeChanged").path("outOfStock").path("latest").asString()).isEqualTo("0");   // stores affected
     }
 
+    /** Cross-service tracing (M28): the id of the request that caused an event goes out with it. */
+    @Test
+    void theRequestIdTravelsWithTheEvent() throws Exception {
+        outbox.add("PURCHASE_ORDER", "PO-10009", "PurchaseOrderDecided", Map.of("poId", "PO-10009"))
+                .contextWrite(reactor.util.context.Context.of("requestId", "req-relay-0001"))
+                .block(Duration.ofSeconds(10));
+        relay.publishBatch().block(Duration.ofSeconds(30));
+
+        GetResponse message = channel.basicGet(queue, true);
+        assertThat(message.getProps().getCorrelationId()).isEqualTo("req-relay-0001");
+        assertThat(json.readTree(new String(message.getBody(), StandardCharsets.UTF_8)).path("requestId").asString()).isEqualTo("req-relay-0001");
+    }
+
     /** Two copies of the core service relaying at the same moment: every event goes out once (SKIP LOCKED). */
     @Test
     void twoRelaysAtOnceNeverPublishAnEventTwice() throws Exception {

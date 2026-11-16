@@ -98,6 +98,17 @@ public class EventListener {
         sender.close();
     }
 
+    private static void logHandled(tools.jackson.databind.JsonNode event, boolean changed, String requestId) {
+        if (requestId != null) {
+            org.slf4j.MDC.put(RequestIdFilter.KEY, requestId);
+        }
+        try {
+            log.info("Handled {} {}{}", event.path("type").asString(), event.path("id").asString(), changed ? "" : " (repeat, skipped)");
+        } finally {
+            org.slf4j.MDC.remove(RequestIdFilter.KEY);
+        }
+    }
+
     /** Declaring is idempotent: the same names and settings every time, by both services. */
     private Mono<Void> declareQueues() {
         return sender.declareExchange(ExchangeSpecification.exchange(exchange).type("topic").durable(true))
@@ -111,10 +122,16 @@ public class EventListener {
                 .then();
     }
 
+    /**
+     * Handles one event under the id of the request in the core service that caused it (M28), so searching the logs
+     * of both services for one request id shows the whole path: the HTTP call, the publish, and this.
+     */
     private Mono<Void> process(AcknowledgableDelivery delivery) {
         String eventId = delivery.getProperties().getMessageId();
+        String requestId = delivery.getProperties().getCorrelationId();
         return Mono.fromCallable(() -> json.readTree(delivery.getBody()))
-                .flatMap(handler::handle)
+                .flatMap(event -> handler.handle(event)
+                        .doOnNext(changed -> logHandled(event, changed, requestId)))
                 .retryWhen(Retry.backoff(3, Duration.ofMillis(500)))
                 .doOnNext(changed -> delivery.ack())
                 .onErrorResume(e -> {

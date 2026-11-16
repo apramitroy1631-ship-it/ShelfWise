@@ -150,13 +150,17 @@ public class ReviewService {
             if (problem == Problem.NEGATIVE_QTY && fix.qty() == null) {
                 throw badRequest("'" + fix.sku() + "' needs the right quantity (at least 1)");
             }
-            if (problem == Problem.NEGATIVE_QTY && fix.unitPrice() != null && fix.unitPrice().compareTo(line.unitPrice()) != 0) {
+            if (problem == Problem.LARGE_QTY && fix.qty() == null) {   // D33: the admin must type the quantity, even to confirm it
+                throw badRequest("'" + fix.sku() + "' has quantity " + line.qty() + "; enter the right quantity (the same one confirms it)");
+            }
+            if ((problem == Problem.NEGATIVE_QTY || problem == Problem.LARGE_QTY)
+                    && fix.unitPrice() != null && fix.unitPrice().compareTo(line.unitPrice()) != 0) {
                 throw badRequest("The recorded price of '" + fix.sku() + "' can't be changed (D15); only its quantity");
             }
             if (problem == Problem.NO_PRICE && fix.unitPrice() == null) {
                 throw badRequest("'" + fix.sku() + "' needs a price");
             }
-            if (problem == Problem.NO_PRICE && fix.qty() == null && line.qty() <= 0) {
+            if (problem == Problem.NO_PRICE && fix.qty() == null && (line.qty() <= 0 || LargeQuantity.isLarge(line.qty()))) {
                 throw badRequest("'" + fix.sku() + "' also needs the right quantity (at least 1)");
             }
         }
@@ -173,7 +177,10 @@ public class ReviewService {
         if ("ADMIN".equals(l.priceSource()) && l.unitPrice().signum() == 0) {
             return Problem.NO_PRICE;
         }
-        return l.qty() <= 0 ? Problem.NEGATIVE_QTY : null;
+        if (l.qty() <= 0) {
+            return Problem.NEGATIVE_QTY;
+        }
+        return LargeQuantity.isLarge(l.qty()) ? Problem.LARGE_QTY : null;
     }
 
     /** {@code version} is the one the admin's screen loaded: a decision made on an out-of-date view is refused. */
@@ -224,12 +231,14 @@ public class ReviewService {
             int qtyAtImport = orig == null ? l.qty() : orig.path("qty").asInt();
             BigDecimal priceAtImport = orig == null ? l.unitPrice() : orig.path("unitPrice").decimalValue();
             Problem problem = "ADMIN".equals(l.priceSource()) && priceAtImport.signum() == 0 ? Problem.NO_PRICE
-                    : qtyAtImport <= 0 ? Problem.NEGATIVE_QTY : null;
+                    : qtyAtImport <= 0 ? Problem.NEGATIVE_QTY : LargeQuantity.isLarge(qtyAtImport) ? Problem.LARGE_QTY : null;
             boolean changed = orig != null && (qtyAtImport != l.qty() || priceAtImport.compareTo(l.unitPrice()) != 0);
             views.add(new ReviewLine(l.sku(), l.productSku(), l.productName(), l.qty(), l.unitPrice(), l.lineTotal(), problem,
                     changed ? qtyAtImport : null, changed ? priceAtImport : null));
             if (problem == Problem.NEGATIVE_QTY) {
                 problems.add("'" + l.sku() + "' has quantity " + qtyAtImport + " (D10)");
+            } else if (problem == Problem.LARGE_QTY) {
+                problems.add("'" + l.sku() + "' has an unusually large quantity of " + qtyAtImport + " (D33)");
             } else if (problem == Problem.NO_PRICE) {
                 problems.add("'" + l.sku() + "' has no price that could be proven (D11)");
             }

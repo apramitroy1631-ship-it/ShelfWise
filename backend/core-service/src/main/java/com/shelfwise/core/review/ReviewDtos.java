@@ -23,7 +23,9 @@ public final class ReviewDtos {
         /** D10: a quantity of 0 or below in the imported file. The admin enters the right quantity. */
         NEGATIVE_QTY,
         /** D11: a missing price no evidence could prove. The admin sets the price. */
-        NO_PRICE
+        NO_PRICE,
+        /** D33: a quantity above {@link LargeQuantity#LIMIT}, probably a typo. The admin confirms or corrects it. */
+        LARGE_QTY
     }
 
     /**
